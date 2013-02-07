@@ -1,0 +1,37 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SubmitScoreActivity"
+    android:gravity="center" >
+
+    <Button
+        android:id="@+id/level1Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="150dp"
+        android:text="@string/level1button"
+        android:onClick="submitScoreLevel1"
+        />
+    
+    <Button
+        android:id="@+id/level2Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="150dp"
+        android:text="@string/level2button"
+        android:onClick="submitScoreLevel2"
+        />
+    
+    <Button
+        android:id="@+id/level3Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="150dp"
+        android:text="@string/level3button"
+        android:onClick="submitScoreLevel3"
+        />
+
+</LinearLayout>

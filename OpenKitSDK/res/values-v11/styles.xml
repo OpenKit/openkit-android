@@ -1,0 +1,27 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme for API 11+. This theme completely replaces
+        AppBaseTheme from res/values/styles.xml on API 11+ devices.
+    -->
+   <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+        <!-- API 11 theme customizations can go here. -->
+    </style>
+    
+   <!-- Theme commented out because right now minimum support level is basically v14 -->
+   <!-- 
+    <style name="OKActivityTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/OKActionBarStyle</item>
+        <item name="android:background">@color/io_openkit_leaderboards_bgcolor</item>
+        <item name="android:windowBackground">@color/io_openkit_leaderboards_bgcolor</item>
+        <item name="android:colorBackground">@color/io_openkit_leaderboards_bgcolor</item>
+    </style>
+    
+    <style name="OKActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:displayOptions">showTitle|homeAsUp</item>
+        <item name="android:background">@color/io_openkit_leaderboards_bgcolor</item>
+    </style>
+    
+     -->
+
+</resources>

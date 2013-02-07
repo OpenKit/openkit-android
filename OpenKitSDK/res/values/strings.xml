@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+
+	Copyright 2012 OpenKit
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+ -->
+ 
+<resources>
+
+    <string name="io_openkit_title_leaderboards">Leaderboards</string>
+    <string name="io_openkit_sdk_app_name">OpenKitSDK</string>
+    <string name="io_openkit_login_text">Create an account to access leaderboards and resume game progress from any device.</string>
+    <string name="io_openkit_privacy_policy">By signing in you agree to the OpenKit Terms of Service and Privacy Policy</string>
+    <string name="io_openkit_dont_sign_in">I don\'t want these features</string>
+    <string name="io_openkit_fb_signin">Sign in with Facebook</string>
+    <string name="io_openkit_loggedIn">Signed in as</string>
+    <string name="io_openkit_createNickName">Create a nickname for this account</string>
+    <string name="io_openkit_nickExplanation">This is how you\'ll appear in leaderboards</string>
+    <string name="io_openkit_continue">Continue</string>
+    <string name="io_openkit_leaderboards_alltime">ALL TIME</string>
+    <string name="io_openkit_leaderboards_thisWeek">THIS WEEK</string>
+    <string name="io_openkit_leaderboards_today">TODAY</string>
+    <string name="io_openkit_profile">Profile</string>
+    <string name="io_openkit_logout">Logout</string>
+    <string name="io_openkit_userprofle">Profile</string>
+
+</resources>

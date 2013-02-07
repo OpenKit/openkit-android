@@ -1,0 +1,118 @@
+/**
+ * Copyright 2012 OpenKit
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.openkit.leaderboards;
+
+import java.util.List;
+
+import org.json.JSONObject;
+
+import io.openkit.OKLeaderboard;
+import io.openkit.OKLog;
+import io.openkit.OKLoginActivity;
+import io.openkit.OKUser;
+import io.openkit.R;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class OKLeaderboardsFragment extends ListFragment {
+
+	private OKLeaderboardsListAdapter listAdapter;
+	private ProgressBar spinnerBar;
+	private ListView listView;
+	private TextView listHeaderTextView;
+	
+	private boolean startedLeaderboardsRequest;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		setRetainInstance(true);
+		super.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		View view = inflater.inflate(R.layout.io_openkit_fragment_leaderboards, container, false);
+		
+		listView = (ListView)view.findViewById(android.R.id.list);
+		spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
+		
+		//Inflate the list headerview
+		View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
+		listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
+		listView.addHeaderView(listHeaderView);
+		
+		//Only do this the first time when fragment is created
+		if(!startedLeaderboardsRequest) {
+			getLeaderboards();
+			
+			if(OKUser.getCurrentUser() == null)
+			{
+				OKLog.v("Launching login view becuase no user is logged in");
+				Intent launchLogin = new Intent(this.getActivity(), OKLoginActivity.class);
+				startActivity(launchLogin);
+			}
+		}
+		
+		listHeaderTextView.setText("2000 Players");
+		
+		return view;
+	}
+	
+	private void getLeaderboards()
+	{
+		startedLeaderboardsRequest = true;
+		
+		spinnerBar.setVisibility(View.VISIBLE);
+		
+		//Get the leaderboards
+		OKLeaderboard.getLeaderboards(new OKLeaderboardsListResponseHandler() {
+
+			@Override
+			public void onSuccess(List<OKLeaderboard> leaderboardList) {
+				listAdapter = new OKLeaderboardsListAdapter(OKLeaderboardsFragment.this.getActivity(), 
+						android.R.layout.simple_list_item_1, leaderboardList);
+
+				//Add a header to the list. Must be done before setting list adapter
+				listHeaderTextView.setText("2000 Players");
+
+				//Display the list
+				OKLeaderboardsFragment.this.setListAdapter(listAdapter);
+				listView.setVisibility(View.VISIBLE);
+				spinnerBar.setVisibility(View.INVISIBLE);
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				spinnerBar.setVisibility(View.INVISIBLE);
+				Toast toast = Toast.makeText(OKLeaderboardsFragment.this.getActivity(), "Couldn't connect to server to get leaderboards", Toast.LENGTH_LONG);
+				toast.show();
+			}
+		});
+	}
+	
+
+}
