@@ -16,5 +16,6 @@ gen/
 local.properties
 
 # Eclipse project files
-.classpath
-.project
+#.classpath
+#.project
+# We need the above files to make the import of projects work
