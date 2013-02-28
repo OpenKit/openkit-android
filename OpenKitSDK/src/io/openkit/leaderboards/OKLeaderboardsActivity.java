@@ -29,10 +29,15 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		this.setTheme(R.style.OKActivityTheme);
+		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
+		this.setTheme(themeID);
+		//this.setTheme(R.style.OKActivityTheme);
 		super.onCreate(savedInstanceState);
 		
-		this.setTitle(R.string.io_openkit_title_leaderboards);
+		//Note: have to specify resources this way so they load in Unity, where R.string does not exist
+		int titleID = getResources().getIdentifier("io_openkit_title_leaderboards", "string", getPackageName());
+		this.setTitle(titleID);
+		//this.setTitle(R.string.io_openkit_title_leaderboards);
 		
 		if(savedInstanceState == null) {
 			OKLeaderboardsFragment fragment = new OKLeaderboardsFragment();
@@ -63,11 +68,13 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 		///Note: since this is a library project, this has to be an IF/ELSE
 		// statement instead of a switch because Library projects can't use the R.id.NAME
 		// in a switch statement
+		int profileButtonId = getResources().getIdentifier("io_openkit_menu_profileButton", "id", getPackageName());
 		
 		if (item.getItemId() == android.R.id.home) {
 			this.finish();
 			return true;
-		} else if (item.getItemId() == R.id.io_openkit_menu_profileButton) {
+		} //else if (item.getItemId() == R.id.io_openkit_menu_profileButton) {
+		else if (item.getItemId() == profileButtonId) {
 			showProfileActivity();
 			return true;
 		} else {
@@ -79,7 +86,9 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.io_openkit_leaderboards, menu);
+	    int menuID = getResources().getIdentifier("io_openkit_leaderboards", "menu", getPackageName());
+	    inflater.inflate(menuID, menu);
+	    //inflater.inflate(R.menu.io_openkit_leaderboards, menu);
 	    return true;
 	}
 

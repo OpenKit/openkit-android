@@ -55,26 +55,36 @@ public class OKLeaderboardsFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.io_openkit_fragment_leaderboards, container, false);
+		// Note: have to lookup id manually for Unity
+		int viewID = getResources().getIdentifier("io_openkit_fragment_leaderboards", "layout", getActivity().getPackageName());
+		View view = inflater.inflate(viewID, container, false);
+		//View view = inflater.inflate(R.layout.io_openkit_fragment_leaderboards, container, false);
+		
+		int spinnerBarID = getResources().getIdentifier("progressSpinner", "id", getActivity().getPackageName());
+		int listHeaderViewID = getResources().getIdentifier("list_simple_header", "layout", getActivity().getPackageName());
+		int listHeaderTextViewID = getResources().getIdentifier("headerTextView", "id", getActivity().getPackageName());
 		
 		listView = (ListView)view.findViewById(android.R.id.list);
-		spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
+		//spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
+		spinnerBar = (ProgressBar)view.findViewById(spinnerBarID);
 		
 		//Inflate the list headerview
-		View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
-		listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
+		//View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
+		View listHeaderView = inflater.inflate(listHeaderViewID, null);
+		//listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
+		listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewID);
 		listView.addHeaderView(listHeaderView);
 		
 		//Only do this the first time when fragment is created
 		if(!startedLeaderboardsRequest) {
 			getLeaderboards();
-			
+			/*
 			if(OKUser.getCurrentUser() == null)
 			{
 				OKLog.v("Launching login view becuase no user is logged in");
 				Intent launchLogin = new Intent(this.getActivity(), OKLoginActivity.class);
 				startActivity(launchLogin);
-			}
+			}*/
 		}
 		
 		listHeaderTextView.setText("2000 Players");
