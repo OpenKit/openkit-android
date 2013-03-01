@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKScore;
-import io.openkit.R;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -74,14 +73,29 @@ public class OKScoresFragment extends ListFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.io_openkit_fragment_okscores, container, false);
+		int viewID = getResources().getIdentifier("io_openkit_fragment_okscores", "layout", getActivity().getPackageName());
+		View view = inflater.inflate(viewID, container, false);
+		//View view = inflater.inflate(R.layout.io_openkit_fragment_okscores, container, false);
 		
 		listView = (ListView)view.findViewById(android.R.id.list);
-		spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
 		
+		int spinnerBarId, todayScoresButtonId, weekScoresButtonId, allTimeScoresButtonId;
+		
+		spinnerBarId = getResources().getIdentifier("progressSpinner", "id", getActivity().getPackageName());
+		todayScoresButtonId = getResources().getIdentifier("io_openkit_leaderboards_todayButton", "id", getActivity().getPackageName());
+		weekScoresButtonId = getResources().getIdentifier("io_openkit_leaderboards_thisWeekButton", "id", getActivity().getPackageName());
+		allTimeScoresButtonId = getResources().getIdentifier("io_openkit_leaderboards_allTimeButton", "id", getActivity().getPackageName());
+		
+		spinnerBar = (ProgressBar)view.findViewById(spinnerBarId);
+		todayScoresButton = (Button)view.findViewById(todayScoresButtonId);
+		weekScoresButton = (Button)view.findViewById(weekScoresButtonId);
+		allTimeScoresButton = (Button)view.findViewById(allTimeScoresButtonId);
+		/*
+		spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
 		todayScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_todayButton);
 		weekScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_thisWeekButton);
 		allTimeScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_allTimeButton);
+		*/
 		
 		todayScoresButton.setOnClickListener(todayScoresPressed);
 		weekScoresButton.setOnClickListener(thisWeekScoresPressed);
@@ -94,9 +108,16 @@ public class OKScoresFragment extends ListFragment
 		
 		selectCurrentTab();
 		
+		int listHeaderViewId, listHeaderTextViewId;
+		
+		listHeaderTextViewId = getResources().getIdentifier("headerTextView", "id", getActivity().getPackageName());
+		listHeaderViewId = getResources().getIdentifier("list_simple_header", "layout", getActivity().getPackageName());
+		
 		//Inflate the list headerview
-		View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
-		listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
+		View listHeaderView = inflater.inflate(listHeaderViewId, null);
+		listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewId);
+		//View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
+		//listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
 		listView.addHeaderView(listHeaderView);
 		listHeaderTextView.setText(currentLeaderboard.getPlayerCountString() + " Players");
 		
@@ -280,12 +301,14 @@ public class OKScoresFragment extends ListFragment
 	
 	private void setButtonAsSelected(Button button)
 	{
-		button.setBackgroundResource(R.drawable.tab_active);
+		int backgroundID = getResources().getIdentifier("tab_active", "drawable", getActivity().getPackageName());
+		button.setBackgroundResource(backgroundID);
 	}
 	
 	private void setButtonAsNormal(Button button)
 	{
-		button.setBackgroundResource(R.drawable.io_openkit_tabbutton);
+		int backgroundID = getResources().getIdentifier("io_openkit_tabbutton", "drawable", getActivity().getPackageName());
+		button.setBackgroundResource(backgroundID);
 	}
 
 }
