@@ -16,7 +16,6 @@
 
 package io.openkit.user;
 
-import io.openkit.R;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
@@ -26,10 +25,13 @@ public class OKUserProfileActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		this.setTheme(R.style.OKActivityTheme);
+		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
+		this.setTheme(themeID);
+		//this.setTheme(R.style.OKActivityTheme);
 		super.onCreate(savedInstanceState);
 		
-		this.setTitle(R.string.io_openkit_userprofle);
+		int titleID = getResources().getIdentifier("io_openkit_userprofle", "string", getPackageName());
+		this.setTitle(titleID);
 		
 		if(savedInstanceState == null) {
 			OKUserProfileFragment fragment = new OKUserProfileFragment();
