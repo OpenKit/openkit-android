@@ -98,6 +98,7 @@ public class MainActivity extends Activity {
 			
 			//Not signed in
 			userNameTextView.setText(R.string.notLoginString);
+			//profilePictureView.setProfileId("");
 		}
 	}
 
