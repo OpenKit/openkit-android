@@ -61,10 +61,23 @@ public class OKLoginFragment extends DialogFragment
 	{
 		getDialog().setTitle("Login");
 		
+		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId;
+		
+		viewID = getResources().getIdentifier("io_openkit_fragment_logindialog", "layout", getActivity().getPackageName());
+		fbLoginButtonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
+		dontLoginButtonId = getResources().getIdentifier("io_openkit_dontSignInButton", "id", getActivity().getPackageName());
+		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
+		
+		/*
 		View view = inflater.inflate(R.layout.io_openkit_fragment_logindialog, container, false);
 		fbLoginButton = (Button)view.findViewById(R.id.io_openkit_fbSignInButton);
 		dontLoginButton = (Button)view.findViewById(R.id.io_openkit_dontSignInButton);
 		spinner = (ProgressBar)view.findViewById(R.id.io_openkit_spinner);
+		*/
+		View view = inflater.inflate(viewID, container, false);
+		fbLoginButton = (Button)view.findViewById(fbLoginButtonId);
+		dontLoginButton = (Button)view.findViewById(dontLoginButtonId);
+		spinner = (ProgressBar)view.findViewById(spinnerId);
 		
 		fbLoginButton.setOnClickListener(loginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);		

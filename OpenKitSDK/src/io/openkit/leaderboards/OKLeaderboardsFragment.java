@@ -20,7 +20,8 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import io.openkit.OKLeaderboard;
+import io.openkit.*;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -73,13 +74,13 @@ public class OKLeaderboardsFragment extends ListFragment {
 		//Only do this the first time when fragment is created
 		if(!startedLeaderboardsRequest) {
 			getLeaderboards();
-			/*
+			
 			if(OKUser.getCurrentUser() == null)
 			{
 				OKLog.v("Launching login view becuase no user is logged in");
 				Intent launchLogin = new Intent(this.getActivity(), OKLoginActivity.class);
 				startActivity(launchLogin);
-			}*/
+			}
 		}
 		
 		listHeaderTextView.setText("2000 Players");
