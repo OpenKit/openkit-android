@@ -1,8 +1,8 @@
 package com.facebook.widget;
 
 import java.lang.reflect.Field;
-
 import android.content.Context;
+import android.util.Log;
 
 public class StyleableHelper {
 	
@@ -31,15 +31,30 @@ public class StyleableHelper {
 	            {
 	                //return as int array
 	                int[] ret = (int[])f.get( null );
+	                Log.d("FBMOD", "Found resource properly!");
 	                return ret;
 	            }
 	        }
 	    }
 	    catch ( Throwable t )
 	    {
+	    	Log.e("FBMOD","Exception thrown while trying to find resource: " + t);
+	    	Log.e("FBMOD","Tried to load class name: " + context.getPackageName() + ".R$styleable");
 	    }
-
+	    
+	    Log.e("FBMOD","Could not load resource properly!");
+	    
 	    return null;
+	}
+	
+	public static Boolean isRClassDefined(Context context)
+	{
+		try {
+			Class.forName(context.getPackageName() + ".R" );
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }
