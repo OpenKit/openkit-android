@@ -22,7 +22,7 @@
     android:orientation="vertical"
     android:padding="6dp" >
 
-    <com.facebook.widget.ProfilePictureView
+    <io.openkit.facebook.widget.ProfilePictureView
         android:id="@+id/io_openkit_fbProfilePicView"
         android:layout_width="60dp"
         android:layout_height="60dp"

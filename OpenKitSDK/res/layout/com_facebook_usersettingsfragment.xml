@@ -45,7 +45,7 @@
             android:layout_marginTop="35dp"
             android:gravity="center"/>
     
-        <com.facebook.widget.LoginButton
+        <io.openkit.facebook.widget.LoginButton
             android:id="@+id/com_facebook_usersettingsfragment_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
