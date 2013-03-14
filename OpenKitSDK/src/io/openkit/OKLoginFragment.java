@@ -19,7 +19,7 @@ package io.openkit;
 import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
-import com.facebook.*;
+import io.openkit.facebook.*;
 import android.support.v4.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;

@@ -18,7 +18,7 @@ package io.openkit;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.facebook.Session;
+import io.openkit.facebook.Session;
 
 /**
  * Singleton instance that stores OpenKit global items 

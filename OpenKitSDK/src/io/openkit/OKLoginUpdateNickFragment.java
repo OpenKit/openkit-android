@@ -18,7 +18,7 @@ package io.openkit;
 
 import io.openkit.OKUserUtilities.UpdateUserNickRequestHandler;
 
-import com.facebook.widget.ProfilePictureView;
+import io.openkit.facebook.widget.ProfilePictureView;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;

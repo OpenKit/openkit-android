@@ -22,9 +22,9 @@ import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.facebook.*;
-import com.facebook.Request.GraphUserCallback;
-import com.facebook.model.GraphUser;
+import io.openkit.facebook.*;
+import io.openkit.facebook.Request.GraphUserCallback;
+import io.openkit.facebook.model.GraphUser;
 
 
 

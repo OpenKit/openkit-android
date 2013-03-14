@@ -18,7 +18,7 @@ package io.openkit.user;
 
 import io.openkit.OKUser;
 
-import com.facebook.widget.ProfilePictureView;
+import io.openkit.facebook.widget.ProfilePictureView;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
