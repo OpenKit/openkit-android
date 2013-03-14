@@ -55,13 +55,32 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.io_openkit_fragment_updatenick, container, false);
+		int viewID, userNickTextViewId, userNickEditTextId, continueButtonId, spinnerId, profilePictureId;
 		
+		viewID = getResources().getIdentifier("io_openkit_fragment_updatenick", "layout", getActivity().getPackageName());
+		userNickTextViewId = getResources().getIdentifier("io_openkit_userNickTextView", "id", getActivity().getPackageName());
+		userNickEditTextId = getResources().getIdentifier("io_openkit_userNickEditText", "id", getActivity().getPackageName());
+		continueButtonId = getResources().getIdentifier("io_openkit_continueButton", "id", getActivity().getPackageName());
+		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
+		profilePictureId = getResources().getIdentifier("io_openkit_fbProfilePicView", "id", getActivity().getPackageName());
+		
+		View view = inflater.inflate(viewID, container, false);
+		userNickTextView = (TextView)view.findViewById(userNickTextViewId);
+		userNickEditText = (EditText)view.findViewById(userNickEditTextId);
+		continueButton = (Button)view.findViewById(continueButtonId);
+		spinner = (ProgressBar)view.findViewById(spinnerId);
+		profiePictureView = (ProfilePictureView)view.findViewById(profilePictureId);
+		
+		/*
+		View view = inflater.inflate(R.layout.io_openkit_fragment_updatenick, container, false);
 		userNickTextView = (TextView)view.findViewById(R.id.io_openkit_userNickTextView);
 		userNickEditText = (EditText)view.findViewById(R.id.io_openkit_userNickEditText);
 		continueButton = (Button)view.findViewById(R.id.io_openkit_continueButton);
 		spinner = (ProgressBar)view.findViewById(R.id.io_openkit_spinner);
 		profiePictureView = (ProfilePictureView)view.findViewById(R.id.io_openkit_fbProfilePicView);
+		*/
+		
+		
 		
 		currentUser = OpenKit.getCurrentUser();
 		userNickTextView.setText(currentUser.getUserNick());

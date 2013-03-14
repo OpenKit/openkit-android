@@ -41,16 +41,27 @@ public class OKLeaderboardsListAdapter extends ArrayAdapter<OKLeaderboard> {
 	{
 		View row = convertView;
 		
+		int text1id = getContext().getResources().getIdentifier("text1", "id", getContext().getPackageName());
+		int text2id = getContext().getResources().getIdentifier("text2", "id", getContext().getPackageName());
+		int smartImageViewID = getContext().getResources().getIdentifier("smartImageView", "id", getContext().getPackageName());
+		int leaderboardRowID = getContext().getResources().getIdentifier("okleaderboardrow", "layout", getContext().getPackageName());
+		
 		if(row == null)
 		{
 			LayoutInflater inflater = LayoutInflater.from(this.getContext());			
-			row = inflater.inflate(R.layout.okleaderboardrow, parent, false);
+			
+			row = inflater.inflate(leaderboardRowID, parent, false);
+			//row = inflater.inflate(R.layout.okleaderboardrow, parent, false);
 		}
 		
-		TextView label1 = (TextView)row.findViewById(R.id.text1);
-		TextView label2 = (TextView)row.findViewById(R.id.text2);
+
+		TextView label1 = (TextView)row.findViewById(text1id);
+		TextView label2 = (TextView)row.findViewById(text2id);
+		//TextView label1 = (TextView)row.findViewById(R.id.text1);
+		//TextView label2 = (TextView)row.findViewById(R.id.text2);
 		
-		SmartImageView imageView = (SmartImageView)row.findViewById(R.id.smartImageView);
+		SmartImageView imageView = (SmartImageView)row.findViewById(smartImageViewID);
+		//SmartImageView imageView = (SmartImageView)row.findViewById(R.id.smartImageView);
 		
 		OKLeaderboard currentLeaderboard = this.getItem(position);
 		

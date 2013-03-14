@@ -29,7 +29,9 @@ public class OKScoresActivity extends FragmentActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		this.setTheme(R.style.OKActivityTheme);
+		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
+		this.setTheme(themeID);
+		//this.setTheme(R.style.OKActivityTheme);
 		super.onCreate(savedInstanceState);
 		
 		currentLeaderboard = getIntent().getParcelableExtra(OKLeaderboard.LEADERBOARD_KEY);

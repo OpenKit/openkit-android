@@ -98,6 +98,7 @@ public class MainActivity extends Activity {
 			
 			//Not signed in
 			userNameTextView.setText(R.string.notLoginString);
+			profilePictureView.setProfileId("");
 		}
 	}
 
@@ -144,6 +145,13 @@ public class MainActivity extends Activity {
 		
 		//Update the view
 		updateView();
+	}
+	
+	@Override
+	public void onResume()
+	{
+		updateView();
+		super.onResume();
 	}
 
 	

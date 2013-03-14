@@ -17,7 +17,6 @@
 package io.openkit.user;
 
 import io.openkit.OKUser;
-import io.openkit.R;
 
 import com.facebook.widget.ProfilePictureView;
 
@@ -46,13 +45,24 @@ public class OKUserProfileFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.io_openkit_fragment_userprofile, container, false);
+		int viewID = getResources().getIdentifier("io_openkit_fragment_userprofile", "layout", getActivity().getPackageName());
+		View view = inflater.inflate(viewID, container, false);
+		//View view = inflater.inflate(R.layout.io_openkit_fragment_userprofile, container, false);
 		
 		OKUser currentUser = OKUser.getCurrentUser();
 		
-		userNickTextView = (TextView)view.findViewById(R.id.io_openkit_userNickTextView);
-		profiePictureView = (ProfilePictureView)view.findViewById(R.id.io_openkit_fbProfilePicView);
-		logoutButton = (Button)view.findViewById(R.id.io_openkit_logoutButton);
+		int userNickTextViewId, profilePictureViewId, logoutButtonId;
+		
+		userNickTextViewId = getResources().getIdentifier("io_openkit_userNickTextView", "id", getActivity().getPackageName());
+		profilePictureViewId = getResources().getIdentifier("io_openkit_fbProfilePicView", "id", getActivity().getPackageName());
+		logoutButtonId = getResources().getIdentifier("io_openkit_logoutButton", "id", getActivity().getPackageName());
+		
+		userNickTextView = (TextView)view.findViewById(userNickTextViewId);
+		profiePictureView = (ProfilePictureView)view.findViewById(profilePictureViewId);
+		logoutButton = (Button)view.findViewById(logoutButtonId);
+		//userNickTextView = (TextView)view.findViewById(R.id.io_openkit_userNickTextView);
+		//profiePictureView = (ProfilePictureView)view.findViewById(R.id.io_openkit_fbProfilePicView);
+		//logoutButton = (Button)view.findViewById(R.id.io_openkit_logoutButton);
 		logoutButton.setOnClickListener(logoutButtonClicked);
 		
 		userNickTextView.setText(currentUser.getUserNick());

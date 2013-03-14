@@ -29,7 +29,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.facebook.FacebookException;
 import com.facebook.LoggingBehavior;
-import com.facebook.android.R;
 import com.facebook.internal.Logger;
 import com.facebook.internal.Utility;
 
@@ -372,10 +371,24 @@ public class ProfilePictureView extends FrameLayout {
     }
 
     private void parseAttributes(AttributeSet attrs) {
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.com_facebook_profile_picture_view);
-        setPresetSize(a.getInt(R.styleable.com_facebook_profile_picture_view_preset_size, CUSTOM));
-        isCropped = a.getBoolean(R.styleable.com_facebook_profile_picture_view_is_cropped, IS_CROPPED_DEFAULT_VALUE);
-        a.recycle();
+    	
+    	//IF the Resources class is defined, load the stylable attributes
+    	if(StyleableHelper.isRClassDefined(getContext())) {
+	    	int attrArray[] = StyleableHelper.getResourceDeclareStyleableIntArray(getContext(), "com_facebook_profile_picture_view");
+	        //TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.com_facebook_profile_picture_view);
+	    	TypedArray a = getContext().obtainStyledAttributes(attrs, attrArray);
+	    	setPresetSize(a.getInt(0, CUSTOM));
+	    	isCropped = a.getBoolean(1, IS_CROPPED_DEFAULT_VALUE);
+	    	//setPresetSize(a.getInt(R.styleable.com_facebook_profile_picture_view_preset_size, CUSTOM));
+	        //isCropped = a.getBoolean(R.styleable.com_facebook_profile_picture_view_is_cropped, IS_CROPPED_DEFAULT_VALUE);
+	        a.recycle();
+    	}
+    	else
+    	{
+    		//There is no R class available so just set some defaults
+    		setPresetSize(NORMAL);
+    		isCropped = true;
+    	}
     }
 
     private void refreshImage(boolean force) {
@@ -392,9 +405,16 @@ public class ProfilePictureView extends FrameLayout {
     }
 
     private void setBlankProfilePicture() {
+    	
+    	int blankSquareID = getResources().getIdentifier("com_facebook_profile_picture_blank_square", "drawable", getContext().getPackageName());
+    	int blankPortraitID = getResources().getIdentifier("com_facebook_profile_picture_blank_portrait", "drawable", getContext().getPackageName());
+    	/*
         int blankImageResource = isCropped() ?
                 R.drawable.com_facebook_profile_picture_blank_square :
-                R.drawable.com_facebook_profile_picture_blank_portrait;
+                R.drawable.com_facebook_profile_picture_blank_portrait;*/
+    	int blankImageResource = isCropped() ?
+                blankSquareID :
+                blankPortraitID;
         setImageBitmap( BitmapFactory.decodeResource(getResources(), blankImageResource));
     }
 
@@ -496,19 +516,26 @@ public class ProfilePictureView extends FrameLayout {
         int dimensionId;
         switch (presetSizeType) {
             case SMALL:
-                dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_small;
+                //dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_small;
+            	dimensionId = getResources().getIdentifier("com_facebook_profilepictureview_preset_size_small", "dimen", getContext().getPackageName());
                 break;
             case NORMAL:
-                dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_normal;
+                //dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_normal;
+                dimensionId =  getResources().getIdentifier("com_facebook_profilepictureview_preset_size_normal", "dimen", getContext().getPackageName());
+                
                 break;
             case LARGE:
-                dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_large;
+                //dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_large;
+                dimensionId =  getResources().getIdentifier("com_facebook_profilepictureview_preset_size_large", "dimen", getContext().getPackageName());
+                
                 break;
             case CUSTOM:
                 if (!forcePreset) {
                     return ImageRequest.UNSPECIFIED_DIMENSION;
                 } else {
-                    dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_normal;
+                    //dimensionId = R.dimen.com_facebook_profilepictureview_preset_size_normal;
+                    dimensionId =  getResources().getIdentifier("com_facebook_profilepictureview_preset_size_normal", "dimen", getContext().getPackageName());
+                    
                     break;
                 }
             default:
