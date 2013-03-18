@@ -3,80 +3,24 @@ openkit-android-sdk
 
 Android SDK for OpenKit Leaderboards and Cloud Storage
 
-This open-source library allows you to integrate OpenKit leaderboards and cloud data storage into your Android app.
+This open-source library allows you to integrate OpenKit leaderboards, cloud
+data storage, and user account management into your Android app.  OpenKit
+relies on Facebook and Twitter for user authentication. Your users login with
+those services, and there is no "OpenKit account" that is shown to them. 
 
-Learn more about how to integrate the SDK into your app at http://openkit.io/docs/
-
-
-Introduction
-------------
-OpenKit gives you cloud data storage, leaderboards, and user account management as a service.
-
-OpenKit relies on Facebook and Twitter for user authentication. Your users login with those services, and there is no "OpenKit account" that is shown to them. 
 
 Quick Start: Run the Sample App
 ===============================
-This quickstart guide will help you set up the OpenKit SDK and try out the sample app. It assumes you have already installed the following:
 
-* Eclipse
-* Android SDK
-* ADT Plugin
+The quickest way to get your hands dirty is to run the sample app that comes
+with the SDK.  Instructions for doing so are found here: http://openkit.io/docs/android/
 
-You can install both Eclipse and the ADT plugin from here: http://developer.android.com/sdk/index.html
-
-Download the SDK
-----------------
-You can download the SDK from https://github.com/OpenKit/openkit-android 
-
-You can either clone the repo, or download a zip file.
-
-Import the SDK & Sample App Into Eclipse
-----------------------------------------
-In Eclipse, select *“File-->Import”*, then choose *“Existing Projects into Workspace”* under the “General” tab and click Next.
-
-![Eclipse Screenshot](/doc/screenshots/1.png)
-
-Select “Select the root directory” and press “Browse”.
-
-Browse to the root directory of the repository, *openkit-android* and click “Open”.
-
-![Eclipse Screenshot](/doc/screenshots/2.png)
-
-Eclipse should identify 3 different projects. 
-
-Deselect the *'Copy projects into workspace'* option so that the sample app keeps correct references to the OpenKit SDK and the Facebook SDK. 
-
-This means that Eclipse will create a link to the project in the SDK installation as opposed to making a copy. 
-
-Make sure all three are selected, and click finish.
-
-If there are any errors, select Project --> Clean.
-
-You’re now ready to run the sample app. Select *“OKSampleApp”* from your workspace and press ‘Run’ in Eclipse. 
-
-![Eclipse Screenshot](/doc/screenshots/3.png)
-
-When you first run it, you may be prompted to choose how to run the application. Select *“Android Application”*. 
-
-The OpenKit sample app will work in both the Android Emulator and on an Android device that supports Android 4.0.
-
-Using the Sample App
----------------------
-To get a feel for the OpenKit SDK, try the following in the sample app:
-
-* Log into OpenKit to see user authentication
-* See a demo of cloud data
-* View the source of OKCloudSampleActivity.java to see the cloud data storage API in action
-* View Leaderboards
-* Submit a score to the Leaderboards
-* View the source of “MainActivity.java” to see how to integrate the OpenKit SDK
-* View the source of “SubmitScoreActivity.java” to see how to submit scores to leaderboards
-
-You can also explore the OpenKitSDK project to see how it works.
 
 Basic SDK Usage
 =================
-Be sure to read how to integrate the SDK into your app at http://openkit.io/docs/
+
+Be sure to read how to integrate the SDK into
+your app at http://openkit.io/docs/android/integration.html
 
 
 Initialize the SDK and set your application id
@@ -124,9 +68,6 @@ Declare the necessary OpenKit activities in your AndroidManifest.xml file. The O
 	...
 </application>
 ```
-
-
-
 
 
 User accounts
