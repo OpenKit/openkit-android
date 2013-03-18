@@ -1,6 +1,10 @@
 Building the Unity Plugin
 =======
 
+```
+Grabbed classes.jar from Unity version 4.0.1f2, at:
+/Applications/Unity/Unity.app/Contents/PlaybackEngines/AndroidPlayer/bin/classes.jar
+
 Loose notes on building the jar for Unity usage:
     Clear workspace
     File -> Import -> Generic project
@@ -20,3 +24,5 @@ Loose notes on building the jar for Unity usage:
     Hit finish.
 
     Replace the Unity file at Assets/Plugins/Android/unityandroid.jar with the newly generated file.
+```
+
