@@ -34,11 +34,20 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginDialogLi
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentManager fm = getSupportFragmentManager();
-
+        
+        if(savedInstanceState == null)
+        {
+        	//Show the login fragment when the activity is first created / launched
+        	showLoginFragment();
+        }
+    }
+	
+	private void showLoginFragment()
+	{
+		FragmentManager fm = getSupportFragmentManager();
         loginDialog = new OKLoginFragment(); 
         loginDialog.show(fm, TAG_LOGINFRAGMENT);
-    }
+	}
 	
 	private void showUserNickUpdateFragment()
 	{

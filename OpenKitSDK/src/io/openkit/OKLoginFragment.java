@@ -16,6 +16,8 @@
 
 package io.openkit;
 
+import java.util.Arrays;
+
 import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
@@ -39,7 +41,7 @@ public class OKLoginFragment extends DialogFragment
 	private Button dontLoginButton;
 	private ProgressBar spinner;
 	
-	private boolean loginButtonClicked = false;
+	private boolean fbLoginButtonClicked = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -103,7 +105,7 @@ public class OKLoginFragment extends DialogFragment
 		@Override
 		public void onClick(View v) {
 			OKLog.v("Pressed FB login button");
-			loginButtonClicked = true;
+			fbLoginButtonClicked = true;
 			loginToFB();
 		}
 	};
@@ -112,10 +114,32 @@ public class OKLoginFragment extends DialogFragment
 		
 		@Override
 		public void onClick(View v) {
-			OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
-			delegate.dismissSignin();
+			dismissLoginFragment();
 		}
 	};
+	
+	/**
+	 * Dismisses the login fragment (e.g. user cancelled sign in process or cancelled facebook login)
+	 */
+	private void dismissLoginFragment()
+	{
+		OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
+		delegate.dismissSignin();
+	}
+	
+	/**
+	 * Handler function for when Facebook login fails
+	 * @param exception Exception from Facebook SDK
+	 */
+	private void facebookLoginFailed(Exception exception)
+	{
+		if(exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
+		{
+			OKLog.v("User cancelled Facebook login");
+			dismissLoginFragment();
+		}
+		
+	}
 	
 	private void showSpinner()
 	{
@@ -131,6 +155,10 @@ public class OKLoginFragment extends DialogFragment
 		dontLoginButton.setVisibility(View.VISIBLE);
 	}
 	
+	/**
+	 * Starts the Facebook authentication process. Performs Facebook authentication using the best method available 
+	 * (native Android dialog, single sign on through Facebook application, or using a web view shown inside the app)
+	 */
 	private void loginToFB()
 	{
 		showSpinner();
@@ -138,16 +166,22 @@ public class OKLoginFragment extends DialogFragment
 		Session session = Session.getActiveSession();
 		
 		if(!session.isOpened() && !session.isClosed()){
-			session.openForRead(new Session.OpenRequest(this).setCallback(sessionStatusCallback));
+			session.openForRead(new Session.OpenRequest(this)
+			.setPermissions(Arrays.asList("basic_info"))
+			.setCallback(sessionStatusCallback));
 		}
 		else {
 			Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
 		}
 	}
 	
+	/**
+	 * Called after the user is authenticated with Facebook. Uses the the Facebook authentication token to look up
+	 * the user's facebook id, then gets the corresponding OKUser to this facebook ID.
+	 */
 	private void authorizeFBUserWithOpenKit()
 	{
-		loginButtonClicked = false;
+		fbLoginButtonClicked = false;
 		FacebookUtilities.AuthorizeUserWithFacebook(new CreateOKUserRequestHandler() {
 
 			@Override
@@ -171,11 +205,21 @@ public class OKLoginFragment extends DialogFragment
 		});
 	}
 	
+	/* Facebook session state change handler. This method handles all cases of Facebook auth */
 	
 	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
 		
+		
+		
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
+			
+			if(exception != null)
+			{
+				OKLog.v("SessionState changed exception: " + exception);
+			}
+			
+			
 			switch (state) {
 			case OPENING:
 				OKLog.v("SessionState Opening");
@@ -185,12 +229,13 @@ public class OKLoginFragment extends DialogFragment
 				break;
 			case OPENED:
 				OKLog.v("SessionState Opened");				
-				if(loginButtonClicked){
+				if(fbLoginButtonClicked){
 					authorizeFBUserWithOpenKit();
 				}
 				break;
 			case CLOSED_LOGIN_FAILED:
-				OKLog.v("SessionState Closed Login Failed");
+				OKLog.v("SessionState Closed Login Failed with exception: " + exception);
+				facebookLoginFailed(exception);
 				break;
 			case OPENED_TOKEN_UPDATED:
 				OKLog.v("SessionState Opened Token Updated");
@@ -205,8 +250,17 @@ public class OKLoginFragment extends DialogFragment
 				OKLog.v("Session State Default case");
 				break;
 			}
+			
+		    if (state.isOpened()) 
+		    {
+		        OKLog.v("FB Session is Open");
+		    } else if (state.isClosed()) {
+		        OKLog.v("FB Session is Closed");
+		    }
 		}
 	};
+	
+	/* Below methods are overridden to add the Facebook session lifecycle callbacks */
 	
 	@Override
     public void onStart() {

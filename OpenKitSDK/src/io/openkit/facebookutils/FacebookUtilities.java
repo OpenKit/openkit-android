@@ -37,6 +37,10 @@ public class FacebookUtilities
 		public void onFail(Error error);
 	}
 	
+	/**
+	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
+	 * @param requestHandler
+	 */
 	public static void AuthorizeUserWithFacebook(final CreateOKUserRequestHandler requestHandler)
 	{
 		Session session = Session.getActiveSession();
@@ -51,7 +55,7 @@ public class FacebookUtilities
 						String userID = user.getId();
 						String userNick = user.getName();
 						
-						CreateOKUserWithFacebookID(userID, userNick, requestHandler);	
+						getOKUserWithFacebookID(userID, userNick, requestHandler);	
 					}
 				}
 			});
@@ -61,8 +65,14 @@ public class FacebookUtilities
 			requestHandler.onFail(new Error("Not current logged into FB"));
 		}
 	}
-		
-	public static void CreateOKUserWithFacebookID(String fbID, String userNick, final CreateOKUserRequestHandler requestHandler)
+	
+	/***
+	 * Gets the OKUser from OpenKit corresponding to the given facebook ID.
+	 * @param fbID FacebookID
+	 * @param userNick Nickname for the user
+	 * @param requestHandler Request handler for request
+	 */
+	private static void getOKUserWithFacebookID(String fbID, String userNick, final CreateOKUserRequestHandler requestHandler)
 	{
 		JSONObject jsonParams = new JSONObject();
 		
