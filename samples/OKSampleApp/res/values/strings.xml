@@ -37,7 +37,7 @@
     
 
     <!-- app_id is the Facebook APP ID. This is required by the Facebook SDK -->
-    <string name="fb_app_id">450333868362300</string>
+    <string name="fb_app_id">481149901940573</string>
     <string name="title_activity_okcloud_sample">OKCloudSampleActivity</string>
     <string name="title_activity_submit_score">SubmitScoreActivity</string>
 

@@ -16,7 +16,6 @@
 
 package io.openkit;
 
-import java.util.Arrays;
 
 import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
@@ -167,7 +166,7 @@ public class OKLoginFragment extends DialogFragment
 		
 		if(!session.isOpened() && !session.isClosed()){
 			session.openForRead(new Session.OpenRequest(this)
-			.setPermissions(Arrays.asList("basic_info"))
+			//.setPermissions(Arrays.asList("basic_info"))
 			.setCallback(sessionStatusCallback));
 		}
 		else {
