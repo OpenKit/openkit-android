@@ -22,6 +22,9 @@ import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
 import io.openkit.facebook.*;
 import android.support.v4.app.DialogFragment;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -122,23 +125,11 @@ public class OKLoginFragment extends DialogFragment
 	 */
 	private void dismissLoginFragment()
 	{
+		OKLog.v("Dismiss login fragment");
 		OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
 		delegate.dismissSignin();
 	}
 	
-	/**
-	 * Handler function for when Facebook login fails
-	 * @param exception Exception from Facebook SDK
-	 */
-	private void facebookLoginFailed(Exception exception)
-	{
-		if(exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
-		{
-			OKLog.v("User cancelled Facebook login");
-			dismissLoginFragment();
-		}
-		
-	}
 	
 	private void showSpinner()
 	{
@@ -168,6 +159,11 @@ public class OKLoginFragment extends DialogFragment
 			session.openForRead(new Session.OpenRequest(this)
 			//.setPermissions(Arrays.asList("basic_info"))
 			.setCallback(sessionStatusCallback));
+		}
+		else if(session.isOpened())
+		{
+			//Facebook session is already open, just authorize the user with OpenKit
+			authorizeFBUserWithOpenKit();
 		}
 		else {
 			Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
@@ -204,6 +200,40 @@ public class OKLoginFragment extends DialogFragment
 		});
 	}
 	
+	static String keyhashErrorString = "remote_app_id does not match stored id ";
+	
+	/**
+	 * Handler function for when Facebook login fails
+	 * @param exception Exception from Facebook SDK
+	 */
+	private void facebookLoginFailed(Exception exception)
+	{
+		OKLog.v("Facebook login failed");
+		
+		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
+		{
+			OKLog.v("User cancelled Facebook login");
+			
+			//This error is most likely a keyhash issue, so display an AlertDialog
+			if(exception.getMessage().equalsIgnoreCase(keyhashErrorString))
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+				builder.setTitle("Error");
+				builder.setMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
+				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dismissLoginFragment();
+					}
+				});
+				builder.create().show();
+				return;
+			}
+		}
+		
+		dismissLoginFragment();
+	}
+	
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
 	
 	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
@@ -213,12 +243,13 @@ public class OKLoginFragment extends DialogFragment
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
 			
+			// Log all facebook exceptions
 			if(exception != null)
 			{
-				OKLog.v("SessionState changed exception: " + exception);
+				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
 			}
 			
-			
+			//Log what is happening with the Facebook session for debug help
 			switch (state) {
 			case OPENING:
 				OKLog.v("SessionState Opening");
@@ -227,14 +258,17 @@ public class OKLoginFragment extends DialogFragment
 				OKLog.v("SessionState Created");
 				break;
 			case OPENED:
-				OKLog.v("SessionState Opened");				
-				if(fbLoginButtonClicked){
-					authorizeFBUserWithOpenKit();
-				}
+				OKLog.v("SessionState Opened");
+				 if(fbLoginButtonClicked){
+			        	OKLog.v("Authorizing user with Facebook");
+						authorizeFBUserWithOpenKit();
+					}
 				break;
 			case CLOSED_LOGIN_FAILED:
 				OKLog.v("SessionState Closed Login Failed with exception: " + exception);
-				facebookLoginFailed(exception);
+				if(fbLoginButtonClicked) {
+		    		facebookLoginFailed(exception);
+		    	}
 				break;
 			case OPENED_TOKEN_UPDATED:
 				OKLog.v("SessionState Opened Token Updated");
@@ -250,9 +284,15 @@ public class OKLoginFragment extends DialogFragment
 				break;
 			}
 			
+			// If the session is opened, authorize the user, if the session is closed 
 		    if (state.isOpened()) 
 		    {
 		        OKLog.v("FB Session is Open");
+				
+		        if(fbLoginButtonClicked){
+		        	OKLog.v("Authorizing user with Facebook");
+					authorizeFBUserWithOpenKit();
+				}
 		    } else if (state.isClosed()) {
 		        OKLog.v("FB Session is Closed");
 		    }
