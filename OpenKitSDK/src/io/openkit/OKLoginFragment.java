@@ -23,7 +23,6 @@ import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 import io.openkit.facebook.*;
 import android.support.v4.app.DialogFragment;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -176,7 +175,6 @@ public class OKLoginFragment extends DialogFragment
 	 */
 	private void authorizeFBUserWithOpenKit()
 	{
-		fbLoginButtonClicked = false;
 		FacebookUtilities.AuthorizeUserWithFacebook(new CreateOKUserRequestHandler() {
 
 			@Override
@@ -229,9 +227,22 @@ public class OKLoginFragment extends DialogFragment
 				builder.create().show();
 				return;
 			}
+			
+			dismissLoginFragment();
 		}
-		
-		dismissLoginFragment();
+		else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+			builder.setTitle("Error");
+			builder.setMessage("There was an unknown error while logging into Facebook. Please try again");
+			builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dismissLoginFragment();
+				}
+			});
+			builder.create().show();
+			return;
+		}
 	}
 	
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
@@ -259,16 +270,9 @@ public class OKLoginFragment extends DialogFragment
 				break;
 			case OPENED:
 				OKLog.v("SessionState Opened");
-				 if(fbLoginButtonClicked){
-			        	OKLog.v("Authorizing user with Facebook");
-						authorizeFBUserWithOpenKit();
-					}
 				break;
 			case CLOSED_LOGIN_FAILED:
-				OKLog.v("SessionState Closed Login Failed with exception: " + exception);
-				if(fbLoginButtonClicked) {
-		    		facebookLoginFailed(exception);
-		    	}
+				OKLog.v("SessionState Closed Login Failed");
 				break;
 			case OPENED_TOKEN_UPDATED:
 				OKLog.v("SessionState Opened Token Updated");
@@ -288,13 +292,17 @@ public class OKLoginFragment extends DialogFragment
 		    if (state.isOpened()) 
 		    {
 		        OKLog.v("FB Session is Open");
-				
 		        if(fbLoginButtonClicked){
 		        	OKLog.v("Authorizing user with Facebook");
 					authorizeFBUserWithOpenKit();
+					fbLoginButtonClicked = false;
 				}
 		    } else if (state.isClosed()) {
 		        OKLog.v("FB Session is Closed");
+		        if(fbLoginButtonClicked) {
+		    		facebookLoginFailed(exception);
+		    		fbLoginButtonClicked = false;
+		    	}
 		    }
 		}
 	};
