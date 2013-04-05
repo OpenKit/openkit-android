@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		if(resultCode == LOGIN_ACTIVITY_RESULT_CODE)
+		if(requestCode == LOGIN_ACTIVITY_RESULT_CODE)
 		{
 			// Check if it was the login activity that is presenting the result
 			
