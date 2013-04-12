@@ -46,4 +46,13 @@ public class OpenKit {
 		return OpenKitSingleton.INSTANCE.getOKAppID();
 	}
 	
+	/**
+	 * Sets the base URL that the OpenKit SDK will use
+	 * @param endpoint
+	 */
+	public static void setEndpoint(String endpoint)
+	{
+		OKHTTPClient.setEndpoint(endpoint);
+	}
+	
 }

@@ -49,15 +49,38 @@ public class OKScore {
 	}
 	
 	private void initFromJSON(JSONObject scoreJSON)
-	{
+	{	
 		try {
 			this.OKLeaderboardID = scoreJSON.getInt("leaderboard_id");
-			this.OKScoreID = scoreJSON.getInt("id");
-			this.scoreValue = scoreJSON.getInt("value");
-			this.rank = scoreJSON.getInt("rank");
-			this.user = new OKUser(scoreJSON.getJSONObject("user"));
-			
 		} catch (JSONException e) {
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.OKScoreID = scoreJSON.getInt("id");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.scoreValue = scoreJSON.getInt("value");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.rank = scoreJSON.getInt("rank");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.user = new OKUser(scoreJSON.getJSONObject("user"));
+		} catch (JSONException e){
 			e.printStackTrace();
 			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
 		}

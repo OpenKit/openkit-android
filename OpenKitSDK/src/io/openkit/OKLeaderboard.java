@@ -19,7 +19,6 @@ package io.openkit;
 import io.openkit.asynchttp.*;
 import io.openkit.leaderboards.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import org.json.*;
 
@@ -309,29 +308,23 @@ public class OKLeaderboard implements Parcelable{
 			params.put("user_id", Integer.toString(currentUser.getOKUserID()));
 		}
 		
-		if(displayTimeRange != OKLeaderboardTimeRange.AllTime)
-		{
-			int days = 0;
-			switch(displayTimeRange) {
-				case OneDay:
-					days = -1;
-					break;
-				case OneWeek:
-					days = -7;
-					break;
-			}
-			
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DAY_OF_YEAR, days);
-			java.util.Date newDate = cal.getTime();
-			params.put("since", newDate.toString());
+		switch (displayTimeRange) {
+		case OneDay:
+			params.put("leaderboard_range", "today");
+			break;
+		case OneWeek:
+			params.put("leaderboard_range", "this_week");
+			break;
+		default:
+			params.put("leaderboard_range","all_time");
+			break;
 		}
 		
 		OKLog.d("Getting leaderboard scores");
 		
 		final OKScoresResponseHandler finalResponseHandler = responseHandler;
 		
-		OKHTTPClient.get("scores", params, new OKJsonHttpResponseHandler() {
+		OKHTTPClient.get("best_scores", params, new OKJsonHttpResponseHandler() {
 			
 			@Override
 			public void onSuccess(JSONObject object) {

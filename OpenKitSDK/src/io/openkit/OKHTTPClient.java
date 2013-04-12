@@ -35,13 +35,18 @@ public class OKHTTPClient {
 		return asyncClient;
 	}
 	
-	private static final String BASE_URL = "http://stage.openkit.io/";
+	private static String BASE_URL = "http://stage.openkit.io/";
 		
 	private static AsyncHttpClient client = initializeClient();
 	
 	public String getOKAppID()
 	{
 		return OpenKit.getOKAppID();
+	}
+	
+	public static void setEndpoint(String endpoint)
+	{
+		BASE_URL = endpoint;
 	}
 	
 	public static void get(String url, RequestParams params, 
