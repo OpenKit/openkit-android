@@ -21,16 +21,16 @@ import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.util.Log;
 
 public class OKScore {
 	
 	private int OKScoreID;
-	private int scoreValue;
+	private long scoreValue;
 	private int OKLeaderboardID;
 	private OKUser user;
 	private int rank;
+	private int metadata;
 	
 	public OKScore()
 	{
@@ -65,7 +65,7 @@ public class OKScore {
 		}
 		
 		try {
-			this.scoreValue = scoreJSON.getInt("value");
+			this.scoreValue = scoreJSON.getLong("value");
 		} catch (JSONException e){
 			e.printStackTrace();
 			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
@@ -80,6 +80,13 @@ public class OKScore {
 		
 		try {
 			this.user = new OKUser(scoreJSON.getJSONObject("user"));
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.metadata = scoreJSON.getInt("metadata");
 		} catch (JSONException e){
 			e.printStackTrace();
 			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
@@ -107,12 +114,12 @@ public class OKScore {
 		this.OKScoreID = aID;
 	}
 	
-	public int getScoreValue()
+	public long getScoreValue()
 	{
 		return scoreValue;
 	}
 	
-	public void setScoreValue(int aValue)
+	public void setScoreValue(long aValue)
 	{
 		this.scoreValue = aValue;
 	}
@@ -135,6 +142,16 @@ public class OKScore {
 	public void setOKUser(OKUser aUser)
 	{
 		this.user = aUser;
+	}
+	
+	public void setMetadata(int aMetadata)
+	{
+		this.metadata = aMetadata;
+	}
+	
+	public int getMetadata()
+	{
+		return metadata;
 	}
 	
 	public interface ScoreRequestResponseHandler
@@ -202,6 +219,7 @@ public class OKScore {
 		scoreJSON.put("value", this.scoreValue);
 		scoreJSON.put("leaderboard_id", this.OKLeaderboardID);
 		scoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
+		scoreJSON.put("metadata", this.metadata);
 		
 		return scoreJSON;
 	}

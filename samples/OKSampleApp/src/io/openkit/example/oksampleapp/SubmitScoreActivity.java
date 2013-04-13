@@ -80,6 +80,9 @@ public class SubmitScoreActivity extends Activity {
 			//Create the score, set it's score value, and set the leaderboard ID which is passed in as a parameter
 			OKScore score = new OKScore();
 			score.setScoreValue(Integer.parseInt(value));
+			
+			//Set the metadata to 1 + the score value
+			score.setMetadata((int)score.getScoreValue() + 1);
 			score.setOKLeaderboardID(leaderboardID);
 			submitScore(score);
 		  }
