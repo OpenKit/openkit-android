@@ -13,14 +13,14 @@ Quick Start: Run the Sample App
 ===============================
 
 The quickest way to get your hands dirty is to run the sample app that comes
-with the SDK.  Instructions for doing so are found here: http://openkit.io/docs/android/
+with the SDK.  Instructions for doing so are found here: http://openkit.io/docs/android
 
 
 Basic SDK Usage
 =================
 
 Be sure to read how to integrate the SDK into
-your app at http://openkit.io/docs/android/integration.html
+your app at http://openkit.io/docs/android-integration
 
 
 Initialize the SDK and set your application id
