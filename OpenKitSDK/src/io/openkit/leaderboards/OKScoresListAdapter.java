@@ -66,7 +66,17 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		TextView rankLabel = (TextView)row.findViewById(io.openkit.R.id.io_openkit_scoreRankTextView);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(io.openkit.R.id.io_openkit_scorePicView);
 		*/
-		label2.setText(Integer.toString(currentScore.getScoreValue()));
+		
+		// If the display string is not null, show that, otherwise show
+		// the score value as a fallback
+		
+		if(currentScore.getDisplayString() != null) {
+			label2.setText(currentScore.getDisplayString());
+		} else {
+			label2.setText(Long.toString(currentScore.getScoreValue()));
+		}
+		
+		
 		rankLabel.setText(Integer.toString(currentScore.getRank()));
 		pictureView.setCropped(true);
 		

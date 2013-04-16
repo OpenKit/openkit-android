@@ -21,6 +21,8 @@ import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.text.TextUtils;
 import android.util.Log;
 
 public class OKScore {
@@ -31,6 +33,7 @@ public class OKScore {
 	private OKUser user;
 	private int rank;
 	private int metadata;
+	private String displayString;
 	
 	public OKScore()
 	{
@@ -88,6 +91,21 @@ public class OKScore {
 		try {
 			this.metadata = scoreJSON.getInt("metadata");
 		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		// Get the display string. Android JSON parsing returns the string "null" for null strings instead of
+		// return null, so we check this using json.isNull and TextUtils.isEmpty for empty strings
+		// and return null if it's empty or null
+		try {
+			if(scoreJSON.isNull("display_string") || TextUtils.isEmpty(scoreJSON.getString("display_string"))) {
+				this.displayString = null;
+			} else {
+				this.displayString = scoreJSON.getString("display_string");
+			}
+		} catch (JSONException e){
+			this.displayString = null;
 			e.printStackTrace();
 			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
 		}
@@ -152,6 +170,16 @@ public class OKScore {
 	public int getMetadata()
 	{
 		return metadata;
+	}
+	
+	public void setDisplayString(String aDisplayValue)
+	{
+		this.displayString = aDisplayValue;
+	}
+	
+	public String getDisplayString()
+	{
+		return this.displayString;
 	}
 	
 	public interface ScoreRequestResponseHandler
@@ -220,6 +248,7 @@ public class OKScore {
 		scoreJSON.put("leaderboard_id", this.OKLeaderboardID);
 		scoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
 		scoreJSON.put("metadata", this.metadata);
+		scoreJSON.put("display_string", this.displayString);
 		
 		return scoreJSON;
 	}
