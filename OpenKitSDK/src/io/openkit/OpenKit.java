@@ -52,6 +52,7 @@ public class OpenKit {
 	 */
 	public static void setEndpoint(String endpoint)
 	{
+		OKLog.d("OpenKit endpoint set to: " + endpoint);
 		OKHTTPClient.setEndpoint(endpoint);
 	}
 	
