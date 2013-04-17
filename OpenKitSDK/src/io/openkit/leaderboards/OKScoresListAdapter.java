@@ -36,6 +36,7 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		super(context, resource, objects);
 	}
 	
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
@@ -60,6 +61,7 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		TextView label2 = (TextView)row.findViewById(label2Id);
 		TextView rankLabel = (TextView)row.findViewById(rankLabelId);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(pictureViewId);
+		
 		/*
 		TextView label1 = (TextView)row.findViewById(io.openkit.R.id.text1);
 		TextView label2 = (TextView)row.findViewById(io.openkit.R.id.text2);
