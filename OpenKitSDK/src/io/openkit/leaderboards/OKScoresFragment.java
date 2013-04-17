@@ -25,6 +25,7 @@ import com.commonsware.cwac.merge.MergeAdapter;
 
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
+import io.openkit.OKLog;
 import io.openkit.OKScore;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -169,6 +170,10 @@ public class OKScoresFragment extends ListFragment
 		toast.show();
 	}
 	
+	/**
+	 * Gets the scores for this leaderboard and also the user's top score for this leaderboard
+	 * @param range
+	 */
 	private void getScores(final OKLeaderboardTimeRange range)
 	{
 		showProgress();
@@ -184,15 +189,12 @@ public class OKScoresFragment extends ListFragment
 				switch (range) {
 				case AllTime:
 					allTimeScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-					//OKScoresFragment.this.setListAdapter(allTimeScoresAdapter);
 					break;
 				case OneWeek:
 					thisWeekScoresAdapater = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-					//OKScoresFragment.this.setListAdapter(thisWeekScoresAdapater);
 					break;
 				case OneDay:
 					todayScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-					//OKScoresFragment.this.setListAdapter(todayScoresAdapter);
 					break;
 				}
 				
@@ -208,13 +210,12 @@ public class OKScoresFragment extends ListFragment
 			
 		});
 		
-		//TODO
-		// This is a fake call to simualte getting the user's "top score" 
-		// (right now it just makes the same call to get leaderboards and picks the first score) 
-		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
+		currentLeaderboard.getUsersTopScoreForLeaderboard(new OKScoresResponseHandler() {
 			
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
+				
+				OKLog.d("User's top score is: " + scoresList);
 				
 				// Choose the right adapater based on which view of leaderboards we're looking at
 				switch (range) {
@@ -242,6 +243,9 @@ public class OKScoresFragment extends ListFragment
 		
 	}
 	
+	/** 
+	 * Updates the listview by creating a new merge adapater, and then adds the individual list adapters that are needed. 
+	 */
 	private void updateListView()
 	{
 		MergeAdapter mergeAdapter = new MergeAdapter();
@@ -282,6 +286,9 @@ public class OKScoresFragment extends ListFragment
 		this.setListAdapter(mergeAdapter);
 	}
 	
+	//TODO
+	// Fake method right now to load more scores (pagination), right now just reloads the same
+	// scores
 	private void getMoreScores(OKLeaderboardTimeRange range, final View v)
 	{
 		final OKScoresListAdapter adapter = getAdapterforRange(range);
