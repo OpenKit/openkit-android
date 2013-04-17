@@ -25,7 +25,6 @@ import com.commonsware.cwac.merge.MergeAdapter;
 
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
-import io.openkit.OKLog;
 import io.openkit.OKScore;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -175,9 +174,7 @@ public class OKScoresFragment extends ListFragment
 		showProgress();
 		currentLeaderboard.setDisplayedTimeRange(range);
 		
-		//Get the user's top score
-		
-		
+		//Get the scores for the leaderboard
 		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
 			
 			@Override
@@ -233,7 +230,6 @@ public class OKScoresFragment extends ListFragment
 				}
 				
 				updateListView();
-				
 			}
 
 			@Override
@@ -371,6 +367,8 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(weekScoresButton);
 		selectedTab = 3;
 		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.AllTime);
+		
 		if(allTimeScoresAdapter == null) {
 			getAllTimeScores();
 		}
@@ -386,6 +384,8 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(allTimeScoresButton);
 		selectedTab = 2;
 		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneWeek);
+		
 		if(thisWeekScoresAdapater == null) {
 			getThisWeekScores();
 		}
@@ -400,6 +400,8 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(weekScoresButton);
 		setButtonAsNormal(allTimeScoresButton);
 		selectedTab = 1;
+		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneDay);
 		
 		if(todayScoresAdapter == null) {
 			getTodayScores();
@@ -429,9 +431,8 @@ public class OKScoresFragment extends ListFragment
 		case OneDay:
 			return todayScoresAdapter;
 		default:
-				return thisWeekScoresAdapater;
+			return thisWeekScoresAdapater;
 		}
 	}
 	
-
 }
