@@ -19,7 +19,6 @@ package io.openkit;
 import io.openkit.asynchttp.*;
 import io.openkit.leaderboards.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import org.json.*;
 
@@ -296,42 +295,91 @@ public class OKLeaderboard implements Parcelable{
 	}
 	
 	
+	/**
+	 * Gets the current user's top score for this leaderboard. If the user is not logged in, calls onFailure and returns.
+	 * @param responseHandler Response handler for the request. 
+	 */
+	public void getUsersTopScoreForLeaderboard(final OKScoresResponseHandler responseHandler)
+	{
+		OKUser currentUser = OpenKit.getCurrentUser();
+		
+		if(currentUser == null)
+		{
+			responseHandler.onFailure(new Throwable("User is not logged in, no top score"), null);
+			return;
+		}
+		
+		RequestParams params = new RequestParams();
+		params.put("app_key",OpenKit.getOKAppID());
+		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
+		params.put("user_id", Integer.toString(currentUser.getOKUserID()));
+		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
+		
+		OKHTTPClient.get("best_scores/user", params, new OKJsonHttpResponseHandler() {
+			
+			@Override
+			public void onSuccess(JSONObject object) {
+				OKScore topScore = new OKScore(object);
+				List<OKScore> list = new ArrayList<OKScore>();
+				list.add(topScore);
+				responseHandler.onSuccess(list);
+			}
+			
+			//We expect a single OKScore object from the API, not an array
+			@Override
+			public void onSuccess(JSONArray array) {
+				responseHandler.onFailure(new Throwable("Received an array when getting users top score. Expected a single object!"), null);
+			}
+			
+			@Override
+			public void onFailure(Throwable error, String content) {
+				responseHandler.onFailure(error, null);
+			}
+			
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				responseHandler.onFailure(e, null);
+			}
+			
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				responseHandler.onFailure(e, errorResponse);
+			}
+		});
+	}
+	
+	/**
+	 * Returns the correct parameter to use with the server REST API for the leaderboard time range
+	 * @return
+	 */
+	private String getParamForLeaderboardDisplayRange()
+	{
+		switch (displayTimeRange) {
+		case OneDay:
+			return "today";
+		case OneWeek:
+			return "this_week";
+		default:
+			return "all_time";
+		}
+	}
+	
+	/**
+	 * Get scores for the given leaderboard
+	 * @param responseHandler ResponseHandler called on success/fail
+	 */
 	public void getLeaderboardScores(OKScoresResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
 		params.put("app_key",OpenKit.getOKAppID());
-		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
+		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));		
+		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
 		
-		// Add the current user ID as a parameter if logged in
-		OKUser currentUser = OpenKit.getCurrentUser();
-		if(currentUser != null)
-		{
-			params.put("user_id", Integer.toString(currentUser.getOKUserID()));
-		}
-		
-		if(displayTimeRange != OKLeaderboardTimeRange.AllTime)
-		{
-			int days = 0;
-			switch(displayTimeRange) {
-				case OneDay:
-					days = -1;
-					break;
-				case OneWeek:
-					days = -7;
-					break;
-			}
-			
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DAY_OF_YEAR, days);
-			java.util.Date newDate = cal.getTime();
-			params.put("since", newDate.toString());
-		}
-		
-		OKLog.d("Getting leaderboard scores");
+		OKLog.d("Getting leaderboard scores for range: " + getParamForLeaderboardDisplayRange());
 		
 		final OKScoresResponseHandler finalResponseHandler = responseHandler;
 		
-		OKHTTPClient.get("scores", params, new OKJsonHttpResponseHandler() {
+		OKHTTPClient.get("best_scores", params, new OKJsonHttpResponseHandler() {
 			
 			@Override
 			public void onSuccess(JSONObject object) {

@@ -16,17 +16,22 @@
 
 package io.openkit.leaderboards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
 
+import com.commonsware.cwac.merge.MergeAdapter;
+
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
+import io.openkit.OKLog;
 import io.openkit.OKScore;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
@@ -39,7 +44,11 @@ public class OKScoresFragment extends ListFragment
 	private OKScoresListAdapter allTimeScoresAdapter;
 	private OKScoresListAdapter thisWeekScoresAdapater;
 	private OKScoresListAdapter todayScoresAdapter;
-
+	
+	private OKScore topScoreAllTime;
+	private OKScore topScoreThisWeek;
+	private OKScore topScoreToday;
+	
 	private ProgressBar spinnerBar;
 	private ListView listView;
 	private OKLeaderboard currentLeaderboard;
@@ -47,6 +56,8 @@ public class OKScoresFragment extends ListFragment
 	private Button todayScoresButton;
 	private Button weekScoresButton;
 	private Button allTimeScoresButton;
+	
+	private Button moreScoresButton;
 	
 	private int selectedTab;
 	
@@ -90,13 +101,7 @@ public class OKScoresFragment extends ListFragment
 		todayScoresButton = (Button)view.findViewById(todayScoresButtonId);
 		weekScoresButton = (Button)view.findViewById(weekScoresButtonId);
 		allTimeScoresButton = (Button)view.findViewById(allTimeScoresButtonId);
-		/*
-		spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
-		todayScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_todayButton);
-		weekScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_thisWeekButton);
-		allTimeScoresButton = (Button)view.findViewById(R.id.io_openkit_leaderboards_allTimeButton);
-		*/
-		
+
 		todayScoresButton.setOnClickListener(todayScoresPressed);
 		weekScoresButton.setOnClickListener(thisWeekScoresPressed);
 		allTimeScoresButton.setOnClickListener(allTimeScoresPressed);
@@ -106,22 +111,39 @@ public class OKScoresFragment extends ListFragment
 			currentLeaderboard = getLeaderboard();
 		}
 		
+		moreScoresButton = new Button(this.getActivity());
+		moreScoresButton.setText("Show 10 more");
+		moreScoresButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				v.setEnabled(false);
+				getMoreScores(currentLeaderboard.getDisplayedTimeRange(), v);
+			}
+		});
+		
+		
 		selectCurrentTab();
 		
-		int listHeaderViewId, listHeaderTextViewId;
 		
+		
+		return view;
+	}
+	
+	private View getHeaderView(String headerText)
+	{
+		LayoutInflater inflater = this.getActivity().getLayoutInflater();
+		
+		int listHeaderViewId, listHeaderTextViewId;
 		listHeaderTextViewId = getResources().getIdentifier("headerTextView", "id", getActivity().getPackageName());
 		listHeaderViewId = getResources().getIdentifier("list_simple_header", "layout", getActivity().getPackageName());
 		
 		//Inflate the list headerview
 		View listHeaderView = inflater.inflate(listHeaderViewId, null);
 		listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewId);
-		//View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
-		//listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
-		listView.addHeaderView(listHeaderView);
-		listHeaderTextView.setText(currentLeaderboard.getPlayerCountString() + " Players");
+		listHeaderTextView.setText(headerText);
 		
-		return view;
+		return listHeaderView;
 	}
 	
 	private OKLeaderboard getLeaderboard()
@@ -148,18 +170,35 @@ public class OKScoresFragment extends ListFragment
 		toast.show();
 	}
 	
-	private void getAllTimeScores()
+	/**
+	 * Gets the scores for this leaderboard and also the user's top score for this leaderboard
+	 * @param range
+	 */
+	private void getScores(final OKLeaderboardTimeRange range)
 	{
 		showProgress();
-		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.AllTime);
+		currentLeaderboard.setDisplayedTimeRange(range);
+		
+		//Get the scores for the leaderboard
 		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
-
+			
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
-				//Create the list adapter with list of leaderboards
-				allTimeScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-				//Display the list
-				OKScoresFragment.this.setListAdapter(allTimeScoresAdapter);
+				
+				// Choose the right adapater based on which view of leaderboards we're looking at
+				switch (range) {
+				case AllTime:
+					allTimeScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+					break;
+				case OneWeek:
+					thisWeekScoresAdapater = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+					break;
+				case OneDay:
+					todayScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+					break;
+				}
+				
+				updateListView();
 				hideProgress();
 			}
 
@@ -167,55 +206,134 @@ public class OKScoresFragment extends ListFragment
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				hideProgress();
 				showError();
+			}
+			
+		});
+		
+		currentLeaderboard.getUsersTopScoreForLeaderboard(new OKScoresResponseHandler() {
+			
+			@Override
+			public void onSuccess(List<OKScore> scoresList) {
+				
+				OKLog.d("User's top score is: " + scoresList);
+				
+				// Choose the right adapater based on which view of leaderboards we're looking at
+				switch (range) {
+				case AllTime:
+					topScoreAllTime = scoresList.get(0);
+					break;
+				case OneWeek:
+					topScoreThisWeek = scoresList.get(0);
+					break;
+				case OneDay:
+					topScoreToday = scoresList.get(0);
+					break;
+				}
+				
+				updateListView();
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				hideProgress();
+				showError();
+			}
+			
+		});
+		
+	}
+	
+	/** 
+	 * Updates the listview by creating a new merge adapater, and then adds the individual list adapters that are needed. 
+	 */
+	private void updateListView()
+	{
+		MergeAdapter mergeAdapter = new MergeAdapter();
+		
+		OKScore topScore;
+		OKScoresListAdapter scoresAdapater;
+		
+		switch (currentLeaderboard.getDisplayedTimeRange()) {
+		case AllTime:
+			topScore = topScoreAllTime;
+			scoresAdapater = allTimeScoresAdapter;
+			break;
+		case OneDay:
+			topScore = topScoreToday;
+			scoresAdapater = todayScoresAdapter;
+			break;
+		default:
+			topScore = topScoreThisWeek;
+			scoresAdapater = thisWeekScoresAdapater;
+			break;
+		}
+		
+		if(topScore != null)
+		{
+			mergeAdapter.addView(getHeaderView("Your High Score"));
+			List<OKScore> list = new ArrayList<OKScore>();
+			list.add(topScore);
+			mergeAdapter.addAdapter(new OKScoresListAdapter(this.getActivity(), android.R.layout.simple_list_item_1, list));
+		}
+		
+		if(scoresAdapater != null)
+		{
+			mergeAdapter.addView(getHeaderView(currentLeaderboard.getPlayerCountString() + " Players"));
+			mergeAdapter.addAdapter(scoresAdapater);
+			mergeAdapter.addView(moreScoresButton);
+		}
+		
+		this.setListAdapter(mergeAdapter);
+	}
+	
+	//TODO
+	// Fake method right now to load more scores (pagination), right now just reloads the same
+	// scores
+	private void getMoreScores(OKLeaderboardTimeRange range, final View v)
+	{
+		final OKScoresListAdapter adapter = getAdapterforRange(range);
+		
+		// You can't get MORE scores if you don't have any scores to begin with
+		if(adapter == null){
+			return;
+		}
+		
+		currentLeaderboard.setDisplayedTimeRange(range);
+		
+		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
+			
+			@Override
+			public void onSuccess(List<OKScore> scoresList) {
+				
+					for(int x = 0; x < scoresList.size(); x++)
+					{
+						adapter.add(scoresList.get(x));
+					}
+				
+				v.setEnabled(true);
+			}
+			
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				//Didn't get any more scores, renable the button
+				v.setEnabled(true);
 			}
 		});
 	}
 	
+	private void getAllTimeScores()
+	{
+		getScores(OKLeaderboardTimeRange.AllTime);
+	}
 	
 	private void getThisWeekScores()
 	{
-		showProgress();
-		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneWeek);
-		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
-
-			@Override
-			public void onSuccess(List<OKScore> scoresList) {
-				//Create the list adapter with list of leaderboards
-				thisWeekScoresAdapater = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-				//Display the list
-				OKScoresFragment.this.setListAdapter(thisWeekScoresAdapater);
-				hideProgress();
-			}
-
-			@Override
-			public void onFailure(Throwable e, JSONObject errorResponse) {
-				hideProgress();
-				showError();
-			}
-		});
+		getScores(OKLeaderboardTimeRange.OneWeek);
 	}
 	
 	private void getTodayScores()
 	{
-		showProgress();
-		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneDay);
-		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
-
-			@Override
-			public void onSuccess(List<OKScore> scoresList) {
-				//Create the list adapter with list of leaderboards
-				todayScoresAdapter = new OKScoresListAdapter(OKScoresFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-				//Display the list
-				OKScoresFragment.this.setListAdapter(todayScoresAdapter);
-				hideProgress();
-			}
-
-			@Override
-			public void onFailure(Throwable e, JSONObject errorResponse) {
-				hideProgress();
-				showError();
-			}
-		});
+		getScores(OKLeaderboardTimeRange.OneDay);
 	}
 	
 	private View.OnClickListener todayScoresPressed = new View.OnClickListener() {
@@ -261,11 +379,13 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(weekScoresButton);
 		selectedTab = 3;
 		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.AllTime);
+		
 		if(allTimeScoresAdapter == null) {
 			getAllTimeScores();
 		}
 		else {
-			this.setListAdapter(allTimeScoresAdapter);
+			updateListView();
 		}
 	}
 	
@@ -276,11 +396,13 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(allTimeScoresButton);
 		selectedTab = 2;
 		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneWeek);
+		
 		if(thisWeekScoresAdapater == null) {
 			getThisWeekScores();
 		}
 		else {
-			this.setListAdapter(thisWeekScoresAdapater);
+			updateListView();
 		}
 	}
 	
@@ -291,11 +413,13 @@ public class OKScoresFragment extends ListFragment
 		setButtonAsNormal(allTimeScoresButton);
 		selectedTab = 1;
 		
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.OneDay);
+		
 		if(todayScoresAdapter == null) {
 			getTodayScores();
 		}
 		else {
-			this.setListAdapter(todayScoresAdapter);
+			updateListView();
 		}
 	}
 	
@@ -310,5 +434,17 @@ public class OKScoresFragment extends ListFragment
 		int backgroundID = getResources().getIdentifier("io_openkit_tabbutton", "drawable", getActivity().getPackageName());
 		button.setBackgroundResource(backgroundID);
 	}
-
+	
+	private OKScoresListAdapter getAdapterforRange(OKLeaderboardTimeRange range)
+	{
+		switch (range) {
+		case AllTime:
+			return allTimeScoresAdapter;
+		case OneDay:
+			return todayScoresAdapter;
+		default:
+			return thisWeekScoresAdapater;
+		}
+	}
+	
 }

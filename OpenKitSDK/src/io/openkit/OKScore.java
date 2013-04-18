@@ -22,15 +22,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 public class OKScore {
 	
 	private int OKScoreID;
-	private int scoreValue;
+	private long scoreValue;
 	private int OKLeaderboardID;
 	private OKUser user;
 	private int rank;
+	private int metadata;
+	private String displayString;
 	
 	public OKScore()
 	{
@@ -49,15 +52,60 @@ public class OKScore {
 	}
 	
 	private void initFromJSON(JSONObject scoreJSON)
-	{
+	{	
 		try {
 			this.OKLeaderboardID = scoreJSON.getInt("leaderboard_id");
-			this.OKScoreID = scoreJSON.getInt("id");
-			this.scoreValue = scoreJSON.getInt("value");
-			this.rank = scoreJSON.getInt("rank");
-			this.user = new OKUser(scoreJSON.getJSONObject("user"));
-			
 		} catch (JSONException e) {
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.OKScoreID = scoreJSON.getInt("id");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.scoreValue = scoreJSON.getLong("value");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.rank = scoreJSON.getInt("rank");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.user = new OKUser(scoreJSON.getJSONObject("user"));
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		try {
+			this.metadata = scoreJSON.getInt("metadata");
+		} catch (JSONException e){
+			e.printStackTrace();
+			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
+		}
+		
+		// Get the display string. Android JSON parsing returns the string "null" for null strings instead of
+		// return null, so we check this using json.isNull and TextUtils.isEmpty for empty strings
+		// and return null if it's empty or null
+		try {
+			if(scoreJSON.isNull("display_string") || TextUtils.isEmpty(scoreJSON.getString("display_string"))) {
+				this.displayString = null;
+			} else {
+				this.displayString = scoreJSON.getString("display_string");
+			}
+		} catch (JSONException e){
+			this.displayString = null;
 			e.printStackTrace();
 			Log.e("OpenKit", "Error parsing score JSON: " + e.toString());
 		}
@@ -84,12 +132,12 @@ public class OKScore {
 		this.OKScoreID = aID;
 	}
 	
-	public int getScoreValue()
+	public long getScoreValue()
 	{
 		return scoreValue;
 	}
 	
-	public void setScoreValue(int aValue)
+	public void setScoreValue(long aValue)
 	{
 		this.scoreValue = aValue;
 	}
@@ -112,6 +160,26 @@ public class OKScore {
 	public void setOKUser(OKUser aUser)
 	{
 		this.user = aUser;
+	}
+	
+	public void setMetadata(int aMetadata)
+	{
+		this.metadata = aMetadata;
+	}
+	
+	public int getMetadata()
+	{
+		return metadata;
+	}
+	
+	public void setDisplayString(String aDisplayValue)
+	{
+		this.displayString = aDisplayValue;
+	}
+	
+	public String getDisplayString()
+	{
+		return this.displayString;
 	}
 	
 	public interface ScoreRequestResponseHandler
@@ -179,6 +247,8 @@ public class OKScore {
 		scoreJSON.put("value", this.scoreValue);
 		scoreJSON.put("leaderboard_id", this.OKLeaderboardID);
 		scoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
+		scoreJSON.put("metadata", this.metadata);
+		scoreJSON.put("display_string", this.displayString);
 		
 		return scoreJSON;
 	}
