@@ -112,7 +112,7 @@ public class OKScoresFragment extends ListFragment
 		}
 		
 		moreScoresButton = new Button(this.getActivity());
-		moreScoresButton.setText("Show 10 more");
+		moreScoresButton.setText("Show more scores");
 		moreScoresButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -236,7 +236,6 @@ public class OKScoresFragment extends ListFragment
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				hideProgress();
-				showError();
 			}
 			
 		});
@@ -286,9 +285,7 @@ public class OKScoresFragment extends ListFragment
 		this.setListAdapter(mergeAdapter);
 	}
 	
-	//TODO
-	// Fake method right now to load more scores (pagination), right now just reloads the same
-	// scores
+	// Get the next set of scores
 	private void getMoreScores(OKLeaderboardTimeRange range, final View v)
 	{
 		final OKScoresListAdapter adapter = getAdapterforRange(range);
@@ -300,15 +297,24 @@ public class OKScoresFragment extends ListFragment
 		
 		currentLeaderboard.setDisplayedTimeRange(range);
 		
-		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
+		// Calculate how many pages of scores have already been loaded
+		int numScores = adapter.getCount();
+		int currentPageNumber = numScores / OKLeaderboard.NUM_SCORES_PER_PAGE;
+		if(currentPageNumber*OKLeaderboard.NUM_SCORES_PER_PAGE < numScores) {
+			currentPageNumber++;
+		}
+		
+		// Get the next page of scores
+		currentLeaderboard.getLeaderboardScores(currentPageNumber + 1, new OKScoresResponseHandler() {
 			
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
 				
-					for(int x = 0; x < scoresList.size(); x++)
-					{
-						adapter.add(scoresList.get(x));
-					}
+				//Iterate through and add each score because Android 2.3 doesn't have addAll
+				for(int x = 0; x < scoresList.size(); x++)
+				{
+					adapter.add(scoresList.get(x));
+				}
 				
 				v.setEnabled(true);
 			}

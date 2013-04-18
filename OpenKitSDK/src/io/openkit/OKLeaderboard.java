@@ -39,6 +39,8 @@ public class OKLeaderboard implements Parcelable{
 	
 	public static final String LEADERBOARD_KEY = "OKLeaderboard";
 	
+	public static final int NUM_SCORES_PER_PAGE = 5;
+	
 	public void writeToParcel(Parcel out, int flags)
 	{
 		//private String name;
@@ -365,15 +367,28 @@ public class OKLeaderboard implements Parcelable{
 	}
 	
 	/**
-	 * Get scores for the given leaderboard
+	 * Get scores for the given leaderboard (only the first page of scores)
 	 * @param responseHandler ResponseHandler called on success/fail
 	 */
 	public void getLeaderboardScores(OKScoresResponseHandler responseHandler)
+	{
+		getLeaderboardScores(1, responseHandler);
+	}
+	
+	
+	/**
+	 * Get scores for the given leaderboard and page number
+	 * @param pageNumber Page number in leaderboard scores pagination
+	 * @param responseHandler ResponseHandler called on success/fail
+	 */
+	public void getLeaderboardScores(int pageNumber, OKScoresResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
 		params.put("app_key",OpenKit.getOKAppID());
 		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));		
 		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
+		params.put("page_num", Integer.toString(pageNumber));
+		params.put("num_per_page",Integer.toString(NUM_SCORES_PER_PAGE));
 		
 		OKLog.d("Getting leaderboard scores for range: " + getParamForLeaderboardDisplayRange());
 		
