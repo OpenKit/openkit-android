@@ -304,7 +304,12 @@ public class OKScoresFragment extends ListFragment
 			
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
-				adapter.addAll(scoresList);
+				
+					for(int x = 0; x < scoresList.size(); x++)
+					{
+						adapter.add(scoresList.get(x));
+					}
+				
 				v.setEnabled(true);
 			}
 			
