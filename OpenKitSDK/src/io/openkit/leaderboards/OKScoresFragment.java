@@ -304,8 +304,10 @@ public class OKScoresFragment extends ListFragment
 			currentPageNumber++;
 		}
 		
+		int nextPageNumber = currentPageNumber + 1;
+		
 		// Get the next page of scores
-		currentLeaderboard.getLeaderboardScores(currentPageNumber + 1, new OKScoresResponseHandler() {
+		currentLeaderboard.getLeaderboardScores(nextPageNumber, new OKScoresResponseHandler() {
 			
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {

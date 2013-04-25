@@ -27,22 +27,38 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 
 public class OKLoginFragment extends DialogFragment
 {
 	
+	private static String loginText;
+	private static int loginTextResourceID;
+	
 	private Button fbLoginButton;
 	private Button dontLoginButton;
 	private ProgressBar spinner;
+	private TextView loginTextView;
 	
 	private boolean fbLoginButtonClicked = false;
+	
+	public static void setLoginText(String text)
+	{
+		loginText = text;
+	}
+	
+	public static void setLoginTextResourceID(int id)
+	{
+		loginTextResourceID = id;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,23 +80,26 @@ public class OKLoginFragment extends DialogFragment
 	{
 		getDialog().setTitle("Login");
 		
-		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId;
+		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID;
 		
 		viewID = getResources().getIdentifier("io_openkit_fragment_logindialog", "layout", getActivity().getPackageName());
 		fbLoginButtonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
 		dontLoginButtonId = getResources().getIdentifier("io_openkit_dontSignInButton", "id", getActivity().getPackageName());
 		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
+		loginTextViewID = getResources().getIdentifier("io_openkit_loginTitleTextView", "id", getActivity().getPackageName());
 		
-		/*
-		View view = inflater.inflate(R.layout.io_openkit_fragment_logindialog, container, false);
-		fbLoginButton = (Button)view.findViewById(R.id.io_openkit_fbSignInButton);
-		dontLoginButton = (Button)view.findViewById(R.id.io_openkit_dontSignInButton);
-		spinner = (ProgressBar)view.findViewById(R.id.io_openkit_spinner);
-		*/
+
 		View view = inflater.inflate(viewID, container, false);
 		fbLoginButton = (Button)view.findViewById(fbLoginButtonId);
 		dontLoginButton = (Button)view.findViewById(dontLoginButtonId);
 		spinner = (ProgressBar)view.findViewById(spinnerId);
+		loginTextView = (TextView)view.findViewById(loginTextViewID);
+		
+		if(loginText != null) {
+			loginTextView.setText(loginText);
+		} else if (loginTextResourceID != 0) {
+			loginTextView.setText(loginTextResourceID);
+		}
 		
 		fbLoginButton.setOnClickListener(loginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);		

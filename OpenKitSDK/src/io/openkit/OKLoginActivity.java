@@ -73,7 +73,9 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginDialogLi
 	@Override
 	public void loginFailed() {
 		OKLog.v("Login failed");
-		loginDialog.dismiss();
+		if(loginDialog != null) {
+			loginDialog.dismiss();
+		}
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
  		builder.setTitle("Error");
