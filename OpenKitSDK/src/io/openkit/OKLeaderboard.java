@@ -39,7 +39,7 @@ public class OKLeaderboard implements Parcelable{
 	
 	public static final String LEADERBOARD_KEY = "OKLeaderboard";
 	
-	public static final int NUM_SCORES_PER_PAGE = 5;
+	public static final int NUM_SCORES_PER_PAGE = 25;
 	
 	public void writeToParcel(Parcel out, int flags)
 	{

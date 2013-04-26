@@ -63,6 +63,17 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/io_openkit_changeNickButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:minWidth="160dp"
+        android:padding="3dp"
+        android:text="@string/io_openkit_changeNick"  />
+    
+    <Button
         android:id="@+id/io_openkit_logoutButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

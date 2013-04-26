@@ -16,9 +16,9 @@
 
 package io.openkit.user;
 
-import io.openkit.OKUser;
-
+import io.openkit.*;
 import io.openkit.facebook.widget.ProfilePictureView;
+
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,6 +34,13 @@ public class OKUserProfileFragment extends Fragment
 	private TextView userNickTextView;
 	private ProfilePictureView profiePictureView;
 	private Button logoutButton;
+	private Button changeNickButton;
+	
+	//Abstract class used as a delegate to handle when the NickFragment is dismissed
+	public abstract class OKLoginUpdateNickFragmentHandler
+	{
+		public abstract void onDismiss();
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -42,6 +49,7 @@ public class OKUserProfileFragment extends Fragment
 		super.onCreate(savedInstanceState);
 	}
 	
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -49,26 +57,32 @@ public class OKUserProfileFragment extends Fragment
 		View view = inflater.inflate(viewID, container, false);
 		//View view = inflater.inflate(R.layout.io_openkit_fragment_userprofile, container, false);
 		
-		OKUser currentUser = OKUser.getCurrentUser();
 		
-		int userNickTextViewId, profilePictureViewId, logoutButtonId;
+		int userNickTextViewId, profilePictureViewId, logoutButtonId, updateNickButtonId;
 		
 		userNickTextViewId = getResources().getIdentifier("io_openkit_userNickTextView", "id", getActivity().getPackageName());
 		profilePictureViewId = getResources().getIdentifier("io_openkit_fbProfilePicView", "id", getActivity().getPackageName());
 		logoutButtonId = getResources().getIdentifier("io_openkit_logoutButton", "id", getActivity().getPackageName());
+		updateNickButtonId = getResources().getIdentifier("io_openkit_changeNickButton", "id", getActivity().getPackageName());
 		
 		userNickTextView = (TextView)view.findViewById(userNickTextViewId);
 		profiePictureView = (ProfilePictureView)view.findViewById(profilePictureViewId);
 		logoutButton = (Button)view.findViewById(logoutButtonId);
-		//userNickTextView = (TextView)view.findViewById(R.id.io_openkit_userNickTextView);
-		//profiePictureView = (ProfilePictureView)view.findViewById(R.id.io_openkit_fbProfilePicView);
-		//logoutButton = (Button)view.findViewById(R.id.io_openkit_logoutButton);
-		logoutButton.setOnClickListener(logoutButtonClicked);
+		changeNickButton = (Button)view.findViewById(updateNickButtonId);
 		
-		userNickTextView.setText(currentUser.getUserNick());
-		profiePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
+		logoutButton.setOnClickListener(logoutButtonClicked);
+		changeNickButton.setOnClickListener(changeNickClicked);
+		
+		updateView();
 		
 		return view;
+	}
+	
+	private void updateView()
+	{
+		OKUser currentUser = OKUser.getCurrentUser();
+		userNickTextView.setText(currentUser.getUserNick());
+		profiePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
 	}
 	
 	private OnClickListener logoutButtonClicked = new OnClickListener() 
@@ -77,6 +91,25 @@ public class OKUserProfileFragment extends Fragment
 		public void onClick(View v) {
 			OKUser.logoutCurrentUser(OKUserProfileFragment.this.getActivity());
 			OKUserProfileFragment.this.getActivity().finish();
+		}
+	};
+	
+	private OnClickListener changeNickClicked = new OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
+			OKLoginUpdateNickFragment nickDialog = new OKLoginUpdateNickFragment();
+			
+			//Update the view when the dialog is completed 
+			nickDialog.setDialogHandler(new OKLoginUpdateNickFragmentHandler() {
+				@Override
+				public void onDismiss() {
+					updateView();
+				}
+			});
+			
+			nickDialog.show(fm, "updateNick");
 		}
 	};
 
