@@ -118,7 +118,7 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		public void onClick(View v) {
 			String newUserNick = userNickEditText.getText().toString();
 			
-			if(newUserNick.isEmpty() || newUserNick.equals(currentUser.getUserNick()))
+			if(newUserNick.equals("") || newUserNick.equals(currentUser.getUserNick()))
 			{
 				OKLoginUpdateNickFragment.this.dismiss();
 			}

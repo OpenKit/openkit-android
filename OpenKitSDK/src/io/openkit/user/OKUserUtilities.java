@@ -17,6 +17,7 @@
 package io.openkit.user;
 
 import io.openkit.OKHTTPClient;
+import io.openkit.OKLoginUpdateNickFragment;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
@@ -24,10 +25,17 @@ import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 public class OKUserUtilities 
 {
+	public static void showUpdateNickDialog(FragmentManager fm)
+	{
+		OKLoginUpdateNickFragment nickDialog = new OKLoginUpdateNickFragment();
+		nickDialog.show(fm, "OKLoginUpdateNickFragment");
+	}
 		
 	
 	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserRequestHandler requestHandler)
