@@ -29,9 +29,13 @@ public class UnityPlugin {
 		OpenKit.initialize(UnityPlayer.currentActivity, appKey);
 	}
 	
+	/**
+	 * Sets the server endpoint for OpenKit calls
+	 * @param endpoint Base URL for endpoint, e.g. "http://stage.openkit.io/"
+	 */
 	public static void setEndpoint(String endpoint)
 	{
-		logD("OpenKit Android: setting the endpoint is not yet supported!");
+		OpenKit.setEndpoint(endpoint);
 	}
 	
 	/**
@@ -68,12 +72,14 @@ public class UnityPlugin {
 	 * @param leaderboardID
 	 * @param gameObjectName GameObject that acts as an event handler
 	 */
-	public static void submitScore(int scoreValue, int leaderboardID, final String gameObjectName)
+	public static void submitScore(long scoreValue, int leaderboardID, int metadata, String displayString, final String gameObjectName)
 	{
 		logD("Submitting score");
 		OKScore score = new OKScore();		
 		score.setScoreValue(scoreValue);
 		score.setOKLeaderboardID(leaderboardID);
+		score.setMetadata(metadata);
+		score.setDisplayString(displayString);
 		
 		if(OKUser.getCurrentUser() == null)
 		{

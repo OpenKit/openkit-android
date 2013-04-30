@@ -21,28 +21,48 @@ import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
 import io.openkit.facebook.*;
+import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 
 public class OKLoginFragment extends DialogFragment
 {
 	
+	private static String loginText;
+	private static int loginTextResourceID;
+	
 	private Button fbLoginButton;
 	private Button dontLoginButton;
 	private ProgressBar spinner;
+	private TextView loginTextView;
+	
+	
+	private static OKLoginFragmentResponseHandler responseHandler;
 	
 	private boolean fbLoginButtonClicked = false;
+	
+	public static void setLoginText(String text)
+	{
+		loginText = text;
+	}
+	
+	public static void setLoginTextResourceID(int id)
+	{
+		loginTextResourceID = id;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,28 +79,38 @@ public class OKLoginFragment extends DialogFragment
 	    super.onDestroyView();
 	}
 	
+	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
+	{
+		responseHandler = handler;
+		show(manager, tag);
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		getDialog().setTitle("Login");
 		
-		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId;
+		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID;
 		
 		viewID = getResources().getIdentifier("io_openkit_fragment_logindialog", "layout", getActivity().getPackageName());
 		fbLoginButtonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
 		dontLoginButtonId = getResources().getIdentifier("io_openkit_dontSignInButton", "id", getActivity().getPackageName());
 		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
+		loginTextViewID = getResources().getIdentifier("io_openkit_loginTitleTextView", "id", getActivity().getPackageName());
 		
-		/*
-		View view = inflater.inflate(R.layout.io_openkit_fragment_logindialog, container, false);
-		fbLoginButton = (Button)view.findViewById(R.id.io_openkit_fbSignInButton);
-		dontLoginButton = (Button)view.findViewById(R.id.io_openkit_dontSignInButton);
-		spinner = (ProgressBar)view.findViewById(R.id.io_openkit_spinner);
-		*/
+
 		View view = inflater.inflate(viewID, container, false);
 		fbLoginButton = (Button)view.findViewById(fbLoginButtonId);
 		dontLoginButton = (Button)view.findViewById(dontLoginButtonId);
 		spinner = (ProgressBar)view.findViewById(spinnerId);
+		loginTextView = (TextView)view.findViewById(loginTextViewID);
+		
+		//Show customizable string if set
+		if(loginText != null) {
+			loginTextView.setText(loginText);
+		} else if (loginTextResourceID != 0) {
+			loginTextView.setText(loginTextResourceID);
+		}
 		
 		fbLoginButton.setOnClickListener(loginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);		
@@ -102,7 +132,7 @@ public class OKLoginFragment extends DialogFragment
 		return view;
 	}
 	
-	private OnClickListener loginButtonClick = new OnClickListener() {
+	private View.OnClickListener loginButtonClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			OKLog.v("Pressed FB login button");
@@ -111,23 +141,13 @@ public class OKLoginFragment extends DialogFragment
 		}
 	};
 	
-	private OnClickListener dismissSignInClick = new OnClickListener() {
-		
+	private View.OnClickListener dismissSignInClick = new View.OnClickListener() 
+	{
 		@Override
 		public void onClick(View v) {
-			dismissLoginFragment();
+			responseHandler.onLoginCancelled();
 		}
 	};
-	
-	/**
-	 * Dismisses the login fragment (e.g. user cancelled sign in process or cancelled facebook login)
-	 */
-	private void dismissLoginFragment()
-	{
-		OKLog.v("Dismiss login fragment");
-		OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
-		delegate.dismissSignin();
-	}
 	
 	
 	private void showSpinner()
@@ -182,9 +202,7 @@ public class OKLoginFragment extends DialogFragment
 				hideSpinner();
 				OKLog.v("Created OKUser successfully!");
 				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
-				
-				OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
-				delegate.loginSuccessful(user);
+				responseHandler.onLoginSucceeded();
 			}
 
 			@Override
@@ -192,10 +210,30 @@ public class OKLoginFragment extends DialogFragment
 				hideSpinner();
 				OKLog.v("Failed to create OKUSER: " + error);
 				
-				OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginFragment.this.getActivity();
-				delegate.loginFailed();
+				showLoginErrorMessage("Sorry, but there was an error reaching the OpenKit server. Please try again later");
 			}
 		});
+	}
+	
+	private void showLoginErrorMessage(String message)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(OKLoginFragment.this.getActivity());
+ 		builder.setTitle("Error");
+ 		builder.setMessage(message);
+ 		builder.setNegativeButton("OK", new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				responseHandler.onLoginFailed();
+			}
+		});
+ 		builder.setCancelable(false);
+
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
 	}
 	
 	static String keyhashErrorString = "remote_app_id does not match stored id ";
@@ -212,41 +250,21 @@ public class OKLoginFragment extends DialogFragment
 		{
 			OKLog.v("User cancelled Facebook login");
 			
-			//This error is most likely a keyhash issue, so display an AlertDialog
+			//Special check for the keyhash issue, otherwise just dismiss because the user cancelled
 			if(exception.getMessage().equalsIgnoreCase(keyhashErrorString))
 			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-				builder.setTitle("Error");
-				builder.setMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
-				builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dismissLoginFragment();
-					}
-				});
-				builder.create().show();
+				showLoginErrorMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
 				return;
+			} else {
+				responseHandler.onLoginCancelled();				
 			}
-			
-			dismissLoginFragment();
 		}
 		else {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-			builder.setTitle("Error");
-			builder.setMessage("There was an unknown error while logging into Facebook. Please try again");
-			builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dismissLoginFragment();
-				}
-			});
-			builder.create().show();
-			return;
+			showLoginErrorMessage("There was an unknown error while logging into Facebook. Please try again");
 		}
 	}
 	
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
-	
 	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
 		
 		

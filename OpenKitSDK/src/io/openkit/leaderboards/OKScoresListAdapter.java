@@ -36,6 +36,7 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		super(context, resource, objects);
 	}
 	
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
@@ -60,13 +61,24 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		TextView label2 = (TextView)row.findViewById(label2Id);
 		TextView rankLabel = (TextView)row.findViewById(rankLabelId);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(pictureViewId);
+		
 		/*
 		TextView label1 = (TextView)row.findViewById(io.openkit.R.id.text1);
 		TextView label2 = (TextView)row.findViewById(io.openkit.R.id.text2);
 		TextView rankLabel = (TextView)row.findViewById(io.openkit.R.id.io_openkit_scoreRankTextView);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(io.openkit.R.id.io_openkit_scorePicView);
 		*/
-		label2.setText(Integer.toString(currentScore.getScoreValue()));
+		
+		// If the display string is not null, show that, otherwise show
+		// the score value as a fallback
+		
+		if(currentScore.getDisplayString() != null) {
+			label2.setText(currentScore.getDisplayString());
+		} else {
+			label2.setText(Long.toString(currentScore.getScoreValue()));
+		}
+		
+		
 		rankLabel.setText(Integer.toString(currentScore.getRank()));
 		pictureView.setCropped(true);
 		

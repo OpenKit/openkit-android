@@ -36,6 +36,7 @@
     <string name="io_openkit_profile">Profile</string>
     <string name="io_openkit_logout">Logout</string>
     <string name="io_openkit_userprofle">Profile</string>
+    <string name="io_openkit_changeNick">Change Nickname</string>
     
     <!-- Copy string resources from Facebook SDK -->
     

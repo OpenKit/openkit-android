@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
-package io.openkit;
+package io.openkit.user;
 
+import io.openkit.OKHTTPClient;
+import io.openkit.OKLog;
+import io.openkit.OKLoginUpdateNickFragment;
+import io.openkit.OKUser;
+import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 public class OKUserUtilities 
 {
-	public interface UpdateUserNickRequestHandler
+	public static void showUpdateNickDialog(FragmentManager fm)
 	{
-		public void onSuccess(OKUser user);
-		public void onFail(Throwable error);
+		OKLoginUpdateNickFragment nickDialog = new OKLoginUpdateNickFragment();
+		nickDialog.show(fm, "OKLoginUpdateNickFragment");
 	}
+		
 	
-	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserNickRequestHandler requestHandler)
+	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserRequestHandler requestHandler)
 	{
 		//Setup the request parameters
 		JSONObject requestParams = new JSONObject();
@@ -57,6 +65,7 @@ public class OKUserUtilities
 				
 				if(responseUser.getOKUserID() == user.getOKUserID()){
 					requestHandler.onSuccess(responseUser);
+					OKLog.v("Succesfully updated user nickname");
 				}
 				else {
 					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user nick"));
