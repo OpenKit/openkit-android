@@ -36,11 +36,6 @@ public class OKUserProfileFragment extends Fragment
 	private Button logoutButton;
 	private Button changeNickButton;
 	
-	//Abstract class used as a delegate to handle when the NickFragment is dismissed
-	public abstract class OKLoginUpdateNickFragmentHandler
-	{
-		public abstract void onDismiss();
-	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)

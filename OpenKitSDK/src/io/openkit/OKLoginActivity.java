@@ -16,15 +16,17 @@
 
 package io.openkit;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
+import io.openkit.user.OKLoginFragmentResponseHandler;
+import io.openkit.user.OKLoginUpdateNickFragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 
-public class OKLoginActivity extends FragmentActivity implements OKLoginDialogListener{
+
+public class OKLoginActivity extends FragmentActivity
+{
+	
 	
 	private OKLoginFragment loginDialog;
 	private OKLoginUpdateNickFragment updateNickDialog;
@@ -46,7 +48,29 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginDialogLi
 	{
 		FragmentManager fm = getSupportFragmentManager();
         loginDialog = new OKLoginFragment(); 
-        loginDialog.show(fm, TAG_LOGINFRAGMENT);
+        loginDialog.show(fm, TAG_LOGINFRAGMENT, new OKLoginFragmentResponseHandler() {
+			
+        	@Override
+			public void onLoginSucceeded() {
+				loginDialog.dismiss();
+				OKLog.v("Successfully logged in, now showing nick update view");
+				showUserNickUpdateFragment();
+			}
+			
+			@Override
+			public void onLoginFailed() {
+				loginDialog.dismiss();
+				OKLog.v("Login failed, dismissing login activity");
+				OKLoginActivity.this.finish();
+			}
+			
+			@Override
+			public void onLoginCancelled() {
+				loginDialog.dismiss();
+				OKLog.v("Login canceled by user, dismissing login activity");
+				OKLoginActivity.this.finish();
+			}
+		});
 	}
 	
 	private void showUserNickUpdateFragment()
@@ -54,52 +78,16 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginDialogLi
 		FragmentManager fm = getSupportFragmentManager();
 		updateNickDialog = new OKLoginUpdateNickFragment();
 		updateNickDialog.show(fm, "OKLoginUpdateNickFragment");
-	}
-
-	@Override
-	public void dismissSignin() {
-		loginDialog.dismiss();
-		this.finish();
-	}
-
-	@Override
-	public void loginSuccessful(OKUser user) {
-		OKLog.v("Successfully logged in, now showing nick update view");
-		loginDialog.dismiss();
 		
-		showUserNickUpdateFragment();
-	}
-
-	@Override
-	public void loginFailed() {
-		OKLog.v("Login failed");
-		if(loginDialog != null) {
-			loginDialog.dismiss();
-		}
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
- 		builder.setTitle("Error");
- 		builder.setMessage("Sorry, but there was an error reaching the OpenKit server. Please try again later");
- 		builder.setNegativeButton("OK",new OnClickListener() {
+		updateNickDialog.setDialogHandler(new OKLoginUpdateNickFragmentHandler() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onDismiss() {
 				OKLoginActivity.this.finish();
 			}
 		});
- 		builder.setCancelable(false);
-
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
 	}
 
-	@Override
-	public void nickUpdateCompleted() {
-		OKLog.v("User nick updating dismissed");
-		this.finish();
-	}
+	
 
 }
 

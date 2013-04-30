@@ -16,11 +16,9 @@
 
 package io.openkit;
 
-import io.openkit.OKUserUtilities.UpdateUserNickRequestHandler;
 
 import io.openkit.facebook.widget.ProfilePictureView;
-import io.openkit.user.OKUserProfileFragment.OKLoginUpdateNickFragmentHandler;
-
+import io.openkit.user.*;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -105,16 +103,6 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		continueButton.setVisibility(View.VISIBLE);
 	}
 	
-	private void dismissNickUpdateDialog()
-	{
-		//IF the parent activity is the LoginActivity, then set it as a delegate and call the delegate function
-		if(this.getActivity().getClass() == OKLoginActivity.class) {
-			OKLoginDialogListener delegate = (OKLoginDialogListener)OKLoginUpdateNickFragment.this.getActivity();
-			delegate.nickUpdateCompleted();
-		} else {
-			this.dismiss();
-		}
-	}
 	
 	@Override
     public void onDismiss(DialogInterface dialog) {
@@ -132,7 +120,7 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 			
 			if(newUserNick.isEmpty() || newUserNick.equals(currentUser.getUserNick()))
 			{
-				dismissNickUpdateDialog();
+				OKLoginUpdateNickFragment.this.dismiss();
 			}
 			else {
 				updateUserNick(newUserNick);
@@ -144,19 +132,19 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 	{
 		showSpinner();
 		
-		OKUserUtilities.updateUserNick(currentUser, newNick, new UpdateUserNickRequestHandler() {
+		OKUserUtilities.updateUserNick(currentUser, newNick, new UpdateUserRequestHandler() {
 			
 			@Override
 			public void onSuccess(OKUser user) {
 				hideSpinner();
 				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginUpdateNickFragment.this.getActivity());
-				dismissNickUpdateDialog();
+				OKLoginUpdateNickFragment.this.dismiss();
 			}
 			
 			@Override
 			public void onFail(Throwable error) {
 				hideSpinner();
-				dismissNickUpdateDialog();
+				OKLoginUpdateNickFragment.this.dismiss();
 			}
 		});
 	}

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package io.openkit;
+package io.openkit.user;
 
+import io.openkit.OKHTTPClient;
+import io.openkit.OKUser;
+import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -25,13 +28,9 @@ import android.util.Log;
 
 public class OKUserUtilities 
 {
-	public interface UpdateUserNickRequestHandler
-	{
-		public void onSuccess(OKUser user);
-		public void onFail(Throwable error);
-	}
+		
 	
-	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserNickRequestHandler requestHandler)
+	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserRequestHandler requestHandler)
 	{
 		//Setup the request parameters
 		JSONObject requestParams = new JSONObject();
