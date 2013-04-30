@@ -17,6 +17,7 @@
 package io.openkit.user;
 
 import io.openkit.OKHTTPClient;
+import io.openkit.OKLog;
 import io.openkit.OKLoginUpdateNickFragment;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
@@ -64,6 +65,7 @@ public class OKUserUtilities
 				
 				if(responseUser.getOKUserID() == user.getOKUserID()){
 					requestHandler.onSuccess(responseUser);
+					OKLog.v("Succesfully updated user nickname");
 				}
 				else {
 					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user nick"));

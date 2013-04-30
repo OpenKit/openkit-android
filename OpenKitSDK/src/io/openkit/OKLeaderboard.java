@@ -260,6 +260,8 @@ public class OKLeaderboard implements Parcelable{
 			public void onSuccess(JSONArray array) {
 				OKLog.d("Received leaderboards JSON array from server: " + array.toString());
 				
+				int maxPlayerCount = 0;
+				
 				int numLeaderboards = array.length();		
 				List<OKLeaderboard> leaderboards = new ArrayList<OKLeaderboard>(numLeaderboards);
 				
@@ -268,12 +270,17 @@ public class OKLeaderboard implements Parcelable{
 					try {
 						JSONObject leaderBoard = array.getJSONObject(x);
 						leaderboards.add(new OKLeaderboard(leaderBoard));
+						
+						if(leaderboards.get(x).getPlayerCount() > maxPlayerCount) {
+							maxPlayerCount = leaderboards.get(x).getPlayerCount(); 
+						}
+							
 					} catch (JSONException e) {
 						OKLog.d("Error parsing list of leaderboards JSON: " + e.toString());
 					}
 				}
 				
-				finalResponseHandler.onSuccess(leaderboards);
+				finalResponseHandler.onSuccess(leaderboards, maxPlayerCount);
 			}
 			
 			@Override

@@ -23,6 +23,6 @@ import org.json.JSONObject;
 
 public interface OKLeaderboardsListResponseHandler {
 	
-	void onSuccess(List<OKLeaderboard> leaderboardList);
+	void onSuccess(List<OKLeaderboard> leaderboardList, int playerCount);
 	void onFailure(Throwable e, JSONObject errorResponse);
 }

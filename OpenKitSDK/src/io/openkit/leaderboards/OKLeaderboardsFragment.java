@@ -83,8 +83,6 @@ public class OKLeaderboardsFragment extends ListFragment {
 			}
 		}
 		
-		listHeaderTextView.setText("2000 Players");
-		
 		return view;
 	}
 	
@@ -98,12 +96,12 @@ public class OKLeaderboardsFragment extends ListFragment {
 		OKLeaderboard.getLeaderboards(new OKLeaderboardsListResponseHandler() {
 
 			@Override
-			public void onSuccess(List<OKLeaderboard> leaderboardList) {
+			public void onSuccess(List<OKLeaderboard> leaderboardList, int playerCount) {
 				listAdapter = new OKLeaderboardsListAdapter(OKLeaderboardsFragment.this.getActivity(), 
 						android.R.layout.simple_list_item_1, leaderboardList);
 
 				//Add a header to the list. Must be done before setting list adapter
-				listHeaderTextView.setText("2000 Players");
+				listHeaderTextView.setText(playerCount + " Players");
 
 				//Display the list
 				OKLeaderboardsFragment.this.setListAdapter(listAdapter);
