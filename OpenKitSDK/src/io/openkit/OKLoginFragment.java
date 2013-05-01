@@ -46,6 +46,7 @@ public class OKLoginFragment extends DialogFragment
 	
 	private Button fbLoginButton;
 	private Button dontLoginButton;
+	private Button googleLoginButton;
 	private ProgressBar spinner;
 	private TextView loginTextView;
 	
@@ -90,13 +91,14 @@ public class OKLoginFragment extends DialogFragment
 	{
 		getDialog().setTitle("Login");
 		
-		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID;
+		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID, googleLoginButtonID;
 		
 		viewID = getResources().getIdentifier("io_openkit_fragment_logindialog", "layout", getActivity().getPackageName());
 		fbLoginButtonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
 		dontLoginButtonId = getResources().getIdentifier("io_openkit_dontSignInButton", "id", getActivity().getPackageName());
 		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
 		loginTextViewID = getResources().getIdentifier("io_openkit_loginTitleTextView", "id", getActivity().getPackageName());
+		googleLoginButtonID = getResources().getIdentifier("io_openkit_GoogleSignInButton", "id", getActivity().getPackageName());
 		
 
 		View view = inflater.inflate(viewID, container, false);
@@ -104,6 +106,7 @@ public class OKLoginFragment extends DialogFragment
 		dontLoginButton = (Button)view.findViewById(dontLoginButtonId);
 		spinner = (ProgressBar)view.findViewById(spinnerId);
 		loginTextView = (TextView)view.findViewById(loginTextViewID);
+		googleLoginButton = (Button)view.findViewById(googleLoginButtonID);
 		
 		//Show customizable string if set
 		if(loginText != null) {
@@ -112,7 +115,8 @@ public class OKLoginFragment extends DialogFragment
 			loginTextView.setText(loginTextResourceID);
 		}
 		
-		fbLoginButton.setOnClickListener(loginButtonClick);
+		fbLoginButton.setOnClickListener(fbLoginButtonClick);
+		googleLoginButton.setOnClickListener(googleLoginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);		
 		
 		Session session = Session.getActiveSession();
@@ -132,7 +136,16 @@ public class OKLoginFragment extends DialogFragment
 		return view;
 	}
 	
-	private View.OnClickListener loginButtonClick = new View.OnClickListener() {
+	private View.OnClickListener googleLoginButtonClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+	
+	private View.OnClickListener fbLoginButtonClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			OKLog.v("Pressed FB login button");
