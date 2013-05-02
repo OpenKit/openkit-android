@@ -20,9 +20,9 @@
  
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item android:id="@+id/io_openkit_menu_profileButton"
-        android:icon="@drawable/io_openkit_profile"
         android:title="@string/io_openkit_profile"
-        android:showAsAction="always"/>
+        android:showAsAction="never" />
 
 </menu>
