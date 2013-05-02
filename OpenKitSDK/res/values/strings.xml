@@ -20,16 +20,23 @@
  
 <resources>
 
-    <string name="io_openkit_title_leaderboards">Leaderboards</string>
     <string name="io_openkit_sdk_app_name">OpenKitSDK</string>
-    <string name="io_openkit_login_text">Create an account to access leaderboards and resume game progress from any device.</string>
-    <string name="io_openkit_privacy_policy">By signing in you agree to the OpenKit Terms of Service and Privacy Policy</string>
-    <string name="io_openkit_dont_sign_in">I don\'t want these features</string>
+    
+    <string name="io_openkit_login_text">Sign in to play with friends.</string>
+    <string name="io_openkit_login_subtext">Leaderboards, achievements, and more!</string>
+    <string name="io_openkit_google_signin">Sign in with Google</string>
+    <string name="io_openkit_facebook_signin">Sign in with Facebook</string>
     <string name="io_openkit_fb_signin">Sign in with Facebook</string>
-    <string name="io_openkit_loggedIn">Signed in as</string>
-    <string name="io_openkit_createNickName">Create a nickname for this account</string>
+    <string name="io_openkit_twitter_signin">Sign in with Twitter</string>
+	<string name="io_openkit_guest_signin">Guest Account</string>
+	<string name="io_openkit_dont_sign_in">No Thanks</string>
+    
+	<string name="io_openkit_loggedIn">Signed in as</string>
+	<string name="io_openkit_createNickName">Create a nickname for this account</string>
     <string name="io_openkit_nickExplanation">This is how you\'ll appear in leaderboards</string>
-    <string name="io_openkit_continue">Continue</string>
+	<string name="io_openkit_continue">Continue</string>
+    
+    <string name="io_openkit_title_leaderboards">Leaderboards</string>
     <string name="io_openkit_leaderboards_alltime">ALL TIME</string>
     <string name="io_openkit_leaderboards_thisWeek">THIS WEEK</string>
     <string name="io_openkit_leaderboards_today">TODAY</string>
