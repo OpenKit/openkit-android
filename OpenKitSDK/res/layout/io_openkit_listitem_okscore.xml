@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center"
-        android:textStyle="bold"/>
+        android:textStyle="bold" 
+        android:textIsSelectable="false" />
 
     <io.openkit.facebook.widget.ProfilePictureView
         android:id="@+id/io_openkit_scorePicView"
@@ -50,14 +51,16 @@
 	        android:id="@+id/text1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:textStyle="bold" />
+	        android:textStyle="bold" 
+	        android:textIsSelectable="false" />
 	
 	    <TextView
 	        android:id="@+id/text2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textSize="12sp"
-	        android:textColor="@color/io_openkit_gray" />
+	        android:textColor="@color/io_openkit_gray" 
+	        android:textIsSelectable="false" />
     
 	</LinearLayout>
 

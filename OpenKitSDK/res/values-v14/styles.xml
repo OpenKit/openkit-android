@@ -29,7 +29,6 @@
     </style>
 
     <style name="OKActivityTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:windowBackground">@color/io_openkit_leaderboards_bgcolor</item>
         <item name="android:actionBarStyle">@style/OKActionBarStyle</item>
     </style>
 

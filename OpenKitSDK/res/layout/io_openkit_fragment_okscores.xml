@@ -47,12 +47,14 @@
             android:id="@+id/io_openkit_leaderboards_allTimeButton"
             android:text="@string/io_openkit_leaderboards_alltime" 
             style="@style/TabButton" />
+        
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:theme="@style/OKActivityTheme" >
 
         <ListView
             android:id="@android:id/list"
@@ -73,6 +75,7 @@
             android:indeterminateOnly="true"
             android:visibility="invisible" >
         </ProgressBar>
+        
     </RelativeLayout>
 
 </LinearLayout>
