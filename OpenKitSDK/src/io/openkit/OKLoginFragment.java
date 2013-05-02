@@ -40,31 +40,38 @@ import android.widget.TextView;
 
 public class OKLoginFragment extends DialogFragment
 {
-	
+
 	private static String loginText;
 	private static int loginTextResourceID;
-	
-	private Button fbLoginButton;
-	private Button dontLoginButton;
-	private Button googleLoginButton;
+
+	private Button fbLoginButton, googleLoginButton, twitterLoginButton,guestLoginButton, dontLoginButton;
 	private ProgressBar spinner;
 	private TextView loginTextView;
-	
-	
-	private static OKLoginFragmentResponseHandler responseHandler;
-	
 	private boolean fbLoginButtonClicked = false;
-	
-	public static void setLoginText(String text)
-	{
+
+	private static OKLoginFragmentResponseHandler responseHandler;
+
+	private static boolean fbLoginEnabled = true;
+	private static boolean googleLoginEnabled = true;
+	private static boolean twitterLoginEnabled = false;
+	private static boolean guestLoginEnabled = false;
+
+	public static void setFbLoginEnabled(boolean enabled) {
+		fbLoginEnabled = enabled;
+	}
+
+	public static void setGoogleLoginEnabled(boolean enabled) {
+		googleLoginEnabled = enabled;
+	}
+
+	public static void setLoginText(String text){
 		loginText = text;
 	}
-	
-	public static void setLoginTextResourceID(int id)
-	{
+
+	public static void setLoginTextResourceID(int id){
 		loginTextResourceID = id;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setRetainInstance(true);
@@ -72,34 +79,36 @@ public class OKLoginFragment extends DialogFragment
 		setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 		setCancelable(false);
 	}
-	
+
 	@Override
 	public void onDestroyView() {
-	    if (getDialog() != null && getRetainInstance())
-	    	getDialog().setDismissMessage(null);
-	    super.onDestroyView();
+		if (getDialog() != null && getRetainInstance())
+			getDialog().setDismissMessage(null);
+		super.onDestroyView();
 	}
-	
+
 	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
 	{
 		responseHandler = handler;
 		show(manager, tag);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		getDialog().setTitle("Login");
-		
-		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID, googleLoginButtonID;
-		
+
+		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID, googleLoginButtonID, twitterLoginButtonID, guestLoginButtonID;
+
 		viewID = getResources().getIdentifier("io_openkit_fragment_logindialog", "layout", getActivity().getPackageName());
 		fbLoginButtonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
 		dontLoginButtonId = getResources().getIdentifier("io_openkit_dontSignInButton", "id", getActivity().getPackageName());
 		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
 		loginTextViewID = getResources().getIdentifier("io_openkit_loginTitleTextView", "id", getActivity().getPackageName());
-		googleLoginButtonID = getResources().getIdentifier("io_openkit_GoogleSignInButton", "id", getActivity().getPackageName());
-		
+		googleLoginButtonID = getResources().getIdentifier("io_openkit_googleSignInButton", "id", getActivity().getPackageName());
+		twitterLoginButtonID = getResources().getIdentifier("io_openkit_twitterSignInButton", "id", getActivity().getPackageName());
+		guestLoginButtonID = getResources().getIdentifier("io_openkit_guestSignInButton", "id", getActivity().getPackageName());
+
 
 		View view = inflater.inflate(viewID, container, false);
 		fbLoginButton = (Button)view.findViewById(fbLoginButtonId);
@@ -107,44 +116,55 @@ public class OKLoginFragment extends DialogFragment
 		spinner = (ProgressBar)view.findViewById(spinnerId);
 		loginTextView = (TextView)view.findViewById(loginTextViewID);
 		googleLoginButton = (Button)view.findViewById(googleLoginButtonID);
-		
+		twitterLoginButton = (Button)view.findViewById(twitterLoginButtonID);
+		guestLoginButton = (Button)view.findViewById(guestLoginButtonID);
+
 		//Show customizable string if set
 		if(loginText != null) {
 			loginTextView.setText(loginText);
 		} else if (loginTextResourceID != 0) {
 			loginTextView.setText(loginTextResourceID);
 		}
-		
+
+		//Only show the correct buttons
+		fbLoginButton.setVisibility(getButtonLayoutVisibility(fbLoginEnabled));
+		googleLoginButton.setVisibility(getButtonLayoutVisibility(googleLoginEnabled));
+		guestLoginButton.setVisibility(getButtonLayoutVisibility(guestLoginEnabled));
+		twitterLoginButton.setVisibility(getButtonLayoutVisibility(twitterLoginEnabled));
+
 		fbLoginButton.setOnClickListener(fbLoginButtonClick);
 		googleLoginButton.setOnClickListener(googleLoginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);		
-		
+
 		Session session = Session.getActiveSession();
-        if (session == null) {
-            if (savedInstanceState != null) {
-                session = Session.restoreSession(getActivity(), null, sessionStatusCallback, savedInstanceState);
-            }
-            if (session == null) {
-                session = new Session(getActivity());
-            }
-            Session.setActiveSession(session);
-            if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
-                session.openForRead(new Session.OpenRequest(this).setCallback(sessionStatusCallback));
-            }
-        }
-        
+		if (session == null) {
+			if (savedInstanceState != null) {
+				session = Session.restoreSession(getActivity(), null, sessionStatusCallback, savedInstanceState);
+			}
+			if (session == null) {
+				session = new Session(getActivity());
+			}
+			Session.setActiveSession(session);
+			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
+				session.openForRead(new Session.OpenRequest(this).setCallback(sessionStatusCallback));
+			}
+		}
+
+
 		return view;
 	}
-	
+
+
+
 	private View.OnClickListener googleLoginButtonClick = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
 
 		}
 	};
-	
+
 	private View.OnClickListener fbLoginButtonClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -153,7 +173,7 @@ public class OKLoginFragment extends DialogFragment
 			loginToFB();
 		}
 	};
-	
+
 	private View.OnClickListener dismissSignInClick = new View.OnClickListener() 
 	{
 		@Override
@@ -161,22 +181,54 @@ public class OKLoginFragment extends DialogFragment
 			responseHandler.onLoginCancelled();
 		}
 	};
-	
-	
+
+	private int getButtonLayoutVisibility(boolean enabled)
+	{
+		if(enabled) {
+			return View.VISIBLE;
+		} else {
+			return View.GONE;
+		}
+	}
+
+	// If the button is Visible, set it to Invisible (e.g. do not set View.Gone to View.Invisible)
+	private void setButtonInvisibleIfNotGone(Button button) {
+		if(button.getVisibility() == View.VISIBLE) {
+			button.setVisibility(View.INVISIBLE);
+		}
+	}
+
+	// If the button is Invisible, set it it Visible (e.g. do not set View.gone to View.Visible)
+	private void setButtonVisibleIfNotGone(Button button) {
+		if(button.getVisibility() == View.INVISIBLE) {
+			button.setVisibility(View.INVISIBLE);
+		}
+	}
+
+
+
+
+
 	private void showSpinner()
 	{
 		spinner.setVisibility(View.VISIBLE);
-		fbLoginButton.setVisibility(View.INVISIBLE);
-		dontLoginButton.setVisibility(View.INVISIBLE);
+		setButtonInvisibleIfNotGone(fbLoginButton);
+		setButtonInvisibleIfNotGone(twitterLoginButton);
+		setButtonInvisibleIfNotGone(googleLoginButton);
+		setButtonInvisibleIfNotGone(guestLoginButton);
+		setButtonInvisibleIfNotGone(dontLoginButton);
 	}
-	
+
 	private void hideSpinner()
 	{
 		spinner.setVisibility(View.INVISIBLE);
-		fbLoginButton.setVisibility(View.VISIBLE);
-		dontLoginButton.setVisibility(View.VISIBLE);
+		setButtonVisibleIfNotGone(fbLoginButton);
+		setButtonVisibleIfNotGone(twitterLoginButton);
+		setButtonVisibleIfNotGone(googleLoginButton);
+		setButtonVisibleIfNotGone(guestLoginButton);
+		setButtonVisibleIfNotGone(dontLoginButton);
 	}
-	
+
 	/**
 	 * Starts the Facebook authentication process. Performs Facebook authentication using the best method available 
 	 * (native Android dialog, single sign on through Facebook application, or using a web view shown inside the app)
@@ -184,9 +236,9 @@ public class OKLoginFragment extends DialogFragment
 	private void loginToFB()
 	{
 		showSpinner();
-		
+
 		Session session = Session.getActiveSession();
-		
+
 		if(!session.isOpened() && !session.isClosed()){
 			session.openForRead(new Session.OpenRequest(this)
 			//.setPermissions(Arrays.asList("basic_info"))
@@ -201,7 +253,7 @@ public class OKLoginFragment extends DialogFragment
 			Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
 		}
 	}
-	
+
 	/**
 	 * Called after the user is authenticated with Facebook. Uses the the Facebook authentication token to look up
 	 * the user's facebook id, then gets the corresponding OKUser to this facebook ID.
@@ -222,25 +274,25 @@ public class OKLoginFragment extends DialogFragment
 			public void onFail(Error error) {
 				hideSpinner();
 				OKLog.v("Failed to create OKUSER: " + error);
-				
+
 				showLoginErrorMessage("Sorry, but there was an error reaching the OpenKit server. Please try again later");
 			}
 		});
 	}
-	
+
 	private void showLoginErrorMessage(String message)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(OKLoginFragment.this.getActivity());
- 		builder.setTitle("Error");
- 		builder.setMessage(message);
- 		builder.setNegativeButton("OK", new OnClickListener() {
-			
+		builder.setTitle("Error");
+		builder.setMessage(message);
+		builder.setNegativeButton("OK", new OnClickListener() {
+
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				responseHandler.onLoginFailed();
 			}
 		});
- 		builder.setCancelable(false);
+		builder.setCancelable(false);
 
 		// create alert dialog
 		AlertDialog alertDialog = builder.create();
@@ -248,9 +300,9 @@ public class OKLoginFragment extends DialogFragment
 		// show it
 		alertDialog.show();
 	}
-	
+
 	static String keyhashErrorString = "remote_app_id does not match stored id ";
-	
+
 	/**
 	 * Handler function for when Facebook login fails
 	 * @param exception Exception from Facebook SDK
@@ -258,11 +310,11 @@ public class OKLoginFragment extends DialogFragment
 	private void facebookLoginFailed(Exception exception)
 	{
 		OKLog.v("Facebook login failed");
-		
+
 		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
 		{
 			OKLog.v("User cancelled Facebook login");
-			
+
 			//Special check for the keyhash issue, otherwise just dismiss because the user cancelled
 			if(exception.getMessage().equalsIgnoreCase(keyhashErrorString))
 			{
@@ -276,21 +328,21 @@ public class OKLoginFragment extends DialogFragment
 			showLoginErrorMessage("There was an unknown error while logging into Facebook. Please try again");
 		}
 	}
-	
+
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
 	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
-		
-		
-		
+
+
+
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
-			
+
 			// Log all facebook exceptions
 			if(exception != null)
 			{
 				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
 			}
-			
+
 			//Log what is happening with the Facebook session for debug help
 			switch (state) {
 			case OPENING:
@@ -318,53 +370,53 @@ public class OKLoginFragment extends DialogFragment
 				OKLog.v("Session State Default case");
 				break;
 			}
-			
+
 			// If the session is opened, authorize the user, if the session is closed 
-		    if (state.isOpened()) 
-		    {
-		        OKLog.v("FB Session is Open");
-		        if(fbLoginButtonClicked){
-		        	OKLog.v("Authorizing user with Facebook");
+			if (state.isOpened()) 
+			{
+				OKLog.v("FB Session is Open");
+				if(fbLoginButtonClicked){
+					OKLog.v("Authorizing user with Facebook");
 					authorizeFBUserWithOpenKit();
 					fbLoginButtonClicked = false;
 				}
-		    } else if (state.isClosed()) {
-		        OKLog.v("FB Session is Closed");
-		        if(fbLoginButtonClicked) {
-		    		facebookLoginFailed(exception);
-		    		fbLoginButtonClicked = false;
-		    	}
-		    }
+			} else if (state.isClosed()) {
+				OKLog.v("FB Session is Closed");
+				if(fbLoginButtonClicked) {
+					facebookLoginFailed(exception);
+					fbLoginButtonClicked = false;
+				}
+			}
 		}
 	};
-	
+
 	/* Below methods are overridden to add the Facebook session lifecycle callbacks */
-	
+
 	@Override
-    public void onStart() {
-        super.onStart();
-        Session.getActiveSession().addCallback(sessionStatusCallback);
-    }
+	public void onStart() {
+		super.onStart();
+		Session.getActiveSession().addCallback(sessionStatusCallback);
+	}
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Session.getActiveSession().removeCallback(sessionStatusCallback);
-    }
+	@Override
+	public void onStop() {
+		super.onStop();
+		Session.getActiveSession().removeCallback(sessionStatusCallback);
+	}
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
-    }
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
+	}
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Session session = Session.getActiveSession();
-        Session.saveSession(session, outState);
-    }
-	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Session session = Session.getActiveSession();
+		Session.saveSession(session, outState);
+	}
 
-	
+
+
 }
