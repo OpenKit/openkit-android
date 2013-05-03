@@ -17,7 +17,6 @@
 package io.openkit;
 
 
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 
 import io.openkit.facebookutils.*;
@@ -27,9 +26,7 @@ import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
