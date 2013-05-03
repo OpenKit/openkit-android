@@ -60,7 +60,7 @@ public class OKLoginFragment extends DialogFragment
 	private static boolean googleLoginEnabled = true;
 	private static boolean twitterLoginEnabled = false;
 	private static boolean guestLoginEnabled = false;
-	
+
 	private GoogleAuthRequest mGoogAuthRequest;
 
 	public static void setFbLoginEnabled(boolean enabled) {
@@ -93,8 +93,8 @@ public class OKLoginFragment extends DialogFragment
 			getDialog().setDismissMessage(null);
 		super.onDestroyView();
 	}
-	
-	
+
+
 
 	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
 	{
@@ -172,87 +172,111 @@ public class OKLoginFragment extends DialogFragment
 
 		@Override
 		public void onClick(View arg0) {
-			
-			mGoogAuthRequest = new GoogleAuthRequest(OKLoginFragment.this,getAccount());
-			
-			showSpinner();
-			
-			mGoogAuthRequest.loginWithGoogleAccount(new GoogleAuthRequestHandler() {
-				@Override
-				public void onUserCancelled() {
-					hideSpinner();
-					responseHandler.onLoginCancelled();
-				}
-				
-				@Override
-				public void onReceivedAuthToken(final String authToken) {
-					// Create the user from the UI thread because onReceivedAuthToken is called from a background thread
-					// and all OK network requests are performed on a background thread anyways
-					OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOKUserRequestHandler() {
-								@Override
-								public void onSuccess(OKUser user) {
-									OKLog.v("Correct callback is called");
-									hideSpinner();
-									OKLog.v("Created OKUser successfully!");
-									OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
-									responseHandler.onLoginSucceeded();
-								}
-								
-								@Override
-								public void onFail(Error error) {
-									hideSpinner();
-									int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_OKLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
-									String message = OKLoginFragment.this.getString(errorMessageId);
-									showLoginErrorMessage(message);
-								}
-							});
-						}
-					});
-				}
-				
-				@Override
-				public void onLoginFailedWithPlayException(
-						final GooglePlayServicesAvailabilityException playEx) 
-				{
-					//Need to run this on UIthread becuase this may be called from a background thread and this shows an error dialog
-					OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							hideSpinner();
-							
-							int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googlePlayServicesError", "string", OKLoginFragment.this.getActivity().getPackageName());
-							String message = OKLoginFragment.this.getString(errorMessageId);
-							
-							showLoginErrorMessage(message);
-							
-							//Can't use helper method below to show error message because we don't include the resources from Google play services SDK
-							//GoogleUtils.showGooglePlayServicesErrorDialog(OKLoginFragment.this.getActivity(), playEx.getConnectionStatusCode());
-						}
-					});
-					
-				}
-				
-				@Override
-				public void onLoginFailed(Exception e) {
-					hideSpinner();
-					int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
-					String message = OKLoginFragment.this.getString(errorMessageId);
-					showLoginErrorMessage(message);
-				}
-			});
+
+			//Check to see if there are any Google accounts defined
+			Account[] googAccounts = GoogleUtils.getGoogleAccounts(OKLoginFragment.this.getActivity());
+
+			if(googAccounts.length == 0) {
+				showLoginErrorMessageFromStringIdentifierName("io_openkit_OKLoginError");
+			}
+			else if(googAccounts.length == 1) {
+				performGoogleAuth(googAccounts[0]);
+			}
+			else {
+				//There are multiple accounts, show a selector to choose which Account to perform Auth on 
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			    builder.setTitle("Choose an Account");
+			    builder.setItems(GoogleUtils.getGoogleAccountNames(OKLoginFragment.this.getActivity()), new OnClickListener() {	
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Account account = GoogleUtils.getGoogleAccounts(OKLoginFragment.this.getActivity())[which];
+						performGoogleAuth(account);
+					}
+				});
+			         
+			    builder.create().show();
+			}
+
 		}
 	};
-	
-	private Account getAccount() {
-		AccountManager account = AccountManager.get(getActivity());
-		Account[] accounts = account.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-		return accounts[0];
+
+
+	private void performGoogleAuth(Account account)
+	{
+		mGoogAuthRequest = new GoogleAuthRequest(OKLoginFragment.this,account);
+
+		showSpinner();
+
+		mGoogAuthRequest.loginWithGoogleAccount(new GoogleAuthRequestHandler() {
+			@Override
+			public void onUserCancelled() {
+				hideSpinner();
+				responseHandler.onLoginCancelled();
+			}
+
+			@Override
+			public void onReceivedAuthToken(final String authToken) {
+				// Create the user from the UI thread because onReceivedAuthToken is called from a background thread
+				// and all OK network requests are performed on a background thread anyways
+				OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOKUserRequestHandler() {
+							@Override
+							public void onSuccess(OKUser user) {
+								OKLog.v("Correct callback is called");
+								hideSpinner();
+								OKLog.v("Created OKUser successfully!");
+								OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
+								responseHandler.onLoginSucceeded();
+							}
+
+							@Override
+							public void onFail(Error error) {
+								hideSpinner();
+								int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_OKLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
+								String message = OKLoginFragment.this.getString(errorMessageId);
+								showLoginErrorMessage(message);
+							}
+						});
+					}
+				});
+			}
+
+			@Override
+			public void onLoginFailedWithPlayException(
+					final GooglePlayServicesAvailabilityException playEx) 
+			{
+				//Need to run this on UIthread becuase this may be called from a background thread and this shows an error dialog
+				OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						hideSpinner();
+
+						int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googlePlayServicesError", "string", OKLoginFragment.this.getActivity().getPackageName());
+						String message = OKLoginFragment.this.getString(errorMessageId);
+
+						showLoginErrorMessage(message);
+
+						//Can't use helper method below to show error message because we don't include the resources from Google play services SDK
+						//GoogleUtils.showGooglePlayServicesErrorDialog(OKLoginFragment.this.getActivity(), playEx.getConnectionStatusCode());
+					}
+				});
+
+			}
+
+			@Override
+			public void onLoginFailed(Exception e) {
+				hideSpinner();
+				int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
+				String message = OKLoginFragment.this.getString(errorMessageId);
+				showLoginErrorMessage(message);
+			}
+		});
 	}
+
 
 	private View.OnClickListener fbLoginButtonClick = new View.OnClickListener() {
 		@Override
@@ -369,6 +393,13 @@ public class OKLoginFragment extends DialogFragment
 		});
 	}
 
+	private void showLoginErrorMessageFromStringIdentifierName(String id)
+	{
+		int errorMessageId = OKLoginFragment.this.getResources().getIdentifier(id, "string", OKLoginFragment.this.getActivity().getPackageName());
+		String message = OKLoginFragment.this.getString(errorMessageId);
+		showLoginErrorMessage(message);
+	}
+	
 	private void showLoginErrorMessage(String message)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(OKLoginFragment.this.getActivity());
