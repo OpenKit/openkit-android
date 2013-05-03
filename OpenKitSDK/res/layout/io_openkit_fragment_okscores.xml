@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="@color/io_openkit_white" >
+    android:background="@android:color/white" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -29,22 +29,16 @@
         android:orientation="horizontal" >
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_todayButton"
             style="@style/TabButton"
             android:text="@string/io_openkit_leaderboards_today" />
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_thisWeekButton"
             android:text="@string/io_openkit_leaderboards_thisWeek"
             style="@style/TabButton"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_allTimeButton"
             android:text="@string/io_openkit_leaderboards_alltime" 
             style="@style/TabButton" />

@@ -21,6 +21,16 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <item
+        android:icon="@drawable/io_openkit_profile"
+        android:title="@string/io_openkit_profile"
+        android:showAsAction="always" />
+    
+    <item
+        android:icon="@drawable/io_openkit_profile"
+        android:title="@string/io_openkit_profile"
+        android:showAsAction="always" />
+    
     <item android:id="@+id/io_openkit_menu_profileButton"
         android:title="@string/io_openkit_profile"
         android:showAsAction="never" />

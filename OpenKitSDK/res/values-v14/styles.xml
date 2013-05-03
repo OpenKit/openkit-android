@@ -30,12 +30,18 @@
 
     <style name="OKActivityTheme" parent="@android:style/Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/OKActionBarStyle</item>
+        <item name="android:actionMenuTextColor">@android:color/white</item>
     </style>
 
     <style name="OKActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:displayOptions">showTitle|homeAsUp</item>
         <item name="android:background">@color/io_openkit_actionBarBgColor</item>
+        <item name="android:titleTextStyle">@style/OKActionBarStyle.Text</item>
     </style>
+    
+    <style name="OKActionBarStyle.Text" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    	<item name="android:textColor">@android:color/white</item>
+	</style>
 
     <style name="OKLoginText">
         <item name="android:textSize">16sp</item>

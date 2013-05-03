@@ -25,7 +25,7 @@
         android:id="@+id/headerTextView"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-		android:background="@color/io_openkit_white"
+		android:background="@android:color/white"
 		android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:paddingLeft="5dp"

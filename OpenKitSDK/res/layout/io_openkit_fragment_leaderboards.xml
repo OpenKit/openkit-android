@@ -22,7 +22,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/OKActivityTheme" 
-    android:background="@color/io_openkit_white" >
+    android:background="@android:color/white" >
 
     <ListView
         android:id="@android:id/list"

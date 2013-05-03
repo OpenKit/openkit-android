@@ -21,9 +21,8 @@
 <resources>
     
     <color name="io_openkit_gray">#A9A9A9</color>
-    <color name="io_openkit_white">#FFFFFF</color>
 
-    <color name="io_openkit_actionBarBgColor">#dddddd</color>
+    <color name="io_openkit_actionBarBgColor">#ff8800</color>
     <color name="transparent">#00000000</color>
     
     <color name="io_openkit_google_shadow">#ce3025</color>
