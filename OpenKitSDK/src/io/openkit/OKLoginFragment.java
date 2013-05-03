@@ -192,7 +192,7 @@ public class OKLoginFragment extends DialogFragment
 						
 						@Override
 						public void run() {
-							GoogleUtils.createOKUserFromGoogle(authToken, new CreateOKUserRequestHandler() {
+							GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOKUserRequestHandler() {
 								@Override
 								public void onSuccess(OKUser user) {
 									OKLog.v("Correct callback is called");
@@ -205,7 +205,9 @@ public class OKLoginFragment extends DialogFragment
 								@Override
 								public void onFail(Error error) {
 									hideSpinner();
-									responseHandler.onLoginFailed();
+									int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_OKLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
+									String message = OKLoginFragment.this.getString(errorMessageId);
+									showLoginErrorMessage(message);
 								}
 							});
 						}

@@ -47,6 +47,7 @@
     
     <string name="io_openkit_googlePlayServicesError">Unfortunately, your device does not have or does not support the required version of Google Play. Please try logging with a different type of account.</string>
     <string name="io_openkit_googleLoginError">Sorry, but there was an error logging in with Google. Please try again later or try a different account type.</string>
+    <string name="io_openkit_OKLoginError">Sorry, but there was an error reaching the OpenKit servers. Please try again later or try using a different account type.</string>
     
     
     <!-- Copy string resources from Facebook SDK -->

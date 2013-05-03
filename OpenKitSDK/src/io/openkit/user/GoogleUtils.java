@@ -64,9 +64,6 @@ public class GoogleUtils {
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-Type", "application/json");
 		client.addHeader("Accept", "application/json");
-
-		//test invalid token
-		authToken = authToken + "yabadadabadadoo";
 		
 		RequestParams params =  new RequestParams();
 		params.put("access_token", authToken);
@@ -108,7 +105,7 @@ public class GoogleUtils {
 		});
 	}
 	
-	public static void createOKUserFromGoogle(String googleAuthToken, final CreateOKUserRequestHandler requestHandler)
+	public static void createOKUserFromGoogle(final Context ctx, final String googleAuthToken, final CreateOKUserRequestHandler requestHandler)
 	{
 		getGoogleUserInfo(googleAuthToken, new GetGoogleUserInfoRequestHandler() {
 			
@@ -137,6 +134,9 @@ public class GoogleUtils {
 			
 			@Override
 			public void onFailure() {
+				//If the user info requests fails, let's invalidate the Google auth token
+				GoogleAuthUtil.invalidateToken(ctx, googleAuthToken);
+				OKLog.v("Invalidated Google auth token");
 				requestHandler.onFail(new Error("Getting Google user info failed"));
 			}
 		});
