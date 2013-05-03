@@ -65,8 +65,13 @@ public class GoogleUtils {
 		client.addHeader("Content-Type", "application/json");
 		client.addHeader("Accept", "application/json");
 
+		//test invalid token
+		authToken = authToken + "yabadadabadadoo";
+		
 		RequestParams params =  new RequestParams();
 		params.put("access_token", authToken);
+		
+
 
 		client.get("https://www.googleapis.com/oauth2/v1/userinfo", params, new OKJsonHttpResponseHandler() {
 
@@ -86,19 +91,19 @@ public class GoogleUtils {
 			@Override
 			public void onFailure(Throwable error, String content) {
 				googleRequestHandler.onFailure();	
-				OKLog.v( "Error: " + error + "content: " + content);
+				OKLog.v( "Error getting Google user info: " + error + "content: " + content);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
 				googleRequestHandler.onFailure();	
-				OKLog.v( "Error: " + e);
+				OKLog.v( "Error getting Google user info: " + e);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				googleRequestHandler.onFailure();	
-				OKLog.v( "Error: " + e);
+				OKLog.v( "Error getting Google user info: " + e);
 			}
 		});
 	}

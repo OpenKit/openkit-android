@@ -45,6 +45,10 @@
     <string name="io_openkit_userprofle">Profile</string>
     <string name="io_openkit_changeNick">Change Nickname</string>
     
+    <string name="io_openkit_googlePlayServicesError">Unfortunately, your device does not have or does not support the required version of Google Play. Please try logging with a different type of account.</string>
+    <string name="io_openkit_googleLoginError">Sorry, but there was an error logging in with Google. Please try again later or try a different account type.</string>
+    
+    
     <!-- Copy string resources from Facebook SDK -->
     
     <string name="com_facebook_dialogloginactivity_ok_button">OK</string>

@@ -148,22 +148,22 @@ public class OKUserUtilities
 			
 			@Override
 			public void onSuccess(JSONArray array) {
-				requestHandler.onFail(new Error("Request cameback as an array when expecting a object: " + array));
+				requestHandler.onFail(new Error("Error creating OKUser. Request cameback as an array when expecting a object: " + array));
 			}
 			
 			@Override
 			public void onFailure(Throwable error, String content) {
-				requestHandler.onFail(new Error("Error: " + error + " content: " + content));
+				requestHandler.onFail(new Error("Error creating OKUser: " + error + " content: " + content));
 			}
 			
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
-				requestHandler.onFail(new Error("Error: " + e + " JSON response: " + errorResponse));
+				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
 			}
 			
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
-				requestHandler.onFail(new Error("Error: " + e + " JSON response: " + errorResponse));
+				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
 			}
 		});
 	}

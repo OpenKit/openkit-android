@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentManager;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -134,11 +135,14 @@ public class OKLoginFragment extends DialogFragment
 			loginTextView.setText(loginTextResourceID);
 		}
 
-		//Only show the correct buttons
-		fbLoginButton.setVisibility(getButtonLayoutVisibility(fbLoginEnabled));
-		googleLoginButton.setVisibility(getButtonLayoutVisibility(googleLoginEnabled));
-		guestLoginButton.setVisibility(getButtonLayoutVisibility(guestLoginEnabled));
-		twitterLoginButton.setVisibility(getButtonLayoutVisibility(twitterLoginEnabled));
+		//Only set the Visibility of the buttons when creating the view for the first time
+		if(savedInstanceState == null) {
+			//Only show the correct buttons
+			fbLoginButton.setVisibility(getButtonLayoutVisibility(fbLoginEnabled));
+			googleLoginButton.setVisibility(getButtonLayoutVisibility(googleLoginEnabled));
+			guestLoginButton.setVisibility(getButtonLayoutVisibility(guestLoginEnabled));
+			twitterLoginButton.setVisibility(getButtonLayoutVisibility(twitterLoginEnabled));
+		}
 
 		fbLoginButton.setOnClickListener(fbLoginButtonClick);
 		googleLoginButton.setOnClickListener(googleLoginButtonClick);
@@ -210,16 +214,33 @@ public class OKLoginFragment extends DialogFragment
 				
 				@Override
 				public void onLoginFailedWithPlayException(
-						GooglePlayServicesAvailabilityException playEx) {
-					hideSpinner();
-					GoogleUtils.showGooglePlayServicesErrorDialog(OKLoginFragment.this.getActivity(), playEx.getConnectionStatusCode());
-					responseHandler.onLoginFailed();
+						final GooglePlayServicesAvailabilityException playEx) 
+				{
+					//Need to run this on UIthread becuase this may be called from a background thread and this shows an error dialog
+					OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							hideSpinner();
+							
+							int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googlePlayServicesError", "string", OKLoginFragment.this.getActivity().getPackageName());
+							String message = OKLoginFragment.this.getString(errorMessageId);
+							
+							showLoginErrorMessage(message);
+							
+							//Can't use helper method below to show error message because we don't include the resources from Google play services SDK
+							//GoogleUtils.showGooglePlayServicesErrorDialog(OKLoginFragment.this.getActivity(), playEx.getConnectionStatusCode());
+						}
+					});
+					
 				}
 				
 				@Override
 				public void onLoginFailed(Exception e) {
 					hideSpinner();
-					responseHandler.onLoginFailed();
+					int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
+					String message = OKLoginFragment.this.getString(errorMessageId);
+					showLoginErrorMessage(message);
 				}
 			});
 		}
@@ -484,16 +505,14 @@ public class OKLoginFragment extends DialogFragment
 		// Handle activity result for Facebook auth
 		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 	}
-	
-
-	
-	
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Session session = Session.getActiveSession();
 		Session.saveSession(session, outState);
+		//Store a boolean so that the bundle is not null in onCreateView when recreating the view
+		outState.putBoolean("view_created", true);
 	}
 
 
