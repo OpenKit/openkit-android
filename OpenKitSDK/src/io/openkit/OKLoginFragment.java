@@ -17,13 +17,17 @@
 package io.openkit;
 
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+
 import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
-
 import io.openkit.facebook.*;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -55,6 +59,8 @@ public class OKLoginFragment extends DialogFragment
 	private static boolean googleLoginEnabled = true;
 	private static boolean twitterLoginEnabled = false;
 	private static boolean guestLoginEnabled = false;
+	
+	private GoogleAuthRequest mGoogAuthRequest;
 
 	public static void setFbLoginEnabled(boolean enabled) {
 		fbLoginEnabled = enabled;
@@ -86,6 +92,8 @@ public class OKLoginFragment extends DialogFragment
 			getDialog().setDismissMessage(null);
 		super.onDestroyView();
 	}
+	
+	
 
 	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
 	{
@@ -160,10 +168,68 @@ public class OKLoginFragment extends DialogFragment
 
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
-
+			
+			mGoogAuthRequest = new GoogleAuthRequest(OKLoginFragment.this,getAccount());
+			
+			showSpinner();
+			
+			mGoogAuthRequest.loginWithGoogleAccount(new GoogleAuthRequestHandler() {
+				@Override
+				public void onUserCancelled() {
+					hideSpinner();
+					responseHandler.onLoginCancelled();
+				}
+				
+				@Override
+				public void onReceivedAuthToken(final String authToken) {
+					// Create the user from the UI thread because onReceivedAuthToken is called from a background thread
+					// and all OK network requests are performed on a background thread anyways
+					OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							GoogleUtils.createOKUserFromGoogle(authToken, new CreateOKUserRequestHandler() {
+								@Override
+								public void onSuccess(OKUser user) {
+									OKLog.v("Correct callback is called");
+									hideSpinner();
+									OKLog.v("Created OKUser successfully!");
+									OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
+									responseHandler.onLoginSucceeded();
+								}
+								
+								@Override
+								public void onFail(Error error) {
+									hideSpinner();
+									responseHandler.onLoginFailed();
+								}
+							});
+						}
+					});
+				}
+				
+				@Override
+				public void onLoginFailedWithPlayException(
+						GooglePlayServicesAvailabilityException playEx) {
+					hideSpinner();
+					GoogleUtils.showGooglePlayServicesErrorDialog(OKLoginFragment.this.getActivity(), playEx.getConnectionStatusCode());
+					responseHandler.onLoginFailed();
+				}
+				
+				@Override
+				public void onLoginFailed(Exception e) {
+					hideSpinner();
+					responseHandler.onLoginFailed();
+				}
+			});
 		}
 	};
+	
+	private Account getAccount() {
+		AccountManager account = AccountManager.get(getActivity());
+		Account[] accounts = account.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+		return accounts[0];
+	}
 
 	private View.OnClickListener fbLoginButtonClick = new View.OnClickListener() {
 		@Override
@@ -260,7 +326,7 @@ public class OKLoginFragment extends DialogFragment
 	 */
 	private void authorizeFBUserWithOpenKit()
 	{
-		FacebookUtilities.AuthorizeUserWithFacebook(new CreateOKUserRequestHandler() {
+		FacebookUtilities.CreateOKUserFromFacebook(new CreateOKUserRequestHandler() {
 
 			@Override
 			public void onSuccess(OKUser user) {
@@ -405,10 +471,23 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
+		// Handle activity result for Google auth
+		if (requestCode == GoogleAuthRequest.REQUEST_CODE_RECOVER_FROM_AUTH_ERROR) {
+			if(mGoogAuthRequest != null) {
+				mGoogAuthRequest.handleGoogleAuthorizeResult(resultCode, data);
+			}
+			return;
+		}
 		super.onActivityResult(requestCode, resultCode, data);
+		// Handle activity result for Facebook auth
 		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 	}
+	
+
+	
+	
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

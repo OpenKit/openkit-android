@@ -38,7 +38,7 @@ public class FacebookUtilities
 	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
 	 * @param requestHandler
 	 */
-	public static void AuthorizeUserWithFacebook(final CreateOKUserRequestHandler requestHandler)
+	public static void CreateOKUserFromFacebook(final CreateOKUserRequestHandler requestHandler)
 	{
 		Session session = Session.getActiveSession();
 		

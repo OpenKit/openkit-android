@@ -1,11 +1,14 @@
 package io.openkit.user;
 
 
+import io.openkit.OKLog;
 import io.openkit.asynchttp.AsyncHttpClient;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import io.openkit.asynchttp.RequestParams;
+import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -16,17 +19,11 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.util.Log;
 
 public class GoogleUtils {
 
-	private static final String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
+	public static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
 
-	static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
-
-	private static void logit(String message){
-		Log.d("OKC", message);
-	}
 
 	public static String[] getGoogleAccountNames(Context ctx) 
 	{
@@ -56,8 +53,13 @@ public class GoogleUtils {
 			}
 		});
 	}
+	
+	public static abstract class GetGoogleUserInfoRequestHandler {
+		public abstract void onSuccess(JSONObject userinfo);
+		public abstract void onFailure();
+	}
 
-	public static void getGoogleUserInfo(String authToken)
+	public static void getGoogleUserInfo(String authToken, final GetGoogleUserInfoRequestHandler googleRequestHandler)
 	{
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-Type", "application/json");
@@ -70,28 +72,67 @@ public class GoogleUtils {
 
 			@Override
 			public void onSuccess(JSONObject object) {
-				// TODO Auto-generated method stub
-				logit( "Got json object: " + object);
+				googleRequestHandler.onSuccess(object);
+				OKLog.v("Successfully got Google user info");
 			}
 
 			@Override
 			public void onSuccess(JSONArray array) {
-				logit( "Got json array: " + array);				
+				// Not expecting an Array object
+				OKLog.v("Got a JSON Array when expecting a JSON object while getting Google user info");
+				googleRequestHandler.onFailure();		
 			}
 
 			@Override
 			public void onFailure(Throwable error, String content) {
-				logit( "Error: " + error + "content: " + content);
+				googleRequestHandler.onFailure();	
+				OKLog.v( "Error: " + error + "content: " + content);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
-				logit( "Error: " + e);
+				googleRequestHandler.onFailure();	
+				OKLog.v( "Error: " + e);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
-				logit( "Error: " + e);
+				googleRequestHandler.onFailure();	
+				OKLog.v( "Error: " + e);
+			}
+		});
+	}
+	
+	public static void createOKUserFromGoogle(String googleAuthToken, final CreateOKUserRequestHandler requestHandler)
+	{
+		getGoogleUserInfo(googleAuthToken, new GetGoogleUserInfoRequestHandler() {
+			
+			@Override
+			public void onSuccess(JSONObject userinfo) {
+				
+				String googleID, userNick;
+				// Parse the user info and then create the OKUser
+				try {
+					//If the google account doesn't return an ID then we fail
+					googleID = userinfo.getString("id");
+				} catch (JSONException e) {
+					requestHandler.onFail(new Error("Google user info request did not return a user ID"));
+					return;
+				}
+				
+				try {
+					userNick = userinfo.getString("name");
+				} catch (JSONException e) {
+					//If the google account doesn't return a name we just give them a nickname
+					userNick = "Enter a name";
+				}
+				
+				OKUserUtilities.createOKUser(OKUserIDType.GoogleID, googleID, userNick, requestHandler);
+			}
+			
+			@Override
+			public void onFailure() {
+				requestHandler.onFail(new Error("Getting Google user info failed"));
 			}
 		});
 	}
