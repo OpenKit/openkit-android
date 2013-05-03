@@ -95,7 +95,6 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 
-
 	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
 	{
 		responseHandler = handler;
@@ -167,7 +166,6 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 
-
 	private View.OnClickListener googleLoginButtonClick = new View.OnClickListener() {
 
 		@Override
@@ -177,7 +175,7 @@ public class OKLoginFragment extends DialogFragment
 			Account[] googAccounts = GoogleUtils.getGoogleAccounts(OKLoginFragment.this.getActivity());
 
 			if(googAccounts.length == 0) {
-				showLoginErrorMessageFromStringIdentifierName("io_openkit_OKLoginError");
+				showLoginErrorMessageFromStringIdentifierName("io_openkit_googleNoAccts");
 			}
 			else if(googAccounts.length == 1) {
 				performGoogleAuth(googAccounts[0]);
@@ -199,7 +197,6 @@ public class OKLoginFragment extends DialogFragment
 
 		}
 	};
-
 
 	private void performGoogleAuth(Account account)
 	{
@@ -277,7 +274,6 @@ public class OKLoginFragment extends DialogFragment
 		});
 	}
 
-
 	private View.OnClickListener fbLoginButtonClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -317,10 +313,6 @@ public class OKLoginFragment extends DialogFragment
 			button.setVisibility(View.INVISIBLE);
 		}
 	}
-
-
-
-
 
 	private void showSpinner()
 	{
@@ -451,8 +443,6 @@ public class OKLoginFragment extends DialogFragment
 
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
 	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
-
-
 
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
