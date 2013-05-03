@@ -26,8 +26,6 @@ import android.support.v4.app.FragmentManager;
 
 public class OKLoginActivity extends FragmentActivity
 {
-	
-	
 	private OKLoginFragment loginDialog;
 	private OKLoginUpdateNickFragment updateNickDialog;
 	

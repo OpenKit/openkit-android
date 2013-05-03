@@ -1,5 +1,4 @@
-<!-- 
-
+<!--
 	Copyright 2012 OpenKit
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,130 +12,129 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
 
- -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="20dip"
-    android:paddingRight="20dip"
-    android:paddingBottom="20dip"
-    android:paddingLeft="20dip"
-    android:background="@color/io_openkit_white"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/io_openkit_loginTitleTextView"
-        style="@style/OKLoginText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:text="@string/io_openkit_login_text" />
-    
-    <TextView
-        android:id="@+id/io_openkit_loginSubTitleTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:text="@string/io_openkit_login_subtext" />
-
-    <Button
-	     android:layout_height="wrap_content"
-	     android:layout_width="match_parent"
-	     android:layout_marginTop="15dip"
-	     android:layout_marginBottom="10dip"
-	     android:paddingTop="12dip"
-	     android:paddingBottom="12dip"
-	     android:background="@drawable/io_openkit_google_button"
-	     android:textColor="@color/io_openkit_white"
-	     android:textStyle="bold"
-	     android:shadowColor="@color/io_openkit_google_shadow"
-	     android:shadowRadius="0.1"
-	     android:shadowDy="2"
-	     android:shadowDx="0"
-	     android:text="@string/io_openkit_google_signin" />
-    
-    <Button
-         android:id="@+id/io_openkit_fbSignInButton"
-	     android:layout_height="wrap_content"
-	     android:layout_width="match_parent"
-	     android:layout_marginTop="0dip"
-	     android:layout_marginBottom="10dip"
-	     android:paddingTop="12dip"
-	     android:paddingBottom="12dip"
-	     android:background="@drawable/io_openkit_facebook_button"
-	     android:textColor="@color/io_openkit_white"
-	     android:textStyle="bold"
-	     android:shadowColor="@color/io_openkit_facebook_shadow"
-	     android:shadowRadius="0.1"
-	     android:shadowDy="2"
-	     android:shadowDx="0"
-	     android:text="@string/io_openkit_facebook_signin" />
-    
-    <Button
-	     android:layout_height="wrap_content"
-	     android:layout_width="match_parent"
-	     android:layout_marginTop="0dip"
-	     android:layout_marginBottom="10dip"
-	     android:paddingTop="12dip"
-	     android:paddingBottom="12dip"
-	     android:background="@drawable/io_openkit_twitter_button"
-	     android:textColor="@color/io_openkit_white"
-	     android:textStyle="bold"
-	     android:shadowColor="@color/io_openkit_twitter_shadow"
-	     android:shadowRadius="0.1"
-	     android:shadowDy="2"
-	     android:shadowDx="0"
-	     android:text="@string/io_openkit_twitter_signin" />
-    
-    <Button
-	     android:layout_height="wrap_content"
-	     android:layout_width="match_parent"
-	     android:layout_marginTop="0dip"
-	     android:layout_marginBottom="0dip"
-	     android:paddingTop="12dip"
-	     android:paddingBottom="12dip"
-	     android:background="@drawable/io_openkit_guest_button"
-	     android:textColor="@color/io_openkit_white"
-	     android:textStyle="bold"
-	     android:shadowColor="@color/io_openkit_guest_shadow"
-	     android:shadowRadius="0.1"
-	     android:shadowDy="2"
-	     android:shadowDx="0"
-	     android:text="@string/io_openkit_guest_signin" />
-    
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" 
-        android:layout_marginTop="20dip" >
+        android:background="@color/io_openkit_white"
+        android:orientation="vertical"
+        android:paddingBottom="20dip"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:paddingTop="20dip" >
+
+        <TextView
+            android:id="@+id/io_openkit_loginTitleTextView"
+            style="@style/OKLoginText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/io_openkit_login_text"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/io_openkit_loginSubTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/io_openkit_login_subtext"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/io_openkit_googleSignInButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="15dip"
+            android:background="@drawable/io_openkit_google_button"
+            android:paddingBottom="12dip"
+            android:paddingTop="12dip"
+            android:shadowColor="@color/io_openkit_google_shadow"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="0.1"
+            android:text="@string/io_openkit_google_signin"
+            android:textColor="@color/io_openkit_white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/io_openkit_fbSignInButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="0dip"
+            android:background="@drawable/io_openkit_facebook_button"
+            android:paddingBottom="12dip"
+            android:paddingTop="12dip"
+            android:shadowColor="@color/io_openkit_facebook_shadow"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="0.1"
+            android:text="@string/io_openkit_facebook_signin"
+            android:textColor="@color/io_openkit_white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/io_openkit_twitterSignInButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="0dip"
+            android:background="@drawable/io_openkit_twitter_button"
+            android:paddingBottom="12dip"
+            android:paddingTop="12dip"
+            android:shadowColor="@color/io_openkit_twitter_shadow"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="0.1"
+            android:text="@string/io_openkit_twitter_signin"
+            android:textColor="@color/io_openkit_white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/io_openkit_guestSignInButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dip"
+            android:layout_marginTop="0dip"
+            android:background="@drawable/io_openkit_guest_button"
+            android:paddingBottom="12dip"
+            android:paddingTop="12dip"
+            android:shadowColor="@color/io_openkit_guest_shadow"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="0.1"
+            android:text="@string/io_openkit_guest_signin"
+            android:textColor="@color/io_openkit_white"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/io_openkit_dontSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@drawable/io_openkit_dismiss_button"
+            android:paddingBottom="12dip"
             android:paddingTop="12dip"
-	     	android:paddingBottom="12dip"
-	    	android:background="@drawable/io_openkit_dismiss_button"
-	    	android:textColor="@color/io_openkit_gray"
-	    	android:textStyle="bold"
-            android:text="@string/io_openkit_dont_sign_in" />
+            android:text="@string/io_openkit_dont_sign_in"
+            android:textColor="@color/io_openkit_gray"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/io_openkit_spinner"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:indeterminate="true"
-            android:indeterminateOnly="true"
-            android:visibility="invisible" />
+    <ProgressBar
+        android:id="@+id/io_openkit_spinner"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        android:visibility="invisible" />
 
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>
