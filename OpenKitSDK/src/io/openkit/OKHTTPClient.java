@@ -35,7 +35,7 @@ public class OKHTTPClient {
 		return asyncClient;
 	}
 	
-	private static String BASE_URL = "http://stage.openkit.io/";
+	private static String BASE_URL = "http://10.0.1.24:3000/";
 		
 	private static AsyncHttpClient client = initializeClient();
 	

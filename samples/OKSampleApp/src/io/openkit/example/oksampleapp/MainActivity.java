@@ -17,6 +17,10 @@ package io.openkit.example.oksampleapp;
 
 
 
+import java.util.List;
+
+import org.json.JSONObject;
+
 import io.openkit.facebook.widget.ProfilePictureView;
 
 import io.openkit.*;
@@ -29,6 +33,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -175,8 +180,25 @@ public class MainActivity extends Activity {
 	private View.OnClickListener showOKLeaderboards = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
-			startActivity(launchOKLeaderboards);
+			
+			//Get the leaderboards
+			OKAchievement.getAchievements(new OKAchievementsListResponseHandler() {
+
+				@Override
+				public void onSuccess(List<OKAchievement> achievementsList) {
+					OKLog.d("Got a list of achievements!");
+					OKAchievement ach = achievementsList.get(0);
+					OKLog.d("Progress of first achievement is " + ach.getProgress());
+				}
+
+				@Override
+				public void onFailure(Throwable e, JSONObject errorResponse) {
+					OKLog.d("Shiiiit.");
+				}
+			});
+			
+//			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
+//			startActivity(launchOKLeaderboards);
 		}
 	};
 	
@@ -187,8 +209,25 @@ public class MainActivity extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
-			startActivity(launchCloudDemo);
+			
+			OKAchievementScore achievementScore = new OKAchievementScore();
+			achievementScore.setProgress(3);
+			achievementScore.setOKAchievementId(1);
+			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
+				@Override
+				public void onSuccess() {
+					OKLog.d("Submitted an achievement score!");
+				}
+				
+				@Override
+				public void onFailure(Throwable error) {
+					OKLog.d("Shiiiiit.");
+				}
+			});
+			
+			
+//			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
+//			startActivity(launchCloudDemo);
 		}
 	};
 	
