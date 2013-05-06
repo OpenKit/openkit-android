@@ -4,7 +4,7 @@
    <!-- pressed -->
     <item android:state_pressed="true">
 	    <shape>
-	    <solid android:color="@color/dismiss_pressed"/>
+	    <solid android:color="@color/io_openkit_dismiss_pressed"/>
 	    <corners android:radius="3dp"/>
 	    </shape>
     </item>
@@ -12,7 +12,7 @@
     <!-- focused -->
     <item android:state_focused="true">
         <shape>
-	    <solid android:color="@color/dismiss_focused"/>
+	    <solid android:color="@color/io_openkit_dismiss_focused"/>
 	    <corners android:radius="3dp"/>
 	    </shape>
     </item> 
@@ -20,7 +20,7 @@
 	<!-- hovered -->
     <item android:state_hovered="true">
         <shape>
-	    <solid android:color="@color/dismiss_hovered"/>
+	    <solid android:color="@color/io_openkit_dismiss_hovered"/>
 	    <corners android:radius="3dp"/>
 	    </shape>
 	</item>
@@ -28,7 +28,7 @@
     <!-- default -->
     <item>
         <shape>
-	    <solid android:color="@color/dismiss_default"/>
+	    <solid android:color="@color/io_openkit_dismiss_default"/>
 	    <corners android:radius="3dp"/>
 	    </shape>
     </item> 

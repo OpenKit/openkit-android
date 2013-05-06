@@ -19,7 +19,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/io_openkit_leaderboards_bgcolor"
+    android:background="@android:color/white"
     android:orientation="vertical"
     android:padding="6dp" >
 
@@ -58,8 +58,11 @@
                 style="@style/OKHeadingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="3dp" />
+                android:padding="3dp" 
+                android:textIsSelectable="false" />
+            
         </LinearLayout>
+    
     </LinearLayout>
 
     <Button

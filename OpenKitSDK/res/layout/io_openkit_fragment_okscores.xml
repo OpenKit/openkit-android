@@ -19,7 +19,8 @@
  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@android:color/white" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -28,32 +29,27 @@
         android:orientation="horizontal" >
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_todayButton"
             style="@style/TabButton"
             android:text="@string/io_openkit_leaderboards_today" />
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_thisWeekButton"
             android:text="@string/io_openkit_leaderboards_thisWeek"
             style="@style/TabButton"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
             android:id="@+id/io_openkit_leaderboards_allTimeButton"
             android:text="@string/io_openkit_leaderboards_alltime" 
             style="@style/TabButton" />
+        
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="8dp" >
+        android:theme="@style/OKActivityTheme" >
 
         <ListView
             android:id="@android:id/list"
@@ -74,6 +70,7 @@
             android:indeterminateOnly="true"
             android:visibility="invisible" >
         </ProgressBar>
+        
     </RelativeLayout>
 
 </LinearLayout>

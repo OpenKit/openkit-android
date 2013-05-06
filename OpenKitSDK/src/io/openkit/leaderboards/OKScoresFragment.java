@@ -433,7 +433,7 @@ public class OKScoresFragment extends ListFragment
 	
 	private void setButtonAsSelected(Button button)
 	{
-		int backgroundID = getResources().getIdentifier("tab_active", "drawable", getActivity().getPackageName());
+		int backgroundID = getResources().getIdentifier("io_openkit_tabbutton_selected", "drawable", getActivity().getPackageName());
 		button.setBackgroundResource(backgroundID);
 	}
 	
