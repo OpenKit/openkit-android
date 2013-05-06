@@ -22,12 +22,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:icon="@drawable/io_openkit_profile"
+        android:icon="@drawable/io_openkit_leaderboards"
         android:title="@string/io_openkit_profile"
         android:showAsAction="always" />
     
     <item
-        android:icon="@drawable/io_openkit_profile"
+        android:icon="@drawable/io_openkit_achievements"
         android:title="@string/io_openkit_profile"
         android:showAsAction="always" />
     

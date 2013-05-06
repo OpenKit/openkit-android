@@ -30,13 +30,12 @@
         android:paddingBottom="10dp"
         android:paddingLeft="5dp"
         android:textStyle="bold" 
-        android:textIsSelectable="false" />     
-	
-    <!-- 
-    <View 
-    	android:id="@+id/line"
+        android:textIsSelectable="false" />    
+         
+	<View
+	    android:id="@+id/line"
     	android:layout_width="fill_parent"
-    	android:layout_height="1dp" />
-	 -->
+    	android:layout_height="1dp"
+    	android:background="@color/io_openkit_light_gray"/>
 
 </LinearLayout>
