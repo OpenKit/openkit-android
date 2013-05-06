@@ -34,6 +34,8 @@
     <string name="level1button">Submit a Score to Level 1</string>
     <string name="level2button">Submit a Score to Level 2</string>
     <string name="level3button">Submit a Score to Level 3</string>
+    <string name="submitAchievement">Submit Achievement Progress</string>
+    <string name="showAchivement">Show Achievements</string>
     
 
     <!-- app_id is the Facebook APP ID. This is required by the Facebook SDK -->

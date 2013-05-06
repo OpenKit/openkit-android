@@ -31,11 +31,11 @@ public class OKHTTPClient {
 		AsyncHttpClient asyncClient = new AsyncHttpClient();
 		asyncClient.addHeader("Content-Type", "application/json");
 		asyncClient.addHeader("Accept", "application/json");
-		asyncClient.setTimeout(6000);
+		asyncClient.setTimeout(10000);
 		return asyncClient;
 	}
 	
-	private static String BASE_URL = "http://10.0.1.24:3000/";
+	private static String BASE_URL = "http://stage.openkit.io/";
 		
 	private static AsyncHttpClient client = initializeClient();
 	
