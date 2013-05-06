@@ -17,6 +17,10 @@ package io.openkit.example.oksampleapp;
 
 
 
+import java.util.List;
+
+import org.json.JSONObject;
+
 import io.openkit.facebook.widget.ProfilePictureView;
 
 import io.openkit.*;
@@ -29,6 +33,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -38,6 +43,7 @@ public class MainActivity extends Activity {
 	private Button submitScoresButton;
 	private Button cloudDataButton;
 	private Button logoutButton;
+	private Button submitAchievementButton, showAchievementsButton;
 	
 	private ProfilePictureView profilePictureView;
 	
@@ -49,6 +55,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		OpenKit.setEndpoint("http://10.0.1.21:3000");
 		OpenKit.initialize(this,"VwfMRAl5Gc4tirjw");
 		
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
@@ -59,11 +66,17 @@ public class MainActivity extends Activity {
 		profilePictureView = (ProfilePictureView)findViewById(R.id.fbProfilePicView);
 		userNameTextView = (TextView)findViewById(R.id.userNameTextView);
 		
+		submitAchievementButton = (Button)findViewById(R.id.submitAchievementButton);
+		showAchievementsButton = (Button)findViewById(R.id.showAchievementsButton);
+		
 		loginToOpenKitButton.setOnClickListener(loginToOpenKitClickedClickListener);
 		showLeaderboardsButton.setOnClickListener(showOKLeaderboards);
 		submitScoresButton.setOnClickListener(submitScore);
 		cloudDataButton.setOnClickListener(cloudDataDemoClickListener);
 		logoutButton.setOnClickListener(logoutOfOpenKit);
+		
+		submitAchievementButton.setOnClickListener(submitAchievementProgress);
+		showAchievementsButton.setOnClickListener(showAchievements);
 		
 		//Update the view with the current user
 		updateView();
@@ -80,7 +93,7 @@ public class MainActivity extends Activity {
 			OKUser currentUser = OpenKit.getCurrentUser();
 			
 			//Hide the login button
-			loginToOpenKitButton.setVisibility(View.INVISIBLE);
+			loginToOpenKitButton.setVisibility(View.GONE);
 			logoutButton.setVisibility(View.VISIBLE);
 			
 			//Show the user's profile pic and nickname
@@ -93,7 +106,7 @@ public class MainActivity extends Activity {
 		}
 		else {
 			//Show the login button
-			loginToOpenKitButton.setVisibility(View.VISIBLE);
+			loginToOpenKitButton.setVisibility(View.GONE);
 			logoutButton.setVisibility(View.INVISIBLE);
 			
 			//Not signed in
@@ -175,10 +188,61 @@ public class MainActivity extends Activity {
 	private View.OnClickListener showOKLeaderboards = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			
+			//Get the leaderboards
 			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
 			startActivity(launchOKLeaderboards);
 		}
 	};
+	
+	
+	/**
+	 * Submit achievement progress to achievement
+	 */
+	private View.OnClickListener submitAchievementProgress = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			OKAchievementScore achievementScore = new OKAchievementScore();
+			achievementScore.setProgress(3);
+			achievementScore.setOKAchievementId(1);
+			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
+				@Override
+				public void onSuccess() {
+					OKLog.d("Submitted an achievement score!");
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					OKLog.d("Failed to submit achievement score.");
+				}
+			});
+		}
+	};
+	
+	private View.OnClickListener showAchievements = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			//Get the leaderboards
+			OKAchievement.getAchievements(new OKAchievementsListResponseHandler() {
+
+				@Override
+				public void onSuccess(List<OKAchievement> achievementsList) {
+					OKLog.d("Got a list of achievements!");
+					OKAchievement ach = achievementsList.get(0);
+					OKLog.d("Progress of first achievement is " + ach.getProgress());
+				}
+
+				@Override
+				public void onFailure(Throwable e, JSONObject errorResponse) {
+					OKLog.d("Failed to get list of achievements: " + errorResponse);
+				}
+			});
+			
+		}
+	};
+	
 	
 	/**
 	 * Launch the cloud storage demo activity
@@ -187,6 +251,7 @@ public class MainActivity extends Activity {
 		
 		@Override
 		public void onClick(View v) {
+			
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
 		}
