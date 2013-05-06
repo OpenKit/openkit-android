@@ -24,7 +24,7 @@ public class GoogleAuthRequest {
 	private GoogleAuthRequestHandler mRequestHandler;
 	private Fragment mFragment;
 	private Account mAccount;
-	private String mAuthToken;
+	//private String mAuthToken;
 
 	public GoogleAuthRequest(Fragment callingFragment, Account accountToLoginWith) {
 		mFragment = callingFragment;
@@ -88,7 +88,7 @@ public class GoogleAuthRequest {
 	{
 		try {
 			String authToken = GoogleAuthUtil.getToken(mFragment.getActivity(), mAccount.name, SCOPE);
-			mAuthToken = authToken;
+			//mAuthToken = authToken;
 			OKLog.v( "GoogleLogin: got auth token");
 			requestHandler.onReceivedAuthToken(authToken);
 		} catch (GooglePlayServicesAvailabilityException playEx) {
