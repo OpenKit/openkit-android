@@ -21,7 +21,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/io_openkit_white"
+        android:background="@android:color/white"
         android:orientation="vertical"
         android:paddingBottom="20dip"
         android:paddingLeft="20dip"
@@ -59,7 +59,7 @@
             android:shadowDy="2"
             android:shadowRadius="0.1"
             android:text="@string/io_openkit_google_signin"
-            android:textColor="@color/io_openkit_white"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
@@ -76,7 +76,7 @@
             android:shadowDy="2"
             android:shadowRadius="0.1"
             android:text="@string/io_openkit_facebook_signin"
-            android:textColor="@color/io_openkit_white"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
@@ -93,7 +93,7 @@
             android:shadowDy="2"
             android:shadowRadius="0.1"
             android:text="@string/io_openkit_twitter_signin"
-            android:textColor="@color/io_openkit_white"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
@@ -110,7 +110,7 @@
             android:shadowDy="2"
             android:shadowRadius="0.1"
             android:text="@string/io_openkit_guest_signin"
-            android:textColor="@color/io_openkit_white"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
