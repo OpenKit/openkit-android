@@ -118,8 +118,7 @@ public class OKUserUtilities
 				jsonParams.put("fb_id", userID);
 				break;
 			case GoogleID:
-				//TODO haven't created google ID field server side yet
-				jsonParams.put("custom_id", userID);
+				jsonParams.put("google_id", userID);
 				break;
 			case TwitterID:
 				jsonParams.put("twitter_id", userID);
