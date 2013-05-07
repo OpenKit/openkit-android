@@ -31,7 +31,7 @@ public class OKHTTPClient {
 		AsyncHttpClient asyncClient = new AsyncHttpClient();
 		asyncClient.addHeader("Content-Type", "application/json");
 		asyncClient.addHeader("Accept", "application/json");
-		asyncClient.setTimeout(6000);
+		asyncClient.setTimeout(10000);
 		return asyncClient;
 	}
 	
