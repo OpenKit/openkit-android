@@ -1,6 +1,5 @@
 <resources>
-    
-
+   
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -45,6 +44,15 @@
         <item name="android:textColor">@color/io_openkit_gray</item>
         <item name="android:typeface">sans</item>
     </style>
+    
+  <style name="Theme.Transparent" parent="android:Theme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:backgroundDimEnabled">true</item>
+  </style>
     
      <!-- Copy styles from Facebook SDK -->
     <color name="com_facebook_blue">#3B5998</color>

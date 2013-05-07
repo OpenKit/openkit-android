@@ -105,8 +105,8 @@ public class MainActivity extends Activity {
 		}
 		else {
 			//Show the login button
-			loginToOpenKitButton.setVisibility(View.GONE);
-			logoutButton.setVisibility(View.INVISIBLE);
+			loginToOpenKitButton.setVisibility(View.VISIBLE);
+			logoutButton.setVisibility(View.GONE);
 			
 			//Not signed in
 			userNameTextView.setText(R.string.notLoginString);
