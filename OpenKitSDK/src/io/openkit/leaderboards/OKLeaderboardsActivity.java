@@ -18,8 +18,6 @@ package io.openkit.leaderboards;
 
 import io.openkit.*;
 import io.openkit.user.OKUserProfileActivity;
-import android.R.bool;
-import android.R.string;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -30,7 +28,7 @@ import android.support.v4.app.FragmentActivity;
 public class OKLeaderboardsActivity extends FragmentActivity {
 	
 	private OKLeaderboardsFragment leaderboardsFragment;
-	private OKLeaderboardsFragment achievementsFragment;
+	private OKAchievementsFragment achievementsFragment;
 	
 	private int leaderboardTitleID;
 	private int achievementsTitleID;
@@ -117,7 +115,7 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 		OKLog.d("Show achievements list");
 		
 		if(achievementsFragment == null) {
-			achievementsFragment = new OKLeaderboardsFragment();
+			achievementsFragment = new OKAchievementsFragment();
 		}
 		
 		if(!achievementsFragment.isVisible()) {

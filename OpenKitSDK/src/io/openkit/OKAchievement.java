@@ -40,6 +40,7 @@ public class OKAchievement implements Parcelable{
 	private int points;
 	private int goal;
 	private int progress;
+	private String description;
 	
 	
 	public void writeToParcel(Parcel out, int flags)
@@ -62,6 +63,8 @@ public class OKAchievement implements Parcelable{
 		out.writeInt(goal);
 		//private int progress;
 		out.writeInt(progress);
+		//private String description
+		out.writeString(description);
 	}
 	
 	private OKAchievement(Parcel in)
@@ -84,6 +87,8 @@ public class OKAchievement implements Parcelable{
 		goal = in.readInt();
 		//private int progress;
 		progress = in.readInt();
+		//private String description
+		description = in.readString();
 	}
 	
 	private static int boolToInt(boolean a)
@@ -210,6 +215,11 @@ public class OKAchievement implements Parcelable{
 		return Integer.toString(progress);
 	}
 	
+	public String getDescription()
+	{
+		return description;
+	}
+	
 	
 	private void initFromJSON(JSONObject leaderboardJSON)
 	{
@@ -223,6 +233,7 @@ public class OKAchievement implements Parcelable{
 			this.points = leaderboardJSON.getInt("points");
 			this.goal = leaderboardJSON.getInt("goal");
 			this.progress = leaderboardJSON.getInt("progress");
+			this.description = leaderboardJSON.getString("desc");
 		}
 		catch(JSONException e){
 			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
