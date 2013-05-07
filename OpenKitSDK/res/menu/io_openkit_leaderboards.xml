@@ -22,11 +22,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/io_openkit_menu_leaderboardsButton"
         android:icon="@drawable/io_openkit_leaderboards"
         android:title="@string/io_openkit_profile"
         android:showAsAction="always" />
     
     <item
+        android:id="@+id/io_openkit_menu_achievementsButton"
         android:icon="@drawable/io_openkit_achievements"
         android:title="@string/io_openkit_profile"
         android:showAsAction="always" />

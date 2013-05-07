@@ -41,6 +41,8 @@ public class OKLeaderboardsFragment extends ListFragment {
 	
 	private boolean startedLeaderboardsRequest;
 	
+	private int numPlayers;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -71,6 +73,8 @@ public class OKLeaderboardsFragment extends ListFragment {
 		listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewID);
 		listView.addHeaderView(listHeaderView);
 		
+		listHeaderTextView.setText(numPlayers + " Players");
+		
 		//Only do this the first time when fragment is created
 		if(!startedLeaderboardsRequest) {
 			getLeaderboards();
@@ -82,6 +86,8 @@ public class OKLeaderboardsFragment extends ListFragment {
 				startActivity(launchLogin);
 			}
 		}
+		
+		OKLog.v("On create view leaderboards");
 		
 		return view;
 	}
@@ -100,8 +106,10 @@ public class OKLeaderboardsFragment extends ListFragment {
 				listAdapter = new OKLeaderboardsListAdapter(OKLeaderboardsFragment.this.getActivity(), 
 						android.R.layout.simple_list_item_1, leaderboardList);
 
+				numPlayers = playerCount;
+				
 				//Add a header to the list. Must be done before setting list adapter
-				listHeaderTextView.setText(playerCount + " Players");
+				listHeaderTextView.setText(numPlayers + " Players");
 
 				//Display the list
 				OKLeaderboardsFragment.this.setListAdapter(listAdapter);

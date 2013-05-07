@@ -37,6 +37,7 @@
 	<string name="io_openkit_continue">Continue</string>
     
     <string name="io_openkit_title_leaderboards">Leaderboards</string>
+    <string name="io_openkit_title_achievements">Achievements</string>
     <string name="io_openkit_leaderboards_alltime">ALL TIME</string>
     <string name="io_openkit_leaderboards_thisWeek">THIS WEEK</string>
     <string name="io_openkit_leaderboards_today">TODAY</string>
