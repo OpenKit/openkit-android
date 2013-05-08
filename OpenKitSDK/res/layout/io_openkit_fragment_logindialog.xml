@@ -43,87 +43,66 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/io_openkit_login_subtext"
+            android:textColor="@color/io_openkit_gray"
             android:textAlignment="center" />
 
         <Button
             android:id="@+id/io_openkit_googleSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OKLoginButton"
             android:layout_marginBottom="10dip"
             android:layout_marginTop="15dip"
             android:background="@drawable/io_openkit_google_button"
-            android:paddingBottom="12dip"
-            android:paddingTop="12dip"
             android:shadowColor="@color/io_openkit_google_shadow"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="0.1"
             android:text="@string/io_openkit_google_signin"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/io_openkit_fbSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OKLoginButton"
             android:layout_marginBottom="10dip"
             android:layout_marginTop="0dip"
             android:background="@drawable/io_openkit_facebook_button"
-            android:paddingBottom="12dip"
-            android:paddingTop="12dip"
             android:shadowColor="@color/io_openkit_facebook_shadow"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="0.1"
             android:text="@string/io_openkit_facebook_signin"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/io_openkit_twitterSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OKLoginButton"
             android:layout_marginBottom="10dip"
             android:layout_marginTop="0dip"
             android:background="@drawable/io_openkit_twitter_button"
-            android:paddingBottom="12dip"
-            android:paddingTop="12dip"
             android:shadowColor="@color/io_openkit_twitter_shadow"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="0.1"
             android:text="@string/io_openkit_twitter_signin"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/io_openkit_guestSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OKLoginButton"
             android:layout_marginBottom="20dip"
             android:layout_marginTop="0dip"
             android:background="@drawable/io_openkit_guest_button"
-            android:paddingBottom="12dip"
-            android:paddingTop="12dip"
             android:shadowColor="@color/io_openkit_guest_shadow"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="0.1"
             android:text="@string/io_openkit_guest_signin"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/io_openkit_dontSignInButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OKLoginButton"
             android:layout_gravity="center"
             android:background="@drawable/io_openkit_dismiss_button"
-            android:paddingBottom="12dip"
-            android:paddingTop="12dip"
             android:text="@string/io_openkit_dont_sign_in"
-            android:textColor="@color/io_openkit_gray"
-            android:textStyle="bold" />
+            android:textColor="@color/io_openkit_gray" />
     </LinearLayout>
 
     <ProgressBar
