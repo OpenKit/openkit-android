@@ -19,7 +19,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:orientation="horizontal" >
+    android:orientation="horizontal" 
+    android:gravity="center_vertical" >
 
     <io.openkit.smartimageview.SmartImageView
         android:id="@+id/smartImageView"
@@ -32,10 +33,11 @@
         android:paddingTop="5dip" />
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/text1"
@@ -51,13 +53,14 @@
             android:textColor="@color/io_openkit_gray"
             android:textIsSelectable="false"
             android:textSize="12sp" />
-
-        <ProgressBar
-            android:id="@+id/io_openkit_achievement_progress"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="5dip"
-            android:layout_margin="5dip" />
+        
     </LinearLayout>
 
+    <ProgressBar
+		android:id="@+id/io_openkit_achievement_progress"
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:layout_width="150dp"
+		android:layout_height="5dip"
+		android:layout_margin="5dip" />
+    
 </LinearLayout>
