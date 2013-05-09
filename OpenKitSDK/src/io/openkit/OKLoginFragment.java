@@ -24,7 +24,6 @@ import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 import io.openkit.facebook.*;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -51,12 +50,14 @@ public class OKLoginFragment extends DialogFragment
 	private TextView loginTextView;
 	private boolean fbLoginButtonClicked = false;
 
-	private static OKLoginFragmentResponseHandler responseHandler;
-
 	private static boolean fbLoginEnabled = true;
 	private static boolean googleLoginEnabled = true;
 	private static boolean twitterLoginEnabled = false;
 	private static boolean guestLoginEnabled = false;
+	
+	private boolean isShowingSpinner = false;
+	
+	private OKLoginFragmentDelegate dialogDelegate;
 
 	private GoogleAuthRequest mGoogAuthRequest;
 
@@ -75,6 +76,10 @@ public class OKLoginFragment extends DialogFragment
 	public static void setLoginTextResourceID(int id){
 		loginTextResourceID = id;
 	}
+	
+	public void setDelegate(OKLoginFragmentDelegate delegate) {
+		dialogDelegate = delegate;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -92,11 +97,6 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 
-	public void show(FragmentManager manager, String tag, OKLoginFragmentResponseHandler handler)
-	{
-		responseHandler = handler;
-		show(manager, tag);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -131,13 +131,14 @@ public class OKLoginFragment extends DialogFragment
 			loginTextView.setText(loginTextResourceID);
 		}
 
-		//Only set the Visibility of the buttons when creating the view for the first time
-		if(savedInstanceState == null) {
-			//Only show the correct buttons
-			fbLoginButton.setVisibility(getButtonLayoutVisibility(fbLoginEnabled));
-			googleLoginButton.setVisibility(getButtonLayoutVisibility(googleLoginEnabled));
-			guestLoginButton.setVisibility(getButtonLayoutVisibility(guestLoginEnabled));
-			twitterLoginButton.setVisibility(getButtonLayoutVisibility(twitterLoginEnabled));
+		//Only show the correct buttons
+		fbLoginButton.setVisibility(getButtonLayoutVisibility(fbLoginEnabled, fbLoginButton));
+		googleLoginButton.setVisibility(getButtonLayoutVisibility(googleLoginEnabled, googleLoginButton));
+		guestLoginButton.setVisibility(getButtonLayoutVisibility(guestLoginEnabled, guestLoginButton));
+		twitterLoginButton.setVisibility(getButtonLayoutVisibility(twitterLoginEnabled, twitterLoginButton));
+
+		if(isShowingSpinner){
+			showSpinner();
 		}
 
 		fbLoginButton.setOnClickListener(fbLoginButtonClick);
@@ -205,7 +206,8 @@ public class OKLoginFragment extends DialogFragment
 			@Override
 			public void onUserCancelled() {
 				hideSpinner();
-				responseHandler.onLoginCancelled();
+				dialogDelegate.onLoginCancelled();
+
 			}
 
 			@Override
@@ -223,7 +225,7 @@ public class OKLoginFragment extends DialogFragment
 								hideSpinner();
 								OKLog.v("Created OKUser successfully!");
 								OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
-								responseHandler.onLoginSucceeded();
+								dialogDelegate.onLoginSucceeded();
 							}
 
 							@Override
@@ -284,14 +286,14 @@ public class OKLoginFragment extends DialogFragment
 	{
 		@Override
 		public void onClick(View v) {
-			responseHandler.onLoginCancelled();
+			dialogDelegate.onLoginCancelled();
 		}
 	};
 
-	private int getButtonLayoutVisibility(boolean enabled)
+	private int getButtonLayoutVisibility(boolean enabled, Button button)
 	{
 		if(enabled) {
-			return View.VISIBLE;
+			return button.getVisibility();
 		} else {
 			return View.GONE;
 		}
@@ -313,6 +315,7 @@ public class OKLoginFragment extends DialogFragment
 
 	private void showSpinner()
 	{
+		isShowingSpinner = true;
 		spinner.setVisibility(View.VISIBLE);
 		setButtonInvisibleIfNotGone(fbLoginButton);
 		setButtonInvisibleIfNotGone(twitterLoginButton);
@@ -323,6 +326,7 @@ public class OKLoginFragment extends DialogFragment
 
 	private void hideSpinner()
 	{
+		isShowingSpinner = false;
 		spinner.setVisibility(View.INVISIBLE);
 		setButtonVisibleIfNotGone(fbLoginButton);
 		setButtonVisibleIfNotGone(twitterLoginButton);
@@ -369,7 +373,7 @@ public class OKLoginFragment extends DialogFragment
 				hideSpinner();
 				OKLog.v("Created OKUser successfully!");
 				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
-				responseHandler.onLoginSucceeded();
+				dialogDelegate.onLoginSucceeded();
 			}
 
 			@Override
@@ -381,6 +385,7 @@ public class OKLoginFragment extends DialogFragment
 			}
 		});
 	}
+	
 
 	private void showLoginErrorMessageFromStringIdentifierName(String id)
 	{
@@ -398,7 +403,7 @@ public class OKLoginFragment extends DialogFragment
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				responseHandler.onLoginFailed();
+				dialogDelegate.onLoginFailed();
 			}
 		});
 		builder.setCancelable(false);
@@ -430,7 +435,7 @@ public class OKLoginFragment extends DialogFragment
 				showLoginErrorMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
 				return;
 			} else {
-				responseHandler.onLoginCancelled();				
+				dialogDelegate.onLoginCancelled();				
 			}
 		}
 		else {
@@ -531,8 +536,6 @@ public class OKLoginFragment extends DialogFragment
 		super.onSaveInstanceState(outState);
 		Session session = Session.getActiveSession();
 		Session.saveSession(session, outState);
-		//Store a boolean so that the bundle is not null in onCreateView when recreating the view
-		outState.putBoolean("view_created", true);
 	}
 
 

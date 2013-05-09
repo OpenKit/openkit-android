@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import io.openkit.OKAchievement;
 import io.openkit.OKAchievementsListResponseHandler;
-import io.openkit.OKLog;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;

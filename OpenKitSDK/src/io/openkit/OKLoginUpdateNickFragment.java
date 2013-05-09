@@ -55,6 +55,14 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		setCancelable(false);
 	}
 	
+	@Override
+	public void onDestroyView() {
+		if (getDialog() != null && getRetainInstance())
+			getDialog().setDismissMessage(null);
+		super.onDestroyView();
+	}
+
+	
 	public void setDialogHandler(OKLoginUpdateNickFragmentHandler handler)
 	{
 		dialogHandler = handler;

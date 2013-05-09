@@ -54,8 +54,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		OpenKit.setEndpoint("http://development.openkit.io/");
-		OpenKit.initialize(this,"DSIPZM0PIewB");
+		OpenKit.setEndpoint("http://stage.openkit.io");
+		OpenKit.initialize(this,"VwfMRAl5Gc4tirjw");
 		
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
 		loginToOpenKitButton = (Button)findViewById(R.id.OKLoginButton);
