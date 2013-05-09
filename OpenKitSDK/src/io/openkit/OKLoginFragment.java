@@ -264,11 +264,17 @@ public class OKLoginFragment extends DialogFragment
 			}
 
 			@Override
-			public void onLoginFailed(Exception e) {
-				hideSpinner();
-				int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
-				String message = OKLoginFragment.this.getString(errorMessageId);
-				showLoginErrorMessage(message);
+			public void onLoginFailed(final Exception e) {
+				OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						OKLog.d("Google auth login failed with exception: " + e);
+						hideSpinner();
+						int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
+						String message = OKLoginFragment.this.getString(errorMessageId);
+						showLoginErrorMessage(message);	
+					}
+				});
 			}
 		});
 	}
