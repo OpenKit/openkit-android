@@ -1,6 +1,8 @@
 package io.openkit.unity.android;
 
 import java.util.Locale;
+
+import io.openkit.OKAchievementScore;
 import io.openkit.OKLoginActivity;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
@@ -96,6 +98,29 @@ public class UnityPlugin {
 			@Override
 			public void onFailure(Throwable arg0) {
 				UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionFailed", arg0.getLocalizedMessage());
+			}
+		});
+	}
+	
+	public static void submitAchievementScore(int progress, int achievementID, final String gameObjectName)
+	{
+		logD("Submitting achievement score");
+		
+		OKAchievementScore achievementScore = new OKAchievementScore();
+		achievementScore.setOKAchievementId(achievementID);
+		achievementScore.setProgress(progress);
+		
+		achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
+			@Override
+			public void onSuccess() {
+				logD("Achievement score submitted successfully");
+				UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionSucceeded", "");
+			}
+
+			@Override
+			public void onFailure(Throwable error) {
+				logD("Achievement score submission failed");
+				UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionFailed", error.getLocalizedMessage());
 			}
 		});
 	}

@@ -50,7 +50,7 @@ public class OKAchievementsListAdapter extends ArrayAdapter<OKAchievement> {
 		progressBar.setMax(currentAchievement.getGoal());
 		progressBar.setProgress(currentAchievement.getProgress());
 		
-		if(currentAchievement.getProgress() == currentAchievement.getGoal()) {
+		if(currentAchievement.getProgress() >= currentAchievement.getGoal()) {
 			imageView.setImageUrl(currentAchievement.getUnlockedIconURL());
 		} else {
 			imageView.setImageUrl(currentAchievement.getLockedIconURL());

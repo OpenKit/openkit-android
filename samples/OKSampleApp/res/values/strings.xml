@@ -21,7 +21,7 @@
     <string name="menu_settings">Settings</string>
     <string name="loginButtonString">Log Into OpenKit</string>
     <string name="logoutButtonString">Logout of OpenKit</string>
-    <string name="showLeaderboardsButton">Leaderboards</string>
+    <string name="showLeaderboardsButton">Leaderboards &amp; Achievements</string>
     <string name="menu_settings">Settings</string>
     <string name="button1text">Store String</string>
     <string name="button2text">Get String</string>
@@ -34,7 +34,7 @@
     <string name="level1button">Submit a Score to Level 1</string>
     <string name="level2button">Submit a Score to Level 2</string>
     <string name="level3button">Submit a Score to Level 3</string>
-    <string name="submitAchievement">Submit Achievement Progress</string>
+    <string name="submitAchievement">Unlock Achievement</string>
     <string name="showAchivement">Show Achievements</string>
     
 

@@ -225,14 +225,62 @@ public class OKAchievement implements Parcelable{
 	{
 		try{
 			this.name = leaderboardJSON.getString("name");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.achievementId = leaderboardJSON.getInt("id");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.OKAPP_id = leaderboardJSON.getInt("app_id");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.inDevelopment = leaderboardJSON.getBoolean("in_development");
+
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.lockedIconUrl = leaderboardJSON.getString("icon_locked_url");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.unlockedIconUrl = leaderboardJSON.getString("icon_url");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try { 
 			this.points = leaderboardJSON.getInt("points");
+		} catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.goal = leaderboardJSON.getInt("goal");
+		}
+		catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.progress = leaderboardJSON.getInt("progress");
+		}
+		catch(JSONException e){
+			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
+		}
+		
+		try{
 			this.description = leaderboardJSON.getString("desc");
 		}
 		catch(JSONException e){

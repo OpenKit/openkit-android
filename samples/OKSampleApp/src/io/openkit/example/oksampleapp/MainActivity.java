@@ -17,9 +17,6 @@ package io.openkit.example.oksampleapp;
 
 
 
-import java.util.List;
-
-import org.json.JSONObject;
 
 import io.openkit.facebook.widget.ProfilePictureView;
 
@@ -42,7 +39,7 @@ public class MainActivity extends Activity {
 	private Button submitScoresButton;
 	private Button cloudDataButton;
 	private Button logoutButton;
-	private Button submitAchievementButton, showAchievementsButton;
+	private Button submitAchievementButton;
 	
 	private ProfilePictureView profilePictureView;
 	
@@ -66,7 +63,6 @@ public class MainActivity extends Activity {
 		userNameTextView = (TextView)findViewById(R.id.userNameTextView);
 		
 		submitAchievementButton = (Button)findViewById(R.id.submitAchievementButton);
-		showAchievementsButton = (Button)findViewById(R.id.showAchievementsButton);
 		
 		loginToOpenKitButton.setOnClickListener(loginToOpenKitClickedClickListener);
 		showLeaderboardsButton.setOnClickListener(showOKLeaderboards);
@@ -75,7 +71,6 @@ public class MainActivity extends Activity {
 		logoutButton.setOnClickListener(logoutOfOpenKit);
 		
 		submitAchievementButton.setOnClickListener(submitAchievementProgress);
-		showAchievementsButton.setOnClickListener(showAchievements);
 		
 		//Update the view with the current user
 		updateView();
@@ -203,8 +198,8 @@ public class MainActivity extends Activity {
 		@Override
 		public void onClick(View arg0) {
 			OKAchievementScore achievementScore = new OKAchievementScore();
-			achievementScore.setProgress(3);
-			achievementScore.setOKAchievementId(1);
+			achievementScore.setProgress(10);
+			achievementScore.setOKAchievementId(3);
 			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
 				@Override
 				public void onSuccess() {
@@ -219,28 +214,6 @@ public class MainActivity extends Activity {
 		}
 	};
 	
-	private View.OnClickListener showAchievements = new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View arg0) {
-			//Get the leaderboards
-			OKAchievement.getAchievements(new OKAchievementsListResponseHandler() {
-
-				@Override
-				public void onSuccess(List<OKAchievement> achievementsList) {
-					OKLog.d("Got a list of achievements!");
-					OKAchievement ach = achievementsList.get(0);
-					OKLog.d("Progress of first achievement is " + ach.getProgress());
-				}
-
-				@Override
-				public void onFailure(Throwable e, JSONObject errorResponse) {
-					OKLog.d("Failed to get list of achievements: " + errorResponse);
-				}
-			});
-			
-		}
-	};
 	
 	
 	/**

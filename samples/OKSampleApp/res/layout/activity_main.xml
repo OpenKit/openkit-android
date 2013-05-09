@@ -92,11 +92,6 @@
         android:layout_height="wrap_content"
         android:text="@string/submitAchievement" />
     
-    <Button
-        android:id="@+id/showAchievementsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/showAchivement" />
 
     <Button
         android:id="@+id/OKLoginButton"
