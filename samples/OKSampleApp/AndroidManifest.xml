@@ -7,9 +7,12 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="14" />
-    
-        <!-- Must add the INTERNET permission for OpenKit and the Facebook SDK to Work -->
+
+    <!-- Must add the INTERNET permission for OpenKit and the Facebook SDK to Work -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Must add the GET_ACCOUNTS and USE_CREDENTIALS perimissions to support Google auth -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <!-- Declare the OpenKit activities as follows, these are required for OpenKit login and to show leaderboards -->
         <activity
             android:name="io.openkit.OKLoginActivity"
@@ -40,7 +43,6 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/fb_app_id" />
 
-        
         <activity
             android:name="io.openkit.example.oksampleapp.OKCloudSampleActivity"
             android:label="@string/title_activity_okcloud_sample" >
@@ -49,7 +51,6 @@
             android:name="io.openkit.example.oksampleapp.SubmitScoreActivity"
             android:label="@string/title_activity_submit_score" >
         </activity>
-        
     </application>
 
 </manifest>

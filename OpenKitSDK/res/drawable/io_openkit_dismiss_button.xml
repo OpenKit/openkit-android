@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    
+   <!-- pressed -->
+    <item android:state_pressed="true">
+	    <shape>
+	    <solid android:color="@color/io_openkit_dismiss_pressed"/>
+	    <corners android:radius="3dp"/>
+	    </shape>
+    </item>
+    
+    <!-- focused -->
+    <item android:state_focused="true">
+        <shape>
+	    <solid android:color="@color/io_openkit_dismiss_focused"/>
+	    <corners android:radius="3dp"/>
+	    </shape>
+    </item> 
+          
+	<!-- hovered -->
+    <item android:state_hovered="true">
+        <shape>
+	    <solid android:color="@color/io_openkit_dismiss_hovered"/>
+	    <corners android:radius="3dp"/>
+	    </shape>
+	</item>
+    
+    <!-- default -->
+    <item>
+        <shape>
+	    <solid android:color="@color/io_openkit_dismiss_default"/>
+	    <corners android:radius="3dp"/>
+	    </shape>
+    </item> 
+
+</selector>

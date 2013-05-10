@@ -17,11 +17,10 @@
  -->
  
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="60dp"
-    android:background="@color/io_openkit_leaderboards_bgcolor"
-    android:orientation="horizontal"
-    android:padding="3dp" >
+	android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/io_openkit_scoreRankTextView"
@@ -29,36 +28,40 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" 
+        android:textIsSelectable="false" />
 
     <io.openkit.facebook.widget.ProfilePictureView
         android:id="@+id/io_openkit_scorePicView"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:paddingTop="5dip"
+        android:paddingBottom="5dip"
         android:layout_gravity="center_vertical"
         android:gravity="center_horizontal" />
+
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:paddingLeft="6dp" >
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/text1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#bebebe"
-            android:textSize="14sp" />
-    </LinearLayout>
+	    <TextView
+	        android:id="@+id/text1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textStyle="bold" 
+	        android:textIsSelectable="false" />
+	
+	    <TextView
+	        android:id="@+id/text2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="12sp"
+	        android:textColor="@color/io_openkit_gray" 
+	        android:textIsSelectable="false" />
+    
+	</LinearLayout>
 
 </LinearLayout>

@@ -18,40 +18,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/io_openkit_leaderboards_bgcolor"
+    android:background="@android:color/white"
     android:orientation="vertical"
-    android:padding="6dp" >
+    android:paddingBottom="20dip"
+    android:paddingLeft="20dip"
+    android:paddingRight="20dip"
+    android:paddingTop="20dip" >
 
-    <io.openkit.facebook.widget.ProfilePictureView
-        android:id="@+id/io_openkit_fbProfilePicView"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="15dip" >
+        
+        <io.openkit.facebook.widget.ProfilePictureView
+	        android:id="@+id/io_openkit_fbProfilePicView"
+	        android:layout_width="60dp"
+	        android:layout_height="60dp"
+	        android:layout_gravity="left"
+	        android:gravity="center_horizontal" />
+
+        <LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dip"
+	        android:gravity="center_vertical"
+	        android:orientation="vertical">
+	        
+		    <TextView
+		        android:id="@+id/io_openkit_loggedInStringTextView"
+		        style="@style/OKSmallLightGrayText"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="@string/io_openkit_loggedIn" />
+		
+		    <TextView
+		        android:id="@+id/io_openkit_userNickTextView"
+		        style="@style/OKHeadingText"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textIsSelectable="false" />
+		    
+	    </LinearLayout>
+    </LinearLayout>
+    
 
     <TextView
-        android:id="@+id/io_openkit_loggedInStringTextView"
         style="@style/OKSmallLightGrayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="3dp"
-        android:text="@string/io_openkit_loggedIn" />
-
-    <TextView
-        android:id="@+id/io_openkit_userNickTextView"
-        style="@style/OKHeadingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="3dp" />
-
-    <TextView
-        style="@style/OKSmallLightGrayText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="3dp"
+        android:layout_gravity="left"
+        android:paddingBottom="0dip"
+    	android:paddingLeft="0dip"
+    	android:paddingRight="0dip"
+    	android:paddingTop="3dip"
         android:text="@string/io_openkit_createNickName"
         android:textStyle="bold" />
 
@@ -59,17 +80,19 @@
         style="@style/OKSmallLightGrayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="3dp"
+        android:layout_gravity="left"
+        android:paddingBottom="15dip"
+   		android:paddingLeft="0dip"
+    	android:paddingRight="0dip"
+    	android:paddingTop="0dip"
         android:text="@string/io_openkit_nickExplanation" />
 
     <EditText
         android:id="@+id/io_openkit_userNickEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:inputType="textPersonName"
-        android:padding="3dp" >
+        android:padding="10dp" >
 
         <requestFocus />
     </EditText>
@@ -82,7 +105,6 @@
             android:id="@+id/io_openkit_continueButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="3dp"
             android:text="@string/io_openkit_continue" />
         
         <ProgressBar

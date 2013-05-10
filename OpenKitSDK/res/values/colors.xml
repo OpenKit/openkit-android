@@ -20,11 +20,40 @@
  
 <resources>
     
-    <color name="io_openkit_gray">#A9A9A9</color>
-    <color name="io_openkit_leaderboards_heading_color">#A9A9A9</color>
-    <color name="io_openkit_leaderboards_bgcolor">#F2F2F2</color>
+    <color name="io_openkit_gray">#777777</color>
+	<color name="io_openkit_light_gray">#e5e5e5</color>
     <color name="io_openkit_actionBarBgColor">#dddddd</color>
     <color name="transparent">#00000000</color>
-    <dimen name="io_openkit_leaderboard_heading_text_size">16sp</dimen>
+    
+    <color name="io_openkit_google_shadow">#ce3025</color>
+    <color name="io_openkit_facebook_shadow">#263a74</color>
+    <color name="io_openkit_twitter_shadow">#007fc1</color>
+   	<color name="io_openkit_guest_shadow">#999</color>
+   	<color name="io_openkit_dismiss_shadow">#bbb</color>
+    
+    <color name="io_openkit_google_pressed">#ce3025</color>
+    <color name="io_openkit_google_focused">#ce3025</color>
+    <color name="io_openkit_google_hovered">#ce3025</color>
+    <color name="io_openkit_google_default">#db4a39</color>
+    
+    <color name="io_openkit_facebook_pressed">#263a74</color>
+    <color name="io_openkit_facebook_focused">#263a74</color>
+    <color name="io_openkit_facebook_hovered">#263a74</color>
+    <color name="io_openkit_facebook_default">#3b5998</color>
+    
+    <color name="io_openkit_twitter_pressed">#007fc1</color>
+    <color name="io_openkit_twitter_focused">#007fc1</color>
+    <color name="io_openkit_twitter_hovered">#007fc1</color>
+    <color name="io_openkit_twitter_default">#00a0d1</color>
+    
+    <color name="io_openkit_general_pressed">#999</color>
+    <color name="io_openkit_general_focused">#999</color>
+    <color name="io_openkit_general_hovered">#999</color>
+    <color name="io_openkit_general_default">#bbb</color>
+    
+    <color name="io_openkit_dismiss_pressed">#ddd</color>
+    <color name="io_openkit_dismiss_focused">#ddd</color>
+    <color name="io_openkit_dismiss_hovered">#ddd</color>
+    <color name="io_openkit_dismiss_default">#eee</color>
     
 </resources>

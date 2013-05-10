@@ -27,39 +27,104 @@ import android.support.v4.app.FragmentActivity;
 
 public class OKLeaderboardsActivity extends FragmentActivity {
 	
+	private OKLeaderboardsFragment leaderboardsFragment;
+	private OKAchievementsFragment achievementsFragment;
+	
+	private int leaderboardTitleID;
+	private int achievementsTitleID;
+	
+	private static String LEADERBOARD_FRAGMENT_TAG = "LeaderboardsFragment";
+	private static String ACHIEVEMENT_FRAGMENT_TAG = "AchievementsFragment";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
 		this.setTheme(themeID);
-		//this.setTheme(R.style.OKActivityTheme);
 		super.onCreate(savedInstanceState);
-		
-		//Note: have to specify resources this way so they load in Unity, where R.string does not exist
-		int titleID = getResources().getIdentifier("io_openkit_title_leaderboards", "string", getPackageName());
-		this.setTitle(titleID);
-		//this.setTitle(R.string.io_openkit_title_leaderboards);
+
+		leaderboardTitleID = getResources().getIdentifier("io_openkit_title_leaderboards", "string", getPackageName());
+		achievementsTitleID = getResources().getIdentifier("io_openkit_title_achievements", "string", getPackageName());
 		
 		if(savedInstanceState == null) {
-			OKLeaderboardsFragment fragment = new OKLeaderboardsFragment();
+			/*
+			leaderboardsFragment = new OKLeaderboardsFragment();
 			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.add(android.R.id.content, fragment);
+			ft.add(android.R.id.content, leaderboardsFragment, LEADERBOARD_FRAGMENT_TAG);
 			ft.commit();
+			*/
+			showLeaderboardsList();
+		}
+		
+		updateActivityTitle();
+	}
+	
+	private void updateActivityTitle()
+	{
+		if(isShowingLeaderbards()) {
+			this.setTitle(leaderboardTitleID);
+		}
+		else {
+			this.setTitle(achievementsTitleID);
+		}
+	}
+	
+	private boolean isShowingLeaderbards()
+	{
+		if(leaderboardsFragment != null && leaderboardsFragment.isVisible()) {
+			return true;
+		} else if(achievementsFragment != null && achievementsFragment.isVisible()) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 	
 	private void showProfileActivity()
 	{
 		//If the user is logged in, show the profile view, else show the login view
-		if(OKUser.getCurrentUser() != null)
-		{
+		if(OKUser.getCurrentUser() != null){
 			Intent showProfile = new Intent(OKLeaderboardsActivity.this, OKUserProfileActivity.class);
 			startActivity(showProfile);
 		}
-		else
-		{
+		else{
 			Intent loginIntent = new Intent(OKLeaderboardsActivity.this, OKLoginActivity.class);
 			startActivity(loginIntent);
 		}
+	}
+	
+	private void showLeaderboardsList()
+	{
+		OKLog.d("Show leaderboards list");
+		
+		if(leaderboardsFragment == null) {
+			leaderboardsFragment = new OKLeaderboardsFragment();
+		}
+		
+		if(!leaderboardsFragment.isVisible()){
+			
+			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.replace(android.R.id.content, leaderboardsFragment, LEADERBOARD_FRAGMENT_TAG);
+			ft.commit();
+		}
+		
+		this.setTitle(leaderboardTitleID);
+	}
+	
+	private void showAchievementsList()
+	{
+		OKLog.d("Show achievements list");
+		
+		if(achievementsFragment == null) {
+			achievementsFragment = new OKAchievementsFragment();
+		}
+		
+		if(!achievementsFragment.isVisible()) {
+			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.replace(android.R.id.content, achievementsFragment, ACHIEVEMENT_FRAGMENT_TAG);
+			ft.commit();
+		}
+		
+		this.setTitle(achievementsTitleID);
 	}
 	
 	@Override
@@ -69,6 +134,8 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 		// statement instead of a switch because Library projects can't use the R.id.NAME
 		// in a switch statement
 		int profileButtonId = getResources().getIdentifier("io_openkit_menu_profileButton", "id", getPackageName());
+		int leaderboardButtonID = getResources().getIdentifier("io_openkit_menu_leaderboardsButton", "id", getPackageName());
+		int achievementsButtonID =  getResources().getIdentifier("io_openkit_menu_achievementsButton", "id", getPackageName());
 		
 		if (item.getItemId() == android.R.id.home) {
 			this.finish();
@@ -77,7 +144,14 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 		else if (item.getItemId() == profileButtonId) {
 			showProfileActivity();
 			return true;
-		} else {
+		} else if(item.getItemId() == leaderboardButtonID) {
+			showLeaderboardsList();
+			return true;
+		} else if (item.getItemId() == achievementsButtonID) {
+			showAchievementsList();
+			return true;
+		}
+		else {
 			return super.onOptionsItemSelected(item);
 		}
 	}

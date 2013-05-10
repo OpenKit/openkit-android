@@ -20,16 +20,24 @@
  
 <resources>
 
-    <string name="io_openkit_title_leaderboards">Leaderboards</string>
     <string name="io_openkit_sdk_app_name">OpenKitSDK</string>
-    <string name="io_openkit_login_text">Create an account to access leaderboards and resume game progress from any device.</string>
-    <string name="io_openkit_privacy_policy">By signing in you agree to the OpenKit Terms of Service and Privacy Policy</string>
-    <string name="io_openkit_dont_sign_in">I don\'t want these features</string>
+    
+    <string name="io_openkit_login_text">Sign in to play with friends.</string>
+    <string name="io_openkit_login_subtext">Leaderboards, achievements, and more!</string>
+    <string name="io_openkit_google_signin">Sign in with Google</string>
+    <string name="io_openkit_facebook_signin">Sign in with Facebook</string>
     <string name="io_openkit_fb_signin">Sign in with Facebook</string>
-    <string name="io_openkit_loggedIn">Signed in as</string>
-    <string name="io_openkit_createNickName">Create a nickname for this account</string>
+    <string name="io_openkit_twitter_signin">Sign in with Twitter</string>
+	<string name="io_openkit_guest_signin">Guest Account</string>
+	<string name="io_openkit_dont_sign_in">No Thanks</string>
+    
+	<string name="io_openkit_loggedIn">Signed in as</string>
+	<string name="io_openkit_createNickName">Create a nickname for this account</string>
     <string name="io_openkit_nickExplanation">This is how you\'ll appear in leaderboards</string>
-    <string name="io_openkit_continue">Continue</string>
+	<string name="io_openkit_continue">Continue</string>
+    
+    <string name="io_openkit_title_leaderboards">Leaderboards</string>
+    <string name="io_openkit_title_achievements">Achievements</string>
     <string name="io_openkit_leaderboards_alltime">ALL TIME</string>
     <string name="io_openkit_leaderboards_thisWeek">THIS WEEK</string>
     <string name="io_openkit_leaderboards_today">TODAY</string>
@@ -37,6 +45,12 @@
     <string name="io_openkit_logout">Logout</string>
     <string name="io_openkit_userprofle">Profile</string>
     <string name="io_openkit_changeNick">Change Nickname</string>
+    
+    <string name="io_openkit_googlePlayServicesError">Unfortunately, your device does not have or does not support the required version of Google Play. Please try logging with a different type of account.</string>
+    <string name="io_openkit_googleLoginError">Sorry, but there was an error logging in with Google. Please try again later or try a different account type.</string>
+    <string name="io_openkit_googleNoAccts">You don\'t have any Google accounts stored on your device. Go to your device settings, and choose "Accounts" and add a Google account.</string>
+    <string name="io_openkit_OKLoginError">Sorry, but there was an error reaching the OpenKit servers. Please try again later or try using a different account type.</string>
+    
     
     <!-- Copy string resources from Facebook SDK -->
     
@@ -57,7 +71,7 @@
     <string name="com_facebook_picker_done_button_text">Done</string>
     <string name="com_facebook_choose_friends">Choose Friends</string>
     <string name="com_facebook_nearby">Nearby</string>
-    <string name="com_facebook_loading">Loading...</string>
+    <string name="com_facebook_loading">Loading&#8230;</string>
     <string name="com_facebook_internet_permission_error_title">AndroidManifest Error</string>
     <string name="com_facebook_internet_permission_error_message">WebView login requires INTERNET permission</string>
     <string name="com_facebook_requesterror_web_login">Please log in via https://www.facebook.com or https://m.facebook.com to re-enable the app to connect with Facebook.</string>

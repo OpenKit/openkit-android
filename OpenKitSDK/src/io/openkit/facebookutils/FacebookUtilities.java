@@ -17,14 +17,11 @@
 package io.openkit.facebookutils;
 
 import io.openkit.*;
-import io.openkit.asynchttp.OKJsonHttpResponseHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import io.openkit.facebook.*;
 import io.openkit.facebook.Request.GraphUserCallback;
 import io.openkit.facebook.model.GraphUser;
+import io.openkit.user.OKUserIDType;
+import io.openkit.user.OKUserUtilities;
 
 
 
@@ -41,7 +38,7 @@ public class FacebookUtilities
 	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
 	 * @param requestHandler
 	 */
-	public static void AuthorizeUserWithFacebook(final CreateOKUserRequestHandler requestHandler)
+	public static void CreateOKUserFromFacebook(final CreateOKUserRequestHandler requestHandler)
 	{
 		Session session = Session.getActiveSession();
 		
@@ -55,7 +52,7 @@ public class FacebookUtilities
 						String userID = user.getId();
 						String userNick = user.getName();
 						
-						getOKUserWithFacebookID(userID, userNick, requestHandler);	
+						OKUserUtilities.createOKUser(OKUserIDType.FacebookID, userID, userNick, requestHandler);
 					}
 				}
 			});
@@ -66,55 +63,5 @@ public class FacebookUtilities
 		}
 	}
 	
-	/***
-	 * Gets the OKUser from OpenKit corresponding to the given facebook ID.
-	 * @param fbID FacebookID
-	 * @param userNick Nickname for the user
-	 * @param requestHandler Request handler for request
-	 */
-	private static void getOKUserWithFacebookID(String fbID, String userNick, final CreateOKUserRequestHandler requestHandler)
-	{
-		JSONObject jsonParams = new JSONObject();
-		
-		try 
-		{	
-			jsonParams.put("nick", userNick);
-			jsonParams.put("fb_id", fbID);
-			jsonParams.put("app_key", OpenKit.getOKAppID());
-		} catch (JSONException e1) {
-			requestHandler.onFail(new Error("Error creating JSON params for request: " + e1));
-		} 
-		
-		OKLog.d("Creating user with FB id");
-		
-		OKHTTPClient.postJSON("users", jsonParams, new OKJsonHttpResponseHandler() {
-			
-			@Override
-			public void onSuccess(JSONObject object) {
-				OKUser currentUser = new OKUser(object);
-				requestHandler.onSuccess(currentUser);
-			}
-			
-			@Override
-			public void onSuccess(JSONArray array) {
-				requestHandler.onFail(new Error("Request cameback as an array when expecting a object: " + array));
-			}
-			
-			@Override
-			public void onFailure(Throwable error, String content) {
-				requestHandler.onFail(new Error("Error: " + error + " content: " + content));
-			}
-			
-			@Override
-			public void onFailure(Throwable e, JSONArray errorResponse) {
-				requestHandler.onFail(new Error("Error: " + e + " JSON response: " + errorResponse));
-			}
-			
-			@Override
-			public void onFailure(Throwable e, JSONObject errorResponse) {
-				requestHandler.onFail(new Error("Error: " + e + " JSON response: " + errorResponse));
-			}
-		});
-	}
 
 }

@@ -22,6 +22,7 @@ import io.openkit.OKLoginUpdateNickFragment;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
+import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +33,7 @@ import android.util.Log;
 
 public class OKUserUtilities 
 {
+	
 	public static void showUpdateNickDialog(FragmentManager fm)
 	{
 		OKLoginUpdateNickFragment nickDialog = new OKLoginUpdateNickFragment();
@@ -93,7 +95,79 @@ public class OKUserUtilities
 			}
 		});
 	}
-
+	
+	
+	/**
+	 * Gets or creates an OKUser with a corresponding userID, userNickname, 
+	 * @param idType Type of ID passed in (e.g. Facebook or Google)
+	 * @param userID UserID from third party service to uniquely identify user
+	 * @param userNick Nickname
+	 * @param requestHandler Anonymous callback
+	 */
+	public static void createOKUser(OKUserIDType idType, String userID, String userNick, final CreateOKUserRequestHandler requestHandler)
+	{
+		JSONObject jsonParams = new JSONObject();
+		
+		try 
+		{	
+			jsonParams.put("nick", userNick);
+			jsonParams.put("app_key", OpenKit.getOKAppID());
+			
+			switch (idType) {
+			case FacebookID:
+				jsonParams.put("fb_id", userID);
+				break;
+			case GoogleID:
+				jsonParams.put("google_id", userID);
+				break;
+			case TwitterID:
+				jsonParams.put("twitter_id", userID);
+				break;
+			case CustomID:
+				jsonParams.put("custom_id", userID);
+				break;
+			default:
+				jsonParams.put("custom_id", userID);
+				break;
+			}
+			
+		} catch (JSONException e1) {
+			requestHandler.onFail(new Error("Error creating JSON params for request: " + e1));
+		} 
+		
+		OKLog.d("Creating user with id of type: " + idType);
+		
+		OKHTTPClient.postJSON("users", jsonParams, new OKJsonHttpResponseHandler() {
+			
+			@Override
+			public void onSuccess(JSONObject object) {
+				OKUser currentUser = new OKUser(object);
+				requestHandler.onSuccess(currentUser);
+			}
+			
+			@Override
+			public void onSuccess(JSONArray array) {
+				requestHandler.onFail(new Error("Error creating OKUser. Request cameback as an array when expecting a object: " + array));
+			}
+			
+			@Override
+			public void onFailure(Throwable error, String content) {
+				requestHandler.onFail(new Error("Error creating OKUser: " + error + " content: " + content));
+			}
+			
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
+			}
+			
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
+			}
+		});
+	}
+	
+	
 	public static JSONObject getJSONRepresentationOfUser(OKUser user)
 	{
 		JSONObject object = new JSONObject();
@@ -103,6 +177,8 @@ public class OKUserUtilities
 			object.putOpt("id", user.getOKUserID());
 			object.putOpt("fb_id", user.getFBUserID());
 			object.putOpt("twitter_id", user.getTwitterUserID());
+			//TODO add custom ID
+			//TODO add Google ID
 		}
 		catch (JSONException e) {
 			Log.e("Tag","Exception thrown when converting user to JSON object: " + e);

@@ -17,6 +17,7 @@ package io.openkit.example.oksampleapp;
 
 
 
+
 import io.openkit.facebook.widget.ProfilePictureView;
 
 import io.openkit.*;
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
 	private Button submitScoresButton;
 	private Button cloudDataButton;
 	private Button logoutButton;
+	private Button submitAchievementButton;
 	
 	private ProfilePictureView profilePictureView;
 	
@@ -49,6 +51,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		OpenKit.setEndpoint("http://stage.openkit.io");
 		OpenKit.initialize(this,"VwfMRAl5Gc4tirjw");
 		
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
@@ -59,11 +62,15 @@ public class MainActivity extends Activity {
 		profilePictureView = (ProfilePictureView)findViewById(R.id.fbProfilePicView);
 		userNameTextView = (TextView)findViewById(R.id.userNameTextView);
 		
+		submitAchievementButton = (Button)findViewById(R.id.submitAchievementButton);
+		
 		loginToOpenKitButton.setOnClickListener(loginToOpenKitClickedClickListener);
 		showLeaderboardsButton.setOnClickListener(showOKLeaderboards);
 		submitScoresButton.setOnClickListener(submitScore);
 		cloudDataButton.setOnClickListener(cloudDataDemoClickListener);
 		logoutButton.setOnClickListener(logoutOfOpenKit);
+		
+		submitAchievementButton.setOnClickListener(submitAchievementProgress);
 		
 		//Update the view with the current user
 		updateView();
@@ -80,7 +87,7 @@ public class MainActivity extends Activity {
 			OKUser currentUser = OpenKit.getCurrentUser();
 			
 			//Hide the login button
-			loginToOpenKitButton.setVisibility(View.INVISIBLE);
+			loginToOpenKitButton.setVisibility(View.GONE);
 			logoutButton.setVisibility(View.VISIBLE);
 			
 			//Show the user's profile pic and nickname
@@ -94,7 +101,7 @@ public class MainActivity extends Activity {
 		else {
 			//Show the login button
 			loginToOpenKitButton.setVisibility(View.VISIBLE);
-			logoutButton.setVisibility(View.INVISIBLE);
+			logoutButton.setVisibility(View.GONE);
 			
 			//Not signed in
 			userNameTextView.setText(R.string.notLoginString);
@@ -175,10 +182,39 @@ public class MainActivity extends Activity {
 	private View.OnClickListener showOKLeaderboards = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			
+			//Get the leaderboards
 			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
 			startActivity(launchOKLeaderboards);
 		}
 	};
+	
+	
+	/**
+	 * Submit achievement progress to achievement
+	 */
+	private View.OnClickListener submitAchievementProgress = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			OKAchievementScore achievementScore = new OKAchievementScore();
+			achievementScore.setProgress(10);
+			achievementScore.setOKAchievementId(3);
+			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
+				@Override
+				public void onSuccess() {
+					OKLog.d("Submitted an achievement score!");
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					OKLog.d("Failed to submit achievement score.");
+				}
+			});
+		}
+	};
+	
+	
 	
 	/**
 	 * Launch the cloud storage demo activity
@@ -187,6 +223,7 @@ public class MainActivity extends Activity {
 		
 		@Override
 		public void onClick(View v) {
+			
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
 		}

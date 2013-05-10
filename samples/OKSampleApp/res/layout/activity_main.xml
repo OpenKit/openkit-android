@@ -63,27 +63,35 @@
                 style="@style/OKHeadingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="3dp" />
+                android:padding="3dp"
+                android:textIsSelectable="true" />
         </LinearLayout>
     </LinearLayout>
 
-        <Button
+    <Button
         android:id="@+id/cloudDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/cloudData" />
-    
+
     <Button
         android:id="@+id/LeaderboardsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/showLeaderboardsButton" />
-    
-        <Button
+
+    <Button
         android:id="@+id/submitScoreButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/submitScore" />
+    
+    <Button
+        android:id="@+id/submitAchievementButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/submitAchievement" />
+    
 
     <Button
         android:id="@+id/OKLoginButton"
@@ -96,6 +104,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/logoutButtonString" />
-
 
 </LinearLayout>

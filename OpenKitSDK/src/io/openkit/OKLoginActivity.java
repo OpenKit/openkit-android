@@ -16,7 +16,8 @@
 
 package io.openkit;
 
-import io.openkit.user.OKLoginFragmentResponseHandler;
+import java.lang.ref.WeakReference;
+
 import io.openkit.user.OKLoginUpdateNickFragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -24,70 +25,77 @@ import android.support.v4.app.FragmentManager;
 
 
 
-public class OKLoginActivity extends FragmentActivity
+public class OKLoginActivity extends FragmentActivity implements OKLoginFragmentDelegate
 {
-	
-	
 	private OKLoginFragment loginDialog;
 	private OKLoginUpdateNickFragment updateNickDialog;
-	
+
+	private static WeakReference<OKLoginActivity> wrActivity = null;
+
 	private static final String TAG_LOGINFRAGMENT = "OKLoginFragment";
-	
+
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        if(savedInstanceState == null)
-        {
-        	//Show the login fragment when the activity is first created / launched
-        	showLoginFragment();
-        }
-    }
-	
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		wrActivity = new WeakReference<OKLoginActivity>(this);
+
+		if(loginDialog != null) {
+			loginDialog.setDelegate(this);
+		}
+
+		if(savedInstanceState == null)
+		{
+			//Show the login fragment when the activity is first created / launched
+			showLoginFragment();
+		}
+	}
+
+	public void onLoginSucceeded()
+	{
+		loginDialog.dismiss();
+		OKLog.v("Successfully logged in, now showing nick update view");
+		showUserNickUpdateFragment();
+	}
+
+	public void onLoginFailed() {
+		loginDialog.dismiss();
+		OKLog.v("Login failed, dismissing login activity");
+		OKLoginActivity.this.finish();
+	}
+
+	public void onLoginCancelled() {
+		loginDialog.dismiss();
+		OKLog.v("Login canceled by user, dismissing login activity");
+		OKLoginActivity.this.finish();
+	}
+
 	private void showLoginFragment()
 	{
 		FragmentManager fm = getSupportFragmentManager();
-        loginDialog = new OKLoginFragment(); 
-        loginDialog.show(fm, TAG_LOGINFRAGMENT, new OKLoginFragmentResponseHandler() {
-			
-        	@Override
-			public void onLoginSucceeded() {
-				loginDialog.dismiss();
-				OKLog.v("Successfully logged in, now showing nick update view");
-				showUserNickUpdateFragment();
-			}
-			
-			@Override
-			public void onLoginFailed() {
-				loginDialog.dismiss();
-				OKLog.v("Login failed, dismissing login activity");
-				OKLoginActivity.this.finish();
-			}
-			
-			@Override
-			public void onLoginCancelled() {
-				loginDialog.dismiss();
-				OKLog.v("Login canceled by user, dismissing login activity");
-				OKLoginActivity.this.finish();
-			}
-		});
-	}
-	
-	private void showUserNickUpdateFragment()
-	{
-		FragmentManager fm = getSupportFragmentManager();
-		updateNickDialog = new OKLoginUpdateNickFragment();
-		updateNickDialog.show(fm, "OKLoginUpdateNickFragment");
-		
-		updateNickDialog.setDialogHandler(new OKLoginUpdateNickFragmentHandler() {
-			@Override
-			public void onDismiss() {
-				OKLoginActivity.this.finish();
-			}
-		});
+		loginDialog = new OKLoginFragment();
+		loginDialog.setDelegate(this);
+		loginDialog.show(fm, TAG_LOGINFRAGMENT);
 	}
 
-	
+	private void showUserNickUpdateFragment()
+	{
+		if((wrActivity.get() != null && (wrActivity.get().isFinishing() != true))) {
+
+			FragmentManager fm = wrActivity.get().getSupportFragmentManager();
+			updateNickDialog = new OKLoginUpdateNickFragment();
+			updateNickDialog.show(fm, "OKLoginUpdateNickFragment");
+
+			updateNickDialog.setDialogHandler(new OKLoginUpdateNickFragmentHandler() {
+				@Override
+				public void onDismiss() {
+					OKLoginActivity.this.finish();
+				}
+			});
+		}
+	}
+
+
 
 }
 
