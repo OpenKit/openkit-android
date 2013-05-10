@@ -25,10 +25,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 public class OKAchievement implements Parcelable{
 	
 	private String name;
@@ -220,72 +218,19 @@ public class OKAchievement implements Parcelable{
 		return description;
 	}
 	
-	
-	private void initFromJSON(JSONObject leaderboardJSON)
-	{
-		try{
-			this.name = leaderboardJSON.getString("name");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.achievementId = leaderboardJSON.getInt("id");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.OKAPP_id = leaderboardJSON.getInt("app_id");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.inDevelopment = leaderboardJSON.getBoolean("in_development");
 
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.lockedIconUrl = leaderboardJSON.getString("icon_locked_url");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.unlockedIconUrl = leaderboardJSON.getString("icon_url");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try { 
-			this.points = leaderboardJSON.getInt("points");
-		} catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.goal = leaderboardJSON.getInt("goal");
-		}
-		catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.progress = leaderboardJSON.getInt("progress");
-		}
-		catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
-		
-		try{
-			this.description = leaderboardJSON.getString("desc");
-		}
-		catch(JSONException e){
-			Log.e("OpenKit", "Error parsing JSON for Achievement: " + e.toString());
-		}
+	private void initFromJSON(JSONObject achievementJSON)
+	{
+		this.name = OKJSONParser.safeParseString("name", achievementJSON);
+		this.achievementId = OKJSONParser.safeParseInt("id", achievementJSON);
+		this.OKAPP_id = OKJSONParser.safeParseInt("app_id", achievementJSON);
+		this.inDevelopment = OKJSONParser.safeParseBoolean("in_development", achievementJSON);
+		this.lockedIconUrl = OKJSONParser.safeParseString("icon_locked_url", achievementJSON);
+		this.unlockedIconUrl = OKJSONParser.safeParseString("icon_url", achievementJSON);
+		this.description = OKJSONParser.safeParseString("desc", achievementJSON);
+		this.points = OKJSONParser.safeParseInt("points", achievementJSON);
+		this.goal = OKJSONParser.safeParseInt( "goal", achievementJSON);
+		this.progress = OKJSONParser.safeParseInt("progress", achievementJSON);	
 	}
 	
 	/**

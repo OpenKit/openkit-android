@@ -10,6 +10,7 @@
 
     <!-- Must add the INTERNET permission for OpenKit and the Facebook SDK to Work -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Must add the GET_ACCOUNTS and USE_CREDENTIALS perimissions to support Google auth -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
