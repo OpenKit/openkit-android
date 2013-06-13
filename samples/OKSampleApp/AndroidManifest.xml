@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="14" />
+        android:targetSdkVersion="17" />
 
     <!-- Must add the INTERNET permission for OpenKit and the Facebook SDK to Work -->
     <uses-permission android:name="android.permission.INTERNET" />
