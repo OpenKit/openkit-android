@@ -17,9 +17,9 @@
 package io.openkit.facebookutils;
 
 import io.openkit.*;
-import io.openkit.facebook.*;
-import io.openkit.facebook.Request.GraphUserCallback;
-import io.openkit.facebook.model.GraphUser;
+import com.facebook.*;
+import com.facebook.Request.GraphUserCallback;
+import com.facebook.model.GraphUser;
 import io.openkit.user.OKUserIDType;
 import io.openkit.user.OKUserUtilities;
 

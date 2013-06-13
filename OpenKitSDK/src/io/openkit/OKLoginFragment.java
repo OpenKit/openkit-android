@@ -21,7 +21,7 @@ import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 
 import io.openkit.facebookutils.*;
 import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
-import io.openkit.facebook.*;
+import com.facebook.*;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.accounts.Account;
@@ -431,7 +431,7 @@ public class OKLoginFragment extends DialogFragment
 	{
 		OKLog.v("Facebook login failed");
 
-		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
+		if(exception != null && exception.getClass() == com.facebook.FacebookOperationCanceledException.class)
 		{
 			OKLog.v("User cancelled Facebook login");
 
