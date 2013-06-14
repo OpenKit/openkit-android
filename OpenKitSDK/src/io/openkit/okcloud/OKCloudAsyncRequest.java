@@ -63,7 +63,7 @@ public class OKCloudAsyncRequest {
 	private void getWithCompletionHandler(String relativeURL, final CompletionHandler h) {
 		
 		RequestParams requestParams = new RequestParams(params);
-		requestParams.put("app_key", OpenKit.getOKAppID());
+		requestParams.put("app_key", OpenKit.getAppKey());
 		
 		OKHTTPClient.get(relativeURL, requestParams, new AsyncHttpResponseHandler(){
 			@Override
@@ -95,7 +95,7 @@ public class OKCloudAsyncRequest {
 	{
 		JSONObject requestParamsJSON = new JSONObject();
 		try {
-			requestParamsJSON.put("app_key", OpenKit.getOKAppID());
+			requestParamsJSON.put("app_key", OpenKit.getAppKey());
 			for (Map.Entry<String, String> entry : params.entrySet()) {
 				requestParamsJSON.put(entry.getKey(), entry.getValue());
 			}

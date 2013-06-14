@@ -24,9 +24,9 @@ public class OpenKit {
 	 * @param context A context (usually the activity)
 	 * @param OKAppID Your OpenKit application ID, taken from the developer dashboard
 	 */
-	public static void initialize(Context context, String OKAppID)
+	public static void initialize(Context context, String appKey, String secretKey)
 	{
-		OKManager.INSTANCE.initialize(context, OKAppID);
+		OKManager.INSTANCE.initialize(context, appKey, secretKey);
 	}
 	
 	/**
@@ -41,9 +41,9 @@ public class OpenKit {
 	/**
 	 * @return Returns the OpenKit application ID.
 	 */
-	public static String getOKAppID()
+	public static String getAppKey()
 	{
-		return OKManager.INSTANCE.getOKAppID();
+		return OKManager.INSTANCE.getAppKey();
 	}
 	
 	/**

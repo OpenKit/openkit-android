@@ -39,9 +39,9 @@ public class OKHTTPClient {
 		
 	private static AsyncHttpClient client = initializeClient();
 	
-	public String getOKAppID()
+	public String getAppKey()
 	{
-		return OpenKit.getOKAppID();
+		return OpenKit.getAppKey();
 	}
 	
 	public static void setEndpoint(String endpoint)

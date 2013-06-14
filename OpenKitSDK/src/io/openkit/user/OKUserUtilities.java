@@ -49,7 +49,7 @@ public class OKUserUtilities
 			JSONObject userDict = new JSONObject();
 			userDict.put("nick", newNick);
 			
-			requestParams.put("app_key", OpenKit.getOKAppID());
+			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("user", userDict);
 			
 		} catch (JSONException e) {
@@ -111,7 +111,7 @@ public class OKUserUtilities
 		try 
 		{	
 			jsonParams.put("nick", userNick);
-			jsonParams.put("app_key", OpenKit.getOKAppID());
+			jsonParams.put("app_key", OpenKit.getAppKey());
 			
 			switch (idType) {
 			case FacebookID:
