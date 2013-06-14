@@ -28,7 +28,7 @@ import com.facebook.Session;
  *
  */
 
-public enum OpenKitSingleton {
+public enum OKManager {
 	INSTANCE;
 	
 	private OKUser currentUser;

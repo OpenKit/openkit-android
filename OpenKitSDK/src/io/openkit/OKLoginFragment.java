@@ -224,7 +224,7 @@ public class OKLoginFragment extends DialogFragment
 								OKLog.v("Correct callback is called");
 								hideSpinner();
 								OKLog.v("Created OKUser successfully!");
-								OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
+								OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
 								dialogDelegate.onLoginSucceeded();
 							}
 
@@ -378,7 +378,7 @@ public class OKLoginFragment extends DialogFragment
 			public void onSuccess(OKUser user) {
 				hideSpinner();
 				OKLog.v("Created OKUser successfully!");
-				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
+				OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
 				dialogDelegate.onLoginSucceeded();
 			}
 

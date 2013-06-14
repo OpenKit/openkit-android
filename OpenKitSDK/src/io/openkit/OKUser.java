@@ -51,7 +51,7 @@ public class OKUser {
 	 */
 	public static void logoutCurrentUser(Context context)
 	{
-		OpenKitSingleton.INSTANCE.logoutCurrentUser(context);
+		OKManager.INSTANCE.logoutCurrentUser(context);
 	}
 	
 	/**
