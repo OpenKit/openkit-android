@@ -145,7 +145,7 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 			@Override
 			public void onSuccess(OKUser user) {
 				hideSpinner();
-				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginUpdateNickFragment.this.getActivity());
+				OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginUpdateNickFragment.this.getActivity());
 				OKLoginUpdateNickFragment.this.dismiss();
 			}
 			

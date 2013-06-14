@@ -28,7 +28,7 @@ import io.openkit.facebook.Session;
  *
  */
 
-public enum OpenKitSingleton {
+public enum OKManager {
 	INSTANCE;
 	
 	private OKUser currentUser;

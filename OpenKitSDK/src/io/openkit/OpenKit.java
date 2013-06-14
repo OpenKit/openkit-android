@@ -26,7 +26,7 @@ public class OpenKit {
 	 */
 	public static void initialize(Context context, String OKAppID)
 	{
-		OpenKitSingleton.INSTANCE.initialize(context, OKAppID);
+		OKManager.INSTANCE.initialize(context, OKAppID);
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class OpenKit {
 	 */
 	public static OKUser getCurrentUser()
 	{
-		return OpenKitSingleton.INSTANCE.getCurrentUser();
+		return OKManager.INSTANCE.getCurrentUser();
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class OpenKit {
 	 */
 	public static String getOKAppID()
 	{
-		return OpenKitSingleton.INSTANCE.getOKAppID();
+		return OKManager.INSTANCE.getOKAppID();
 	}
 	
 	/**
