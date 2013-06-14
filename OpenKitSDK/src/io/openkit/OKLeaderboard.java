@@ -240,7 +240,7 @@ public class OKLeaderboard implements Parcelable{
 	public static void getLeaderboards(OKLeaderboardsListResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getOKAppID());
+		params.put("app_key",OpenKit.getAppKey());
 		
 		OKLog.d("Getting list of leaderboards");
 		
@@ -319,7 +319,7 @@ public class OKLeaderboard implements Parcelable{
 		}
 		
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getOKAppID());
+		params.put("app_key",OpenKit.getAppKey());
 		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
 		params.put("user_id", Integer.toString(currentUser.getOKUserID()));
 		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
@@ -391,7 +391,7 @@ public class OKLeaderboard implements Parcelable{
 	public void getLeaderboardScores(int pageNumber, OKScoresResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getOKAppID());
+		params.put("app_key",OpenKit.getAppKey());
 		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));		
 		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
 		params.put("page_num", Integer.toString(pageNumber));
