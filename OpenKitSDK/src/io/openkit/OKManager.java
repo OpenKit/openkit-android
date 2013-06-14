@@ -32,30 +32,38 @@ public enum OKManager {
 	INSTANCE;
 	
 	private OKUser currentUser;
-	private String OKAppID;
+	private String appKey;
+	private String secretKey;
 	
 	/**
 	 * OpenKit internal only, developers should use OpenKit.initialize()
 	 * @param context
-	 * @param OKAppID
+	 * @param appKey
+	 * @param secretKey
 	 */
-	public void initialize(Context context, String OKAppID)
+	public void initialize(Context context, String appKey, String secretKey)
 	{
-		this.OKAppID = OKAppID;
+		this.appKey = appKey;
+		this.secretKey = secretKey;
 		this.getCurrentUser(context);
 	}
 	
 	/**
-	 * @return Returns the OpenKit application ID.
+	 * @return Returns the OpenKit application key.
 	 */
-	public String getOKAppID()
+	public String getAppKey()
 	{
-		return this.OKAppID;
+		return this.appKey;
 	}
 	
 	public OKUser getCurrentUser()
 	{
 		return currentUser;
+	}
+	
+	public String getSecretKey()
+	{
+		return secretKey;
 	}
 	
 	/**
