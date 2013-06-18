@@ -22,7 +22,6 @@ import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import io.openkit.asynchttp.RequestParams;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,32 +45,6 @@ public class OKCloud {
 	//==============================================================================
 	// Private
 	//==============================================================================
-	private boolean encodeObj(Object o, StringBuilder out) {
-		boolean success = true;
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			out.append(mapper.writeValueAsString(o));
-		} catch (Exception e) {
-			OKLog.d("Could not encode object!");
-			success = false;
-		}
-		return success;
-	}
-
-	private Object decodeStr(String s) {
-		ObjectMapper mapper = new ObjectMapper();
-		Object o;
-		try {
-			o = mapper.readValue(s, Object.class);
-		} catch (Exception e) {
-			OKLog.d("Could not decode String!!");
-			return null;
-		}
-		return o;
-	}
-
-	// Verifies that we can serialize and deserialize this object before
-	// storing to redis.
 	private void iset(Object o, String key, final OKCloudHandler h) {
 
 		if(OpenKit.getCurrentUser() == null) {
