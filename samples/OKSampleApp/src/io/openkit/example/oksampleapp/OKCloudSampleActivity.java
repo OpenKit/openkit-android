@@ -15,21 +15,24 @@
  */
 package io.openkit.example.oksampleapp;
 
-import io.openkit.*;
-import io.openkit.okcloud.*;
+import io.openkit.OKLog;
+import io.openkit.okcloud.OKCloud;
+import io.openkit.okcloud.OKCloudException;
+import io.openkit.okcloud.OKCloudHandler;
 
-import android.os.Bundle;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 
 public class OKCloudSampleActivity extends Activity {
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,24 +45,22 @@ public class OKCloudSampleActivity extends Activity {
 		getMenuInflater().inflate(R.menu.activity_okcloud_sample, menu);
 		return true;
 	}
-	
+
 	private void showToast(String toastText)
 	{
 		Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
 		toast.show();
 	}
-	
+
 	public void storeString(View view) {
 		final String stringToStore = "I'm a string and I'm stored in the cloud!";
-		
+
 		OKCloud.set(stringToStore, "myKey1", new OKCloudHandler() {
 			@Override
 			public void complete(Object obj, OKCloudException e) {
 				if (e == null) {
-					OKLog.d("Successfully stored string.");
 					showToast("Successfully stored string: " + stringToStore);
 				} else {
-					OKLog.d("Error storing string: %s", e.getMessage());
 					showToast("Error storing string: " + e.getMessage());
 				}
 			}
@@ -71,55 +72,109 @@ public class OKCloudSampleActivity extends Activity {
 			@Override
 			public void complete(Object obj, OKCloudException e) {
 				if (e == null) {
-					OKLog.d("Got the string: %s", obj);
 					showToast("Got the string: " + obj.toString());
 				} else {
-					OKLog.d("Error getting string: %s", e.getMessage());
 					showToast("Error getting string: " + e.getMessage());
 				}
 			}
 		});
 	}
-	
-	// See types in "Raw" Data Binding Example
-	// http://wiki.fasterxml.com/JacksonInFiveMinutes
-	public void storeHashMap(View view) {
-		final Object[] arr = { "one", "two", 1 };
-		HashMap<Object, Object> obj = new HashMap<Object, Object>();
-		obj.put("property1", "foo");
-		obj.put("property2", -99);
-		obj.put("property3", arr);
 
-		OKCloud.set(obj, "myKey2", new OKCloudHandler() {
+	public void storeArray(View view) {
+		JSONArray arr = new JSONArray();
+		arr.put("hello");
+		arr.put(-99);
+		OKCloud.set(arr, "myKey2", new OKCloudHandler() {
+
 			@Override
 			public void complete(Object obj, OKCloudException e) {
 				if (e == null) {
-					OKLog.d("Successfully stored HashMap.");
-					showToast("Succesfully stored HashMap");
+					showToast("Succesfully stored JSONArray");
 				} else {
-					OKLog.d("Error storing HashMap: %s", e.getMessage());
-					showToast("Error storing HashMap");
+					showToast("Error storing JSONArray");
 				}
 			}
 		});
 	}
 
-	public void getHashMap(View view) {
+	public void getArray(View view) {
 		OKCloud.get("myKey2", new OKCloudHandler() {
 			@Override
 			public void complete(Object obj, OKCloudException e) {
 				if (e == null) {
-					LinkedHashMap<?, ?> casted_obj = (LinkedHashMap<?, ?>)obj;
-					Object val1 = casted_obj.get("property1");
-					Object val2 = casted_obj.get("property2");
-					Object val3 = casted_obj.get("property3");
-					OKLog.d("Property 1:\n  value: %s\n  class: %s", val1, val1.getClass().getName());
-					OKLog.d("Property 2:\n  value: %d\n  class: %s", val2, val2.getClass().getName());
-					OKLog.d("Property 3:\n  value: %s\n  class: %s", val3.toString(), val3.getClass().getName());
-					showToast("Successfully got HashMap with " + casted_obj.size() + " pairs");
+					Object element0, element1;
+					JSONArray arr = (JSONArray)obj;
+					try {
+						element0 = arr.get(0);
+						element1 = arr.get(1);
+					} catch (JSONException e1) {
+						OKLog.d("Could not get elements of returned array!");
+						return;
+					}
+					OKLog.d("Element 0 value: %s", element0);
+					OKLog.d("Element 1 value: %d", element1);
+					showToast("Successfully got JSONArray with " + arr.length() + " pairs");
 				} else {
 					OKLog.d("Error getting hashmap: %s", e.getMessage());
 					showToast("Error getting hashmap: " + e.getMessage());
+				}
+			}
+		});
+
+	}
+
+	public void storeJSON(View view) {
+		JSONObject obj = new JSONObject();
+		JSONArray arr = new JSONArray();
+		arr.put("one");
+		arr.put("two");
+		arr.put(3);
+
+		try {
+			obj.put("property1", "hello");
+			obj.put("property2", arr);
+		} catch (JSONException e1) {
+			OKLog.d("Could not add to sample JSON object");
+		}
+
+		OKCloud.set(obj, "myKey3", new OKCloudHandler() {
+			@Override
+			public void complete(Object obj, OKCloudException e) {
+				if (e == null) {
+					OKLog.d("Successfully stored JSONObject.");
+					showToast("Succesfully stored JSONObject");
+				} else {
+					OKLog.d("Error storing JSONObject: %s", e.getMessage());
+					showToast("Error storing JSONObject");
+				}
+			}
+		});
+	}
+
+	public void getJSON(View view) {
+		OKCloud.get("myKey3", new OKCloudHandler() {
+			@Override
+			public void complete(Object obj, OKCloudException e) {
+				if (e == null) {
+					JSONObject jsonObject = (JSONObject)obj;
+
+					// See format of properties in 'storeJSON' method above.
+					String property1;
+					JSONArray property2;
+					try {
+						property1 = (String)jsonObject.get("property1");
+						property2 = (JSONArray)jsonObject.get("property2");
+					} catch (JSONException e1) {
+						OKLog.d("Could not get elements of returned json!");
+						return;
+					}
+
+					OKLog.d("Property 1 value: %s", property1);
+					OKLog.d("Property 2: value: %s", property2);
+					showToast("Successfully got JSONObject with " + jsonObject.length() + " properties");
+				} else {
+					OKLog.d("Error getting JSONObject: %s", e.getMessage());
+					showToast("Error getting JSONObject: " + e.getMessage());
 				}
 			}
 		});
