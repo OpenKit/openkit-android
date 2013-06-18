@@ -1,5 +1,4 @@
-<!-- 
-
+<!--
 	Copyright 2012 OpenKit
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +12,8 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+-->
 
- -->
- 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearLayout1"
@@ -37,19 +35,34 @@
         android:layout_height="wrap_content"
         android:onClick="getString"
         android:text="@string/button2text" />
-
-    <Button
-        android:id="@+id/button3"
+    
+     <Button
+        android:id="@+id/Button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="storeHashMap"
+        android:onClick="storeArray"
         android:text="@string/button3text" />
 
     <Button
         android:id="@+id/Button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="getHashMap"
+        android:onClick="getArray"
         android:text="@string/button4text" />
+    
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="storeJSON"
+        android:text="@string/button5text" />
+
+    <Button
+        android:id="@+id/Button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="getJSON"
+        android:text="@string/button6text" />
 
 </LinearLayout>
