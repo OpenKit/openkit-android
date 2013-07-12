@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import io.openkit.OKAchievementScore;
 import io.openkit.OKLoginActivity;
-import io.openkit.OKManager;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
 import io.openkit.OKScore.ScoreRequestResponseHandler;

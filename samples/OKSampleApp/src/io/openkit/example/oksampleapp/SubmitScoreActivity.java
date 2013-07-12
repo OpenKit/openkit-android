@@ -26,38 +26,38 @@ public class SubmitScoreActivity extends Activity {
 		getMenuInflater().inflate(R.menu.activity_submit_score, menu);
 		return true;
 	}
-	
+
 	public void submitScoreLevel1(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(2);
+	    promptForScoreAndSubmit(25);
 	}
-	
+
 	public void submitScoreLevel2(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(3);
+	    promptForScoreAndSubmit(26);
 	}
-	
+
 	public void submitScoreLevel3(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(4);
+	    promptForScoreAndSubmit(27);
 	}
-	
+
 	public void submitScore(final OKScore scoreToSubmit)
 	{
 		scoreToSubmit.submitScore(new OKScore.ScoreRequestResponseHandler() {
-			
+
 			@Override
 			public void onSuccess() {
 				Toast.makeText(SubmitScoreActivity.this, "Submitted score successfully with value: " + scoreToSubmit.getScoreValue(), Toast.LENGTH_SHORT).show();
 			}
-			
+
 			@Override
 			public void onFailure(Throwable error) {
 				Toast.makeText(SubmitScoreActivity.this, "Failed to submit score with error: " + error, Toast.LENGTH_LONG).show();
 			}
 		});
 	}
-	
+
 	/**
 	 * Display an alert dialog to get a score value, and then submit a score to the given leaderboard
 	 * @param leaderboardID Leaderboard ID taken from the OpenKit dashboard
@@ -74,16 +74,17 @@ public class SubmitScoreActivity extends Activity {
 		alert.setView(input);
 
 		alert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+		@Override
 		public void onClick(DialogInterface dialog, int whichButton) {
 			String value = input.getText().toString();
-			
+
 			//Create the score, set it's score value, and set the leaderboard ID which is passed in as a parameter
 			OKScore score = new OKScore();
 			score.setScoreValue(Long.parseLong(value));
-			
+
 			//Set the metadata to 1 + the score value
 			score.setMetadata((int)score.getScoreValue() + 1);
-			
+
 			//Set the display string to include the unit "OpenKit Points"
 			score.setDisplayString(score.getScoreValue() + " OpenKit points");
 			score.setOKLeaderboardID(leaderboardID);
@@ -92,7 +93,8 @@ public class SubmitScoreActivity extends Activity {
 		});
 
 		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		  public void onClick(DialogInterface dialog, int whichButton) {
+		  @Override
+		public void onClick(DialogInterface dialog, int whichButton) {
 		    // Canceled
 			 return;
 		  }
