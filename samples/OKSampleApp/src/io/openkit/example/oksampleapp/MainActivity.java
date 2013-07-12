@@ -33,27 +33,27 @@ import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
-	
+
 	private Button loginToOpenKitButton;
 	private Button showLeaderboardsButton;
 	private Button submitScoresButton;
 	private Button cloudDataButton;
 	private Button logoutButton;
 	private Button submitAchievementButton;
-	
+
 	private ProfilePictureView profilePictureView;
-	
+
 	private TextView userNameTextView;
-	
+
 	private static final int LOGIN_ACTIVITY_RESULT_CODE = 5;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		OpenKit.setEndpoint("http://stage.openkit.io");
-		OpenKit.initialize(this,"VwfMRAl5Gc4tirjw");
-		
+		OpenKit.setEndpoint("http://development.openkit.io");
+		OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
+
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
 		loginToOpenKitButton = (Button)findViewById(R.id.OKLoginButton);
 		submitScoresButton = (Button)findViewById(R.id.submitScoreButton);
@@ -61,22 +61,22 @@ public class MainActivity extends Activity {
 		logoutButton = (Button)findViewById(R.id.OKLogoutButton);
 		profilePictureView = (ProfilePictureView)findViewById(R.id.fbProfilePicView);
 		userNameTextView = (TextView)findViewById(R.id.userNameTextView);
-		
+
 		submitAchievementButton = (Button)findViewById(R.id.submitAchievementButton);
-		
+
 		loginToOpenKitButton.setOnClickListener(loginToOpenKitClickedClickListener);
 		showLeaderboardsButton.setOnClickListener(showOKLeaderboards);
 		submitScoresButton.setOnClickListener(submitScore);
 		cloudDataButton.setOnClickListener(cloudDataDemoClickListener);
 		logoutButton.setOnClickListener(logoutOfOpenKit);
-		
+
 		submitAchievementButton.setOnClickListener(submitAchievementProgress);
-		
+
 		//Update the view with the current user
 		updateView();
-		
+
 	}
-	
+
 	/**
 	 * This method upates the view based on whether the user is logged into OpenKit or not
 	 */
@@ -85,15 +85,15 @@ public class MainActivity extends Activity {
 		if(OpenKit.getCurrentUser() != null){
 			//Get the current user
 			OKUser currentUser = OpenKit.getCurrentUser();
-			
+
 			//Hide the login button
 			loginToOpenKitButton.setVisibility(View.GONE);
 			logoutButton.setVisibility(View.VISIBLE);
-			
+
 			//Show the user's profile pic and nickname
 			profilePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
 			userNameTextView.setText(currentUser.getUserNick());
-			
+
 			// Note: we currently use ProfilePicView from the Facebook SDK to show user profile images
 			// only because Twitter authentication is not yet implemented. Once Twitter auth is in place,
 			// this will be replaced by an OKUserProfilePicView class.
@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
 			//Show the login button
 			loginToOpenKitButton.setVisibility(View.VISIBLE);
 			logoutButton.setVisibility(View.GONE);
-			
+
 			//Not signed in
 			userNameTextView.setText(R.string.notLoginString);
 			profilePictureView.setProfileId("");
@@ -115,10 +115,10 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
-	
+
 	/**
 	 * OnClickListener that launches the OKLoginActivity to ask a user to Login to OpenKit.
-	 * 
+	 *
 	 * This method uses startActivityForResult() on the OKLoginActivity, but this is not required.
 	 * You can show OKLoginActivity with startActivity() also.
 	 */
@@ -130,30 +130,31 @@ public class MainActivity extends Activity {
 			//You can also use startActivit(launchOKLogin);
 		}
 	};
-	
+
 	/**
 	 * Showing sample of how to handle the activity result after prompting for login
 	 */
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		if(requestCode == LOGIN_ACTIVITY_RESULT_CODE)
 		{
 			// Check if it was the login activity that is presenting the result
-			
+
 			// Perform work here that requires the user to be logged in
 		}
-		
+
 		if(OpenKit.getCurrentUser() != null)
 		{
 			// Perform work here that requires the user to be logged in
 			//This is always the way to check if the user is logged in.
 			OKLog.v("onActivityResult, user is logged in");
 		}
-		
+
 		//Update the view
 		updateView();
 	}
-	
+
 	@Override
 	public void onResume()
 	{
@@ -161,40 +162,40 @@ public class MainActivity extends Activity {
 		super.onResume();
 	}
 
-	
+
 	/**
 	 * OnClickListener that logs the current user out of OpenKit
 	 */
 	private View.OnClickListener logoutOfOpenKit = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View arg0) {
 			OKUser.logoutCurrentUser(MainActivity.this);
-			
+
 			//Update the view
 			updateView();
 		}
 	};
-	
+
 	/**
 	 * Launch OKLeaderboards to show leaderboards
 	 */
 	private View.OnClickListener showOKLeaderboards = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			
+
 			//Get the leaderboards
 			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
 			startActivity(launchOKLeaderboards);
 		}
 	};
-	
-	
+
+
 	/**
 	 * Submit achievement progress to achievement
 	 */
 	private View.OnClickListener submitAchievementProgress = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View arg0) {
 			OKAchievementScore achievementScore = new OKAchievementScore();
@@ -213,27 +214,27 @@ public class MainActivity extends Activity {
 			});
 		}
 	};
-	
-	
-	
+
+
+
 	/**
 	 * Launch the cloud storage demo activity
 	 */
 	private View.OnClickListener cloudDataDemoClickListener = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View v) {
-			
+
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
 		}
 	};
-	
+
 	/**
 	 * Launch the view to submit scores
 	 */
 	private View.OnClickListener submitScore = new View.OnClickListener() {
-		
+
 		@Override
 		public void onClick(View arg0) {
 			Intent launchScoreSubmitter = new Intent(MainActivity.this, SubmitScoreActivity.class);
