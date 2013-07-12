@@ -154,7 +154,7 @@ public class OKScore {
 			JSONObject scoreJSON = getScoreAsJSON();
 			
 			JSONObject requestParams = new JSONObject();
-			requestParams.put("app_key", OpenKit.getOKAppID());
+			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("score", scoreJSON);
 
 			OKHTTPClient.postJSON("/scores", requestParams, new OKJsonHttpResponseHandler() {

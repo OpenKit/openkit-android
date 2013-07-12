@@ -16,11 +16,15 @@
 
 package io.openkit.okcloud;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import io.openkit.*;
+import io.openkit.OKHTTPClient;
+import io.openkit.OKLog;
+import io.openkit.OpenKit;
+import io.openkit.asynchttp.OKJsonHttpResponseHandler;
+import io.openkit.asynchttp.RequestParams;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class OKCloud {
 
@@ -41,99 +45,93 @@ public class OKCloud {
 	//==============================================================================
 	// Private
 	//==============================================================================
-	private boolean encodeObj(Object o, StringBuilder out) {
-		boolean success = true;
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			out.append(mapper.writeValueAsString(o)); 
-		} catch (Exception e) {
-			OKLog.d("Could not encode object!");
-			success = false;
-		}
-		return success;
-	}
-	
-	private Object decodeStr(String s) {
-		ObjectMapper mapper = new ObjectMapper();
-		Object o;
-		try {
-			o = mapper.readValue(s, Object.class);
-		} catch (Exception e) {
-			OKLog.d("Could not decode String!!");
-			return null;
-		}
-		return o;
-	}
-	
-	// Verifies that we can serialize and deserialize this object before
-	// storing to redis.
 	private void iset(Object o, String key, final OKCloudHandler h) {
-		String objRep;
-		StringBuilder strOut = new StringBuilder();
-		
+
 		if(OpenKit.getCurrentUser() == null) {
 			h.complete(null, new OKCloudException("User is not logged in. User must be logged in when making cloud requests."));
 			return;
 		}
-		
-		if (!encodeObj(o, strOut)) {
-			h.complete(null, new OKCloudException("Could not serialize this object."));
-			return;
+
+		JSONObject x = new JSONObject();
+		try {
+			x.put("user_id", OpenKit.getCurrentUser().getOKUserID());
+			x.put("field_key", key);
+			x.put("field_value", o);
+		} catch (JSONException e) {
+			OKLog.d("Object passed to OKCloud.set() could not be set as JSON value.");
 		}
-		
-		objRep = strOut.toString();
-		final Object decodedObj = decodeStr(objRep);
-		if (decodedObj == null) {
-			h.complete(null, new OKCloudException("Serialization of object succeeded, but deserialization did not."));
-			return;
-		}
-		
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("user_id", String.valueOf(OpenKit.getCurrentUser().getOKUserID()));
-		params.put("field_key", key);
-		params.put("field_value", objRep);
-		
-		OKCloudAsyncRequest req = new OKCloudAsyncRequest("developer_data", "POST", params);
-		req.performWithCompletionHandler(new OKCloudAsyncRequest.CompletionHandler() {
-			
+
+		OKHTTPClient.postJSON("/developer_data", x, new OKJsonHttpResponseHandler() {
+
 			@Override
-			public void complete(String response, OKCloudException e) {
-				h.complete(decodedObj, e);
+			public void onSuccess(JSONObject object) {
+				h.complete(object, null);
 			}
-			
+
+			@Override
+			public void onSuccess(JSONArray array) {
+				OKLog.v("You should never see me.");
+			}
+
+			@Override
+			public void onFailure(Throwable error, String content) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
 		});
 	}
 
 	private void iget(final String key, final OKCloudHandler h) {
-		
+
 		if(OpenKit.getCurrentUser() == null) {
 			h.complete(null, new OKCloudException("User is not logged in. User must be logged in when making cloud requests."));
 			return;
 		}
-		
-		HashMap<String, String> params = new HashMap<String, String>();
+
+		RequestParams params = new RequestParams();
 		params.put("user_id", String.valueOf(OpenKit.getCurrentUser().getOKUserID()));
-		String path = String.format("developer_data/%s", key);
-		
-		OKCloudAsyncRequest req = new OKCloudAsyncRequest(path, "GET", params);
-		req.performWithCompletionHandler(new OKCloudAsyncRequest.CompletionHandler() {
-			
+		OKHTTPClient.get(String.format("/developer_data/%s", key), params, new OKJsonHttpResponseHandler() {
+
 			@Override
-			public void complete(String response, OKCloudException e) {
-				Object retVal = null;
-				OKCloudException retErr = e;
-				if (retErr == null) {
-					ObjectMapper mapper = new ObjectMapper();
-					try {
-						LinkedHashMap<?,?> resObj = mapper.readValue(response, LinkedHashMap.class);
-						retVal = resObj.get(key);
-					} catch(Exception badError) {
-						retErr = new OKCloudException("Bad stuff is happening.");
-					}
+			public void onSuccess(JSONObject object) {
+				Object x;
+				try {
+					x = object.get(key);
+				} catch (JSONException e) {
+					OKLog.d("Could not get object out of returned JSON.");
+					return;
 				}
-				h.complete(retVal, retErr);
+				h.complete(x, null);
 			}
-			
+
+			@Override
+			public void onSuccess(JSONArray array) {
+				OKLog.v("You should never see me.");
+			}
+
+			@Override
+			public void onFailure(Throwable error, String content) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				h.complete(null, new OKCloudException("Failed to store JSON."));
+			}
 		});
 	}
 }

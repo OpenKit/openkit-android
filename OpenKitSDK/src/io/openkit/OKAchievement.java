@@ -263,7 +263,7 @@ public class OKAchievement implements Parcelable{
 	public static void getAchievements(OKAchievementsListResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
-		params.put("app_key", OpenKit.getOKAppID());
+		params.put("app_key", OpenKit.getAppKey());
 		
 		// If a user_id is supplied, progress for each achievement will come back for this user.
 		OKUser currentUser = OpenKit.getCurrentUser();

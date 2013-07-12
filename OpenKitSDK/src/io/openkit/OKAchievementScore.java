@@ -72,7 +72,7 @@ public class OKAchievementScore {
 			JSONObject achievementScoreJSON = getAchievementScoreAsJSON();
 			
 			JSONObject requestParams = new JSONObject();
-			requestParams.put("app_key", OpenKit.getOKAppID());
+			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("achievement_score", achievementScoreJSON);
 
 			OKHTTPClient.postJSON("/achievement_scores", requestParams, new OKJsonHttpResponseHandler() {

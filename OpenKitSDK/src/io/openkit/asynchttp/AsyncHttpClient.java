@@ -355,6 +355,17 @@ public class AsyncHttpClient {
                 context);
     }
 
+    public void get(HttpGet request, AsyncHttpResponseHandler responseHandler) {
+        sendRequest(httpClient, httpContext, request, null, responseHandler, null);
+    }
+
+    public void post(HttpPost request, String contentType, AsyncHttpResponseHandler responseHandler) {
+        sendRequest(httpClient, httpContext, request, contentType, responseHandler, null);
+    }
+
+    public void put(HttpPut request, String contentType, AsyncHttpResponseHandler responseHandler) {
+        sendRequest(httpClient, httpContext, request, contentType, responseHandler, null);
+    }
 
     //
     // HTTP POST Requests

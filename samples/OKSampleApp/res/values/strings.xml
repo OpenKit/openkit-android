@@ -25,8 +25,10 @@
     <string name="menu_settings">Settings</string>
     <string name="button1text">Store String</string>
     <string name="button2text">Get String</string>
-    <string name="button3text">Store Object</string>
-    <string name="button4text">Get Object</string>
+    <string name="button3text">Store Array</string>
+    <string name="button4text">Get Array</string>
+    <string name="button5text">Store JSON Object</string>
+    <string name="button6text">Get JSON Object</string>
     <string name="signedIn">Signed In As</string>
     <string name="notLoginString">Not Logged In</string>
     <string name="cloudData">Cloud Data Demo</string>
