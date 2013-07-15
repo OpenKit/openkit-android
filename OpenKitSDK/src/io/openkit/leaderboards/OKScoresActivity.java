@@ -26,26 +26,26 @@ import android.view.MenuItem;
 public class OKScoresActivity extends FragmentActivity {
 
 	private OKLeaderboard currentLeaderboard;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
 		this.setTheme(themeID);
 		//this.setTheme(R.style.OKActivityTheme);
 		super.onCreate(savedInstanceState);
-		
+
 		currentLeaderboard = getIntent().getParcelableExtra(OKLeaderboard.LEADERBOARD_KEY);
-		
+
 		this.setTitle(currentLeaderboard.getName());
-		
+
 		if(savedInstanceState == null) {
-			OKScoresFragment fragment = OKScoresFragment.newInstance(currentLeaderboard);
+			OKSocialLeaderboardFragment fragment = OKSocialLeaderboardFragment.newInstance(currentLeaderboard);
 			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.add(android.R.id.content, fragment);
 			ft.commit();
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -58,5 +58,5 @@ public class OKScoresActivity extends FragmentActivity {
 		}
 
 	}
-	
+
 }

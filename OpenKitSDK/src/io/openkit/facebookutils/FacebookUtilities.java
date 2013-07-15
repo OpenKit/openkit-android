@@ -25,15 +25,16 @@ import io.openkit.user.OKUserUtilities;
 
 
 
-public class FacebookUtilities 
+public class FacebookUtilities
 {
-	
+	static String keyhashErrorString = "remote_app_id does not match stored id ";
+
 	public interface CreateOKUserRequestHandler
 	{
 		public void onSuccess(OKUser user);
 		public void onFail(Error error);
 	}
-	
+
 	/**
 	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
 	 * @param requestHandler
@@ -41,7 +42,7 @@ public class FacebookUtilities
 	public static void CreateOKUserFromFacebook(final CreateOKUserRequestHandler requestHandler)
 	{
 		Session session = Session.getActiveSession();
-		
+
 		if(session.isOpened())
 		{
 			//Perform a 'ME' request to get user info
@@ -51,7 +52,7 @@ public class FacebookUtilities
 					if(user != null) {
 						String userID = user.getId();
 						String userNick = user.getName();
-						
+
 						OKUserUtilities.createOKUser(OKUserIDType.FacebookID, userID, userNick, requestHandler);
 					}
 				}
@@ -62,6 +63,32 @@ public class FacebookUtilities
 			requestHandler.onFail(new Error("Not current logged into FB"));
 		}
 	}
-	
+
+	/**
+	 * Given a facebook login exception, returns a string to display as an error message if one should be shown, otherwise returns null
+	 * @param exception
+	 * @return Error message to display, null if no error to show
+	 */
+	public static String ShouldShowFacebookError(Exception exception)
+	{
+		OKLog.v("Facebook login failed");
+
+		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
+		{
+			OKLog.v("User cancelled Facebook login");
+
+			//Special check for the keyhash issue, otherwise just dismiss because the user cancelled
+			if(exception.getMessage().equalsIgnoreCase(keyhashErrorString))
+			{
+				return "There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application";
+			} else {
+				return null;
+			}
+		}
+		else {
+			return "There was an unknown error while logging into Facebook. Please try again";
+		}
+	}
+
 
 }
