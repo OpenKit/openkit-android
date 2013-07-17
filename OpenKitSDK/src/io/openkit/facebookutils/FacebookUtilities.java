@@ -16,9 +16,14 @@
 
 package io.openkit.facebookutils;
 
+import java.util.List;
+
+import org.json.JSONArray;
+
 import io.openkit.*;
 import io.openkit.facebook.*;
 import io.openkit.facebook.Request.GraphUserCallback;
+import io.openkit.facebook.Request.GraphUserListCallback;
 import io.openkit.facebook.model.GraphUser;
 import io.openkit.user.OKUserIDType;
 import io.openkit.user.OKUserUtilities;
@@ -61,6 +66,43 @@ public class FacebookUtilities
 		else
 		{
 			requestHandler.onFail(new Error("Not current logged into FB"));
+		}
+	}
+
+	public interface GetFBFriendsRequestHandler
+	{
+		public void onSuccess(JSONArray friendsArray);
+		public void onFail(FacebookRequestError error);
+	}
+
+	public static void GetFBFriends(final GetFBFriendsRequestHandler requestHandler)
+	{
+		Session session = Session.getActiveSession();
+
+		if(session != null && session.isOpened())
+		{
+			Request.newMyFriendsRequest(session, new GraphUserListCallback() {
+
+				@Override
+				public void onCompleted(List<GraphUser> users, Response response) {
+					FacebookRequestError error = response.getError();
+
+					if(error != null) {
+						OKLog.d("Error getting Facebook friends");
+						requestHandler.onFail(error);
+					} else {
+						// Munge the Facebook friends into a JSONArray of friend IDs
+						JSONArray array = new JSONArray();
+						for(int x = 0; x < users.size(); x++) {
+							GraphUser user = users.get(x);
+							array.put(user.getId());
+						}
+						requestHandler.onSuccess(array);
+					}
+				}
+			});
+		} else {
+			requestHandler.onFail(new FacebookRequestError(FacebookRequestError.INVALID_ERROR_CODE, "OpenKit", "Facebook session is not open"));
 		}
 	}
 
