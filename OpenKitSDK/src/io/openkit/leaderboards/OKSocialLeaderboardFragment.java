@@ -45,7 +45,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		int viewID = getResources().getIdentifier("io_openkit_fragment_oksocialleaderboard", "layout", getActivity().getPackageName());
 		View view = inflater.inflate(viewID, container, false);
@@ -63,6 +63,21 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 		if(scoresListAdapter == null)
 			getScores();
+
+
+		Session session = Session.getActiveSession();
+		if (session == null) {
+			if (savedInstanceState != null) {
+				session = Session.restoreSession(getActivity(), null, sessionStatusCallback, savedInstanceState);
+			}
+			if (session == null) {
+				session = new Session(getActivity());
+			}
+			Session.setActiveSession(session);
+			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
+				session.openForRead(new Session.OpenRequest(this).setCallback(sessionStatusCallback));
+			}
+		}
 
 		return view;
 	}

@@ -77,11 +77,13 @@ public class FacebookUtilities
 
 	public static void GetFBFriends(final GetFBFriendsRequestHandler requestHandler)
 	{
+		OKLog.d("Getting list of FB friends");
+
 		Session session = Session.getActiveSession();
 
 		if(session != null && session.isOpened())
 		{
-			Request.newMyFriendsRequest(session, new GraphUserListCallback() {
+			Request friendsRequest = Request.newMyFriendsRequest(session, new GraphUserListCallback() {
 
 				@Override
 				public void onCompleted(List<GraphUser> users, Response response) {
@@ -91,6 +93,7 @@ public class FacebookUtilities
 						OKLog.d("Error getting Facebook friends");
 						requestHandler.onFail(error);
 					} else {
+						OKLog.d("Got %d facebook friends", users.size());
 						// Munge the Facebook friends into a JSONArray of friend IDs
 						JSONArray array = new JSONArray();
 						for(int x = 0; x < users.size(); x++) {
@@ -101,6 +104,8 @@ public class FacebookUtilities
 					}
 				}
 			});
+
+			friendsRequest.executeAsync();
 		} else {
 			requestHandler.onFail(new FacebookRequestError(FacebookRequestError.INVALID_ERROR_CODE, "OpenKit", "Facebook session is not open"));
 		}
