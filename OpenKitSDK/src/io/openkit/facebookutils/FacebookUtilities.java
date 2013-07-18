@@ -48,7 +48,7 @@ public class FacebookUtilities
 	{
 		Session session = Session.getActiveSession();
 
-		if(session.isOpened())
+		if(isFBSessionOpen())
 		{
 			//Perform a 'ME' request to get user info
 			Request.executeMeRequestAsync(session, new GraphUserCallback() {
@@ -66,6 +66,47 @@ public class FacebookUtilities
 		else
 		{
 			requestHandler.onFail(new Error("Not current logged into FB"));
+		}
+	}
+
+	public static boolean isFBSessionOpen()
+	{
+		Session session = Session.getActiveSession();
+
+		if(session != null && session.isOpened())
+			return true;
+		else
+			return false;
+	}
+
+	public static void logSessionState(SessionState state)
+	{
+		//Log what is happening with the Facebook session for debug help
+		switch (state) {
+		case OPENING:
+			OKLog.v("SessionState Opening");
+			break;
+		case CREATED:
+			OKLog.v("SessionState Created");
+			break;
+		case OPENED:
+			OKLog.v("SessionState Opened");
+			break;
+		case CLOSED_LOGIN_FAILED:
+			OKLog.v("SessionState Closed Login Failed");
+			break;
+		case OPENED_TOKEN_UPDATED:
+			OKLog.v("SessionState Opened Token Updated");
+			break;
+		case CREATED_TOKEN_LOADED:
+			OKLog.v("SessionState created token loaded" );
+			break;
+		case CLOSED:
+			OKLog.v("SessionState closed");
+			break;
+		default:
+			OKLog.v("Session State Default case");
+			break;
 		}
 	}
 
@@ -110,6 +151,7 @@ public class FacebookUtilities
 			requestHandler.onFail(new FacebookRequestError(FacebookRequestError.INVALID_ERROR_CODE, "OpenKit", "Facebook session is not open"));
 		}
 	}
+
 
 	/**
 	 * Given a facebook login exception, returns a string to display as an error message if one should be shown, otherwise returns null
