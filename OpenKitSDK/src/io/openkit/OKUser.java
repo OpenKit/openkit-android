@@ -23,27 +23,30 @@ import android.content.Context;
 import android.util.Log;
 
 public class OKUser {
-	
+
 	private int OKUserID;
 	private long FBUserID;
 	private long twitterUserID;
 	private String userNick;
-	
+	private String googleID;
+	private long customID;
+
+
 	/**
 	 * Creates OKUser with JSONObject
 	 * @param userJSON JSON for user
 	 */
-	
+
 	public OKUser(JSONObject userJSON)
 	{
 		super();
 		initFromJSON(userJSON);
 	}
-	
+
 	public OKUser() {
 		super();
 	}
-	
+
 	/**
 	 * Logs the current user out of OpenKit and clears all cached data on the device associated
 	 * with the user
@@ -53,7 +56,7 @@ public class OKUser {
 	{
 		OKManager.INSTANCE.logoutCurrentUser(context);
 	}
-	
+
 	/**
 	 * Get the current logged in OKUser
 	 * @return OKUser or null if the user hasn't logged in
@@ -68,54 +71,73 @@ public class OKUser {
 		try {
 			this.OKUserID = userJSON.getInt("id");
 			this.userNick = userJSON.getString("nick");
-			
+
 			//We use optLong for fbID and Twitter ID becuase an OKUser will typically not have both, only 1 or the other
 			this.FBUserID = userJSON.optLong("fb_id");
 			this.twitterUserID = userJSON.optLong("twitter_id");
+			this.googleID = userJSON.optString("google_id");
+			this.customID = userJSON.optLong("custom_id");
+
 		} catch (JSONException e) {
 			Log.e("OpenKit", "Error parsing user JSON: " + e.toString());
 		}
-		
+
 	}
-	
+
 	public int getOKUserID()
 	{
 		return OKUserID;
 	}
-	
+
 	public void setOKUserID(int aID)
 	{
 		this.OKUserID = aID;
 	}
-	
+
 	public long getFBUserID()
 	{
 		return FBUserID;
 	}
-	
+
 	public void setFBUserID(long aFBID)
 	{
 		this.FBUserID = aFBID;
 	}
-	
+
 	public long getTwitterUserID()
 	{
 		return twitterUserID;
 	}
-	
+
 	public void setTwitterUserID(long aTwitterID)
 	{
 		this.twitterUserID = aTwitterID;
 	}
-	
+
 	public String getUserNick()
 	{
 		return userNick;
 	}
-	
+
 	public void setUserNick(String aNick)
 	{
 		this.userNick = aNick;
+	}
+
+	public String getGoogleID() {
+		return googleID;
+	}
+
+	public void setGoogleID(String googleID) {
+		this.googleID = googleID;
+	}
+
+	public long getCustomID() {
+		return customID;
+	}
+
+	public void setCustomID(long customID) {
+		this.customID = customID;
 	}
 
 }
