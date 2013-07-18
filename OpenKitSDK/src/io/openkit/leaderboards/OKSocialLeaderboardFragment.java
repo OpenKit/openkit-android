@@ -4,20 +4,25 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import com.commonsware.cwac.merge.MergeAdapter;
+
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKLog;
 import io.openkit.OKScore;
 import io.openkit.facebook.Session;
 import io.openkit.facebook.SessionState;
+import io.openkit.facebookutils.FacebookUtilities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class OKSocialLeaderboardFragment extends ListFragment {
 
@@ -26,6 +31,9 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	private OKLeaderboard currentLeaderboard;
 
 	private OKScoresListAdapter scoresListAdapter;
+	private OKScoresListAdapter friendsScoresListAdapter;
+
+	private int numSocialRequestsRunning = 0;
 
 	public static OKSocialLeaderboardFragment newInstance(OKLeaderboard leaderboard)
 	{
@@ -64,7 +72,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		if(scoresListAdapter == null)
 			getScores();
 
-
+		// Setup the Facebook cached session if there is one
 		Session session = Session.getActiveSession();
 		if (session == null) {
 			if (savedInstanceState != null) {
@@ -80,6 +88,75 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		}
 
 		return view;
+	}
+
+	private void updateListView()
+	{
+		MergeAdapter mergeAdapter = new MergeAdapter();
+
+		mergeAdapter.addView(getHeaderView("Friends"));
+
+		if(friendsScoresListAdapter != null && friendsScoresListAdapter.getCount() > 0) {
+			mergeAdapter.addAdapter(friendsScoresListAdapter);
+		} else if (isShowingSocialScoresProgressBar()) {
+			mergeAdapter.addView(getHeaderView("Loading social scores"));
+		} else if (!FacebookUtilities.isFBSessionOpen()) {
+			mergeAdapter.addView(getFBLoginRow());
+		} else {
+			// Show invite friends
+			mergeAdapter.addView(getFBInviteRow());
+		}
+
+		mergeAdapter.addView(getHeaderView("All Players"));
+		mergeAdapter.addAdapter(scoresListAdapter);
+
+		this.setListAdapter(mergeAdapter);
+	}
+
+	private View getFBLoginRow()
+	{
+		LayoutInflater inflater = this.getActivity().getLayoutInflater();
+		int fbLoginRowID = getResources().getIdentifier("io_openkit_list_fb_login", "layout", getActivity().getPackageName());
+		View fbLoginRow = inflater.inflate(fbLoginRowID, null);
+		return fbLoginRow;
+	}
+
+	private View getFBInviteRow()
+	{
+		View fbLoginRow = getFBLoginRow();
+
+		int textViewId, fbLoginbuttonId;
+		textViewId = getResources().getIdentifier("io_openkit_fbloginTitleTextView", "id", getActivity().getPackageName());
+		fbLoginbuttonId = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
+
+		TextView fbTextView = (TextView)fbLoginRow.findViewById(textViewId);
+		Button loginButton = (Button)fbLoginRow.findViewById(fbLoginbuttonId);
+
+		fbTextView.setText("Invite some friends");
+		loginButton.setText("Invite some friends");
+
+		return fbLoginRow;
+	}
+
+	private View getHeaderView(String headerText)
+	{
+		LayoutInflater inflater = this.getActivity().getLayoutInflater();
+
+		int listHeaderViewId, listHeaderTextViewId;
+		listHeaderTextViewId = getResources().getIdentifier("headerTextView", "id", getActivity().getPackageName());
+		listHeaderViewId = getResources().getIdentifier("list_simple_header", "layout", getActivity().getPackageName());
+
+		//Inflate the list headerview
+		View listHeaderView = inflater.inflate(listHeaderViewId, null);
+		TextView listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewId);
+		listHeaderTextView.setText(headerText);
+
+		return listHeaderView;
+	}
+
+	private boolean isShowingSocialScoresProgressBar()
+	{
+		return (numSocialRequestsRunning > 0);
 	}
 
 	private void getScores()
@@ -122,7 +199,30 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	{
 		listView.setVisibility(View.VISIBLE);
 		spinnerBar.setVisibility(View.INVISIBLE);
+		updateListView();
 	}
+
+	/*
+	private void loginToFacebook()
+	{
+
+			Session session = Session.getActiveSession();
+
+			if(!session.isOpened() && !session.isClosed()){
+				session.openForRead(new Session.OpenRequest(this)
+				//.setPermissions(Arrays.asList("basic_info"))
+				.setCallback(sessionStatusCallback));
+			}
+			else if(session.isOpened())
+			{
+				//Facebook session is already open, just authorize the user with OpenKit
+				authorizeFBUserWithOpenKit();
+			}
+			else {
+				Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
+			}
+	}
+	*/
 
 
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
@@ -137,33 +237,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
 			}
 
-			//Log what is happening with the Facebook session for debug help
-			switch (state) {
-			case OPENING:
-				OKLog.v("SessionState Opening");
-				break;
-			case CREATED:
-				OKLog.v("SessionState Created");
-				break;
-			case OPENED:
-				OKLog.v("SessionState Opened");
-				break;
-			case CLOSED_LOGIN_FAILED:
-				OKLog.v("SessionState Closed Login Failed");
-				break;
-			case OPENED_TOKEN_UPDATED:
-				OKLog.v("SessionState Opened Token Updated");
-				break;
-			case CREATED_TOKEN_LOADED:
-				OKLog.v("SessionState created token loaded" );
-				break;
-			case CLOSED:
-				OKLog.v("SessionState closed");
-				break;
-			default:
-				OKLog.v("Session State Default case");
-				break;
-			}
+			FacebookUtilities.logSessionState(state);
 
 			// If the session is opened, authorize the user, if the session is closed
 			if (state.isOpened())
