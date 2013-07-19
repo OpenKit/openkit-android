@@ -1,5 +1,6 @@
 package io.openkit.leaderboards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -9,14 +10,12 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKLog;
-import io.openkit.OKManager;
 import io.openkit.OKScore;
-import io.openkit.OKUser;
+import io.openkit.facebook.FacebookRequestError;
 import io.openkit.facebook.Session;
 import io.openkit.facebook.SessionState;
 import io.openkit.facebookutils.FacebookUtilities;
-import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
-import io.openkit.user.OKUserUtilities;
+import io.openkit.facebookutils.FacebookUtilities.GetFBFriendsRequestHandler;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -112,7 +111,9 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		}
 
 		mergeAdapter.addView(getHeaderView("All Players"));
-		mergeAdapter.addAdapter(scoresListAdapter);
+
+		if(scoresListAdapter != null)
+			mergeAdapter.addAdapter(scoresListAdapter);
 
 		this.setListAdapter(mergeAdapter);
 	}
@@ -208,8 +209,46 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void getSocialScores()
 	{
-
+		getSocialScoresFromOpenKit();
 	}
+
+	private void getSocialScoresFromOpenKit()
+	{
+		if(FacebookUtilities.isFBSessionOpen())
+		{
+
+			startedSocialRequest();
+
+			FacebookUtilities.GetFBFriends(new GetFBFriendsRequestHandler() {
+
+				@Override
+				public void onSuccess(ArrayList<Long> friendsArray) {
+					currentLeaderboard.getFacebookFriendsScoresWithFacebookFriends(friendsArray, new OKScoresResponseHandler() {
+
+						@Override
+						public void onSuccess(List<OKScore> scoresList) {
+							OKLog.v("Got %d social scores!", scoresList.size());
+							friendsScoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+							stoppedSocialRequest();
+						}
+
+						@Override
+						public void onFailure(Throwable e, JSONObject errorResponse) {
+							OKLog.v("Failed to get social scores from OpenKit: " + e);
+							stoppedSocialRequest();
+						}
+					});
+				}
+
+				@Override
+				public void onFail(FacebookRequestError error) {
+					OKLog.v("Failed to get Facebook friends");
+					stoppedSocialRequest();
+				}
+			});
+		}
+	}
+
 
 	private OKLeaderboard getLeaderboard()
 	{
@@ -227,6 +266,20 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		listView.setVisibility(View.VISIBLE);
 		spinnerBar.setVisibility(View.INVISIBLE);
 		updateListView();
+	}
+
+	private void startedSocialRequest()
+	{
+		numSocialRequestsRunning++;
+		if(numSocialRequestsRunning == 1)
+			updateListView();
+	}
+
+	private void stoppedSocialRequest()
+	{
+		numSocialRequestsRunning--;
+		if(numSocialRequestsRunning <= 0)
+			updateListView();
 	}
 
 
@@ -253,6 +306,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	private void loggedIntoFB()
 	{
 		FacebookUtilities.CreateOrUpdateOKUserFromFacebook(this.getActivity().getApplicationContext());
+		getSocialScoresFromOpenKit();
 
 	}
 
@@ -282,7 +336,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 				if(exception != null) {
 					String errorMessage = FacebookUtilities.ShouldShowFacebookError(exception);
 					if(errorMessage != null) {
-						OKUserUtilities.showErrorMessage(errorMessage, OKSocialLeaderboardFragment.this.getActivity());
+						FacebookUtilities.showErrorMessage(errorMessage, OKSocialLeaderboardFragment.this.getActivity());
 					}
 				}
 			}

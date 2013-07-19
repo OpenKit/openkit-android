@@ -38,18 +38,18 @@ public class OKLeaderboardsFragment extends ListFragment {
 	private ProgressBar spinnerBar;
 	private ListView listView;
 	private TextView listHeaderTextView;
-	
+
 	private boolean startedLeaderboardsRequest;
-	
+
 	private int numPlayers;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		setRetainInstance(true);
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -57,57 +57,58 @@ public class OKLeaderboardsFragment extends ListFragment {
 		int viewID = getResources().getIdentifier("io_openkit_fragment_leaderboards", "layout", getActivity().getPackageName());
 		View view = inflater.inflate(viewID, container, false);
 		//View view = inflater.inflate(R.layout.io_openkit_fragment_leaderboards, container, false);
-		
+
 		int spinnerBarID = getResources().getIdentifier("progressSpinner", "id", getActivity().getPackageName());
 		int listHeaderViewID = getResources().getIdentifier("list_simple_header", "layout", getActivity().getPackageName());
 		int listHeaderTextViewID = getResources().getIdentifier("headerTextView", "id", getActivity().getPackageName());
-		
+
 		listView = (ListView)view.findViewById(android.R.id.list);
 		//spinnerBar = (ProgressBar)view.findViewById(R.id.progressSpinner);
 		spinnerBar = (ProgressBar)view.findViewById(spinnerBarID);
-		
+
 		//Inflate the list headerview
 		//View listHeaderView = inflater.inflate(R.layout.list_simple_header, null);
 		View listHeaderView = inflater.inflate(listHeaderViewID, null);
 		//listHeaderTextView = (TextView)listHeaderView.findViewById(R.id.headerTextView);
 		listHeaderTextView = (TextView)listHeaderView.findViewById(listHeaderTextViewID);
 		listView.addHeaderView(listHeaderView);
-		
+
 		listHeaderTextView.setText(numPlayers + " Players");
-		
+
 		//Only do this the first time when fragment is created
 		if(!startedLeaderboardsRequest) {
 			getLeaderboards();
-			
+
+			/*
 			if(OKUser.getCurrentUser() == null)
 			{
 				OKLog.v("Launching login view becuase no user is logged in");
 				Intent launchLogin = new Intent(this.getActivity(), OKLoginActivity.class);
 				startActivity(launchLogin);
-			}
+			}*/
 		}
-		
+
 		OKLog.v("On create view leaderboards");
-		
+
 		return view;
 	}
-	
+
 	private void getLeaderboards()
 	{
 		startedLeaderboardsRequest = true;
-		
+
 		spinnerBar.setVisibility(View.VISIBLE);
-		
+
 		//Get the leaderboards
 		OKLeaderboard.getLeaderboards(new OKLeaderboardsListResponseHandler() {
 
 			@Override
 			public void onSuccess(List<OKLeaderboard> leaderboardList, int playerCount) {
-				listAdapter = new OKLeaderboardsListAdapter(OKLeaderboardsFragment.this.getActivity(), 
+				listAdapter = new OKLeaderboardsListAdapter(OKLeaderboardsFragment.this.getActivity(),
 						android.R.layout.simple_list_item_1, leaderboardList);
 
 				numPlayers = playerCount;
-				
+
 				//Add a header to the list. Must be done before setting list adapter
 				listHeaderTextView.setText(numPlayers + " Players");
 
@@ -125,6 +126,6 @@ public class OKLeaderboardsFragment extends ListFragment {
 			}
 		});
 	}
-	
+
 
 }
