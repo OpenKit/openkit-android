@@ -20,7 +20,7 @@ package io.openkit;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 
 import io.openkit.facebookutils.*;
-import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
+import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
 import io.openkit.facebook.*;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
@@ -54,9 +54,9 @@ public class OKLoginFragment extends DialogFragment
 	private static boolean googleLoginEnabled = true;
 	private static boolean twitterLoginEnabled = false;
 	private static boolean guestLoginEnabled = false;
-	
+
 	private boolean isShowingSpinner = false;
-	
+
 	private OKLoginFragmentDelegate dialogDelegate;
 
 	private GoogleAuthRequest mGoogAuthRequest;
@@ -76,7 +76,7 @@ public class OKLoginFragment extends DialogFragment
 	public static void setLoginTextResourceID(int id){
 		loginTextResourceID = id;
 	}
-	
+
 	public void setDelegate(OKLoginFragmentDelegate delegate) {
 		dialogDelegate = delegate;
 	}
@@ -143,7 +143,7 @@ public class OKLoginFragment extends DialogFragment
 
 		fbLoginButton.setOnClickListener(fbLoginButtonClick);
 		googleLoginButton.setOnClickListener(googleLoginButtonClick);
-		dontLoginButton.setOnClickListener(dismissSignInClick);		
+		dontLoginButton.setOnClickListener(dismissSignInClick);
 
 		Session session = Session.getActiveSession();
 		if (session == null) {
@@ -179,17 +179,17 @@ public class OKLoginFragment extends DialogFragment
 				performGoogleAuth(googAccounts[0]);
 			}
 			else {
-				//There are multiple accounts, show a selector to choose which Account to perform Auth on 
+				//There are multiple accounts, show a selector to choose which Account to perform Auth on
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			    builder.setTitle("Choose an Account");
-			    builder.setItems(GoogleUtils.getGoogleAccountNames(OKLoginFragment.this.getActivity()), new OnClickListener() {	
+			    builder.setItems(GoogleUtils.getGoogleAccountNames(OKLoginFragment.this.getActivity()), new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						Account account = GoogleUtils.getGoogleAccounts(OKLoginFragment.this.getActivity())[which];
 						performGoogleAuth(account);
 					}
 				});
-			         
+
 			    builder.create().show();
 			}
 
@@ -218,7 +218,7 @@ public class OKLoginFragment extends DialogFragment
 
 					@Override
 					public void run() {
-						GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOKUserRequestHandler() {
+						GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOrUpdateOKUserRequestHandler() {
 							@Override
 							public void onSuccess(OKUser user) {
 								OKLog.v("Correct callback is called");
@@ -229,7 +229,7 @@ public class OKLoginFragment extends DialogFragment
 							}
 
 							@Override
-							public void onFail(Error error) {
+							public void onFail(Throwable error) {
 								hideSpinner();
 								int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_OKLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
 								String message = OKLoginFragment.this.getString(errorMessageId);
@@ -242,7 +242,7 @@ public class OKLoginFragment extends DialogFragment
 
 			@Override
 			public void onLoginFailedWithPlayException(
-					final GooglePlayServicesAvailabilityException playEx) 
+					final GooglePlayServicesAvailabilityException playEx)
 			{
 				//Need to run this on UIthread becuase this may be called from a background thread and this shows an error dialog
 				OKLoginFragment.this.getActivity().runOnUiThread(new Runnable() {
@@ -272,7 +272,7 @@ public class OKLoginFragment extends DialogFragment
 						hideSpinner();
 						int errorMessageId = OKLoginFragment.this.getResources().getIdentifier("io_openkit_googleLoginError", "string", OKLoginFragment.this.getActivity().getPackageName());
 						String message = OKLoginFragment.this.getString(errorMessageId);
-						showLoginErrorMessage(message);	
+						showLoginErrorMessage(message);
 					}
 				});
 			}
@@ -288,7 +288,7 @@ public class OKLoginFragment extends DialogFragment
 		}
 	};
 
-	private View.OnClickListener dismissSignInClick = new View.OnClickListener() 
+	private View.OnClickListener dismissSignInClick = new View.OnClickListener()
 	{
 		@Override
 		public void onClick(View v) {
@@ -342,7 +342,7 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 	/**
-	 * Starts the Facebook authentication process. Performs Facebook authentication using the best method available 
+	 * Starts the Facebook authentication process. Performs Facebook authentication using the best method available
 	 * (native Android dialog, single sign on through Facebook application, or using a web view shown inside the app)
 	 */
 	private void loginToFB()
@@ -372,18 +372,18 @@ public class OKLoginFragment extends DialogFragment
 	 */
 	private void authorizeFBUserWithOpenKit()
 	{
-		FacebookUtilities.CreateOKUserFromFacebook(new CreateOKUserRequestHandler() {
+		FacebookUtilities.CreateOrUpdateOKUserFromFacebook(new CreateOrUpdateOKUserRequestHandler() {
 
 			@Override
 			public void onSuccess(OKUser user) {
 				hideSpinner();
-				OKLog.v("Created OKUser successfully!");
+				OKLog.v("Got OKUser successfully!");
 				OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
 				dialogDelegate.onLoginSucceeded();
 			}
 
 			@Override
-			public void onFail(Error error) {
+			public void onFail(Throwable error) {
 				hideSpinner();
 				OKLog.v("Failed to create OKUSER: " + error);
 
@@ -391,7 +391,7 @@ public class OKLoginFragment extends DialogFragment
 			}
 		});
 	}
-	
+
 
 	private void showLoginErrorMessageFromStringIdentifierName(String id)
 	{
@@ -399,7 +399,7 @@ public class OKLoginFragment extends DialogFragment
 		String message = OKLoginFragment.this.getString(errorMessageId);
 		showLoginErrorMessage(message);
 	}
-	
+
 	private void showLoginErrorMessage(String message)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(OKLoginFragment.this.getActivity());
@@ -441,7 +441,7 @@ public class OKLoginFragment extends DialogFragment
 				showLoginErrorMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
 				return;
 			} else {
-				dialogDelegate.onLoginCancelled();				
+				dialogDelegate.onLoginCancelled();
 			}
 		}
 		else {
@@ -489,8 +489,8 @@ public class OKLoginFragment extends DialogFragment
 				break;
 			}
 
-			// If the session is opened, authorize the user, if the session is closed 
-			if (state.isOpened()) 
+			// If the session is opened, authorize the user, if the session is closed
+			if (state.isOpened())
 			{
 				OKLog.v("FB Session is Open");
 				if(fbLoginButtonClicked){
@@ -523,7 +523,7 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		// Handle activity result for Google auth
 		if (requestCode == GoogleAuthRequest.REQUEST_CODE_RECOVER_FROM_AUTH_ERROR) {

@@ -22,7 +22,6 @@ import io.openkit.OKLoginUpdateNickFragment;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
-import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +39,7 @@ public class OKUserUtilities
 		nickDialog.show(fm, "OKLoginUpdateNickFragment");
 	}
 
-	public static void updateOKUser(final OKUser user, final UpdateUserRequestHandler requestHandler)
+	public static void updateOKUser(final OKUser user, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		//Setup the request parameters
 		JSONObject requestParams = new JSONObject();
@@ -95,7 +94,7 @@ public class OKUserUtilities
 
 
 
-	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserRequestHandler requestHandler)
+	public static void updateUserNick(final OKUser user, String newNick, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		user.setUserNick(newNick);
 		updateOKUser(user, requestHandler);
@@ -109,7 +108,7 @@ public class OKUserUtilities
 	 * @param userNick Nickname
 	 * @param requestHandler Anonymous callback
 	 */
-	public static void createOKUser(OKUserIDType idType, String userID, String userNick, final CreateOKUserRequestHandler requestHandler)
+	public static void createOKUser(OKUserIDType idType, String userID, String userNick, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		JSONObject jsonParams = new JSONObject();
 
