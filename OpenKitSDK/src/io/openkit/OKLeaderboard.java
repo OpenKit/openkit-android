@@ -243,7 +243,6 @@ public class OKLeaderboard implements Parcelable{
 	public static void getLeaderboards(OKLeaderboardsListResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getAppKey());
 
 		OKLog.d("Getting list of leaderboards");
 
@@ -322,7 +321,6 @@ public class OKLeaderboard implements Parcelable{
 		}
 
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getAppKey());
 		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
 		params.put("user_id", Integer.toString(currentUser.getOKUserID()));
 		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
@@ -414,7 +412,6 @@ public class OKLeaderboard implements Parcelable{
 	public void getLeaderboardScores(int pageNumber, OKScoresResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
-		params.put("app_key",OpenKit.getAppKey());
 		params.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
 		params.put("leaderboard_range", getParamForLeaderboardDisplayRange());
 		params.put("page_num", Integer.toString(pageNumber));
@@ -462,16 +459,15 @@ public class OKLeaderboard implements Parcelable{
 	{
 		JSONObject requestParams = new JSONObject();
 		try {
-			requestParams.put("app_key",OpenKit.getAppKey());
 			requestParams.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
-			requestParams.put("fb_friends", friendsArray);
+
+			JSONArray array = new JSONArray(friendsArray);
+			requestParams.put("fb_friends", array);
 		} catch (JSONException e) {
 			OKLog.v("Error formatting JSON params for getting social scores from OpenKit");
 			responseHandler.onFailure(e, null);
 			e.printStackTrace();
 		}
-
-		//params.put("fb_friends", friendsArray);
 
 		OKLog.d("Getting fb friends scores");
 
