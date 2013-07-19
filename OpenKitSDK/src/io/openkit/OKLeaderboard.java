@@ -261,7 +261,7 @@ public class OKLeaderboard implements Parcelable{
 
 			@Override
 			public void onSuccess(JSONArray array) {
-				OKLog.d("Received leaderboards JSON array from server: " + array.toString());
+				//OKLog.d("Received leaderboards JSON array from server: " + array.toString());
 
 				int maxPlayerCount = 0;
 
@@ -386,6 +386,26 @@ public class OKLeaderboard implements Parcelable{
 	}
 
 
+	private List<OKScore> parseScoresJSONArray(JSONArray arrayOfScores)
+	{
+		int numScores = arrayOfScores.length();
+		List<OKScore> scoresList = new ArrayList<OKScore>(numScores);
+
+		for(int x = 0; x < numScores; x++)
+		{
+			JSONObject score;
+			try {
+				score = arrayOfScores.getJSONObject(x);
+				scoresList.add(new OKScore(score));
+			} catch (JSONException e) {
+				OKLog.d("Error parsing list of scores for a leaderboard: " + e.toString());
+			}
+		}
+
+		return scoresList;
+	}
+
+
 	/**
 	 * Get scores for the given leaderboard and page number
 	 * @param pageNumber Page number in leaderboard scores pagination
@@ -417,20 +437,7 @@ public class OKLeaderboard implements Parcelable{
 			@Override
 			public void onSuccess(JSONArray array)
 			{
-				int numScores = array.length();
-				List<OKScore> scoresList = new ArrayList<OKScore>(numScores);
-
-				for(int x = 0; x < numScores; x++)
-				{
-					JSONObject score;
-					try {
-						score = array.getJSONObject(x);
-						scoresList.add(new OKScore(score));
-					} catch (JSONException e) {
-						OKLog.d("Error parsing list of scores for a leaderboard: " + e.toString());
-					}
-				}
-
+				List<OKScore> scoresList = parseScoresJSONArray(array);
 				finalResponseHandler.onSuccess(scoresList);
 			}
 
@@ -451,9 +458,54 @@ public class OKLeaderboard implements Parcelable{
 		});
 	}
 
-	public void getFacebookFriendsScoresWithFacebookFriends()
+	public void getFacebookFriendsScoresWithFacebookFriends(ArrayList<Long> friendsArray, final OKScoresResponseHandler responseHandler)
 	{
-		//TODO
+		JSONObject requestParams = new JSONObject();
+		try {
+			requestParams.put("app_key",OpenKit.getAppKey());
+			requestParams.put("leaderboard_id", Integer.toString(this.OKLeaderboard_id));
+			requestParams.put("fb_friends", friendsArray);
+		} catch (JSONException e) {
+			OKLog.v("Error formatting JSON params for getting social scores from OpenKit");
+			responseHandler.onFailure(e, null);
+			e.printStackTrace();
+		}
+
+		//params.put("fb_friends", friendsArray);
+
+		OKLog.d("Getting fb friends scores");
+
+		OKHTTPClient.postJSON("/best_scores/social", requestParams, new OKJsonHttpResponseHandler() {
+
+			@Override
+			public void onSuccess(JSONObject object) {
+				//This should never be called because the server
+				//always responds with an array of scores, even if it's empty
+				// or only has 1 score
+				responseHandler.onFailure(new IllegalArgumentException("Server returned only one JSON object instead of an array"), null);
+			}
+
+			@Override
+			public void onSuccess(JSONArray array) {
+				List<OKScore> scoresList = parseScoresJSONArray(array);
+				responseHandler.onSuccess(scoresList);
+			}
+
+			@Override
+			public void onFailure(Throwable error, String content) {
+				responseHandler.onFailure(error, null);
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				responseHandler.onFailure(e, null);
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				responseHandler.onFailure(e, errorResponse);
+			}
+		});
 	}
 
 	public void getScoresFromGPG()
