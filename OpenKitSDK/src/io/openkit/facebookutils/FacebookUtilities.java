@@ -27,7 +27,7 @@ import io.openkit.facebook.Request.GraphUserListCallback;
 import io.openkit.facebook.model.GraphUser;
 import io.openkit.user.OKUserIDType;
 import io.openkit.user.OKUserUtilities;
-
+import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
 
 
 public class FacebookUtilities
@@ -40,33 +40,97 @@ public class FacebookUtilities
 		public void onFail(Error error);
 	}
 
+	public interface GetFBUserIDRequestHandler
+	{
+		public void onCompletion(GraphUser user);
+	}
+
 	/**
-	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
+	 * Update the
 	 * @param requestHandler
 	 */
-	public static void CreateOKUserFromFacebook(final CreateOKUserRequestHandler requestHandler)
+	public static void CreateOrUpdateOKUserFromFacebook(final CreateOrUpdateOKUserRequestHandler requestHandler)
+	{
+		if(OKUser.getCurrentUser() != null) {
+			GetFacebookUserInfo(new GetFBUserIDRequestHandler() {
+
+				@Override
+				public void onCompletion(GraphUser user) {
+					if(user != null) {
+						long fbID = Long.parseLong(user.getId());
+
+						if(OKUser.getCurrentUser().getFBUserID() == 0) {
+							OKUser.getCurrentUser().setFBUserID(fbID);
+							//TODO
+							// Should we set the user's nickname to their facebook name?
+							OKLog.v("Updating cached user with Facebook ID");
+							OKUserUtilities.updateOKUser(OKUser.getCurrentUser(), requestHandler);
+						} else {
+							// If the FB ID of the login is different from the cached FB id, create a new OKUser with the new FB ID
+							if(fbID != OKUser.getCurrentUser().getFBUserID()) {
+								OKLog.v("Cached user has different FB ID than logged in user, creating new OKUser with new FB ID");
+								OKUserUtilities.createOKUser(OKUserIDType.FacebookID, user.getId(), user.getName(), requestHandler);
+							} else {
+								// The user already has a cached FB ID, and the fb ID matches the retrieved one, so do nothing
+								requestHandler.onSuccess(OKUser.getCurrentUser());
+							}
+						}
+					} else {
+						requestHandler.onFail(new Error("Couldn't update current user because could not get Facebook user info"));
+					}
+				}
+			});
+		} else {
+			CreateOKUserFromFacebook(requestHandler);
+		}
+	}
+
+
+
+	private static void GetFacebookUserInfo(final GetFBUserIDRequestHandler requestHandler)
 	{
 		Session session = Session.getActiveSession();
 
 		if(isFBSessionOpen())
 		{
-			//Perform a 'ME' request to get user info
 			Request.executeMeRequestAsync(session, new GraphUserCallback() {
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
 					if(user != null) {
-						String userID = user.getId();
-						String userNick = user.getName();
-
-						OKUserUtilities.createOKUser(OKUserIDType.FacebookID, userID, userNick, requestHandler);
+						requestHandler.onCompletion(user);
+					} else {
+						requestHandler.onCompletion(null);
 					}
 				}
 			});
+		} else {
+			OKLog.v("Tried to get FB user ID without being logged into FB");
+			requestHandler.onCompletion(null);
 		}
-		else
-		{
-			requestHandler.onFail(new Error("Not current logged into FB"));
-		}
+	}
+
+
+	/**
+	 * Makes a call to Facebook to get the user's facebook ID, then gets the corresponding OKUser from OpenKit, and responds with the request handler. Expects that the user is already authenticated with Facebook
+	 * @param requestHandler
+	 */
+	public static void CreateOKUserFromFacebook(final CreateOrUpdateOKUserRequestHandler requestHandler)
+	{
+		OKLog.v("Creating new OKUser from facebook ID");
+
+		GetFacebookUserInfo(new GetFBUserIDRequestHandler() {
+
+			@Override
+			public void onCompletion(GraphUser user) {
+				if(user != null) {
+					String userID = user.getId();
+					String userNick = user.getName();
+					OKUserUtilities.createOKUser(OKUserIDType.FacebookID, userID, userNick, requestHandler);
+				} else {
+					requestHandler.onFail(new Error("Could not get FB user info"));
+				}
+			}
+		});
 	}
 
 	public static boolean isFBSessionOpen()
