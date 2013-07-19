@@ -18,6 +18,7 @@ package io.openkit.user;
 
 import io.openkit.OKHTTPClient;
 import io.openkit.OKLog;
+import io.openkit.OKLoginFragment;
 import io.openkit.OKLoginUpdateNickFragment;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
@@ -27,6 +28,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
@@ -190,6 +195,23 @@ public class OKUserUtilities
 		return object;
 	}
 
+	public static void showErrorMessage(String message, Context context)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle("Error");
+		builder.setMessage(message);
+		builder.setNegativeButton("OK", new OnClickListener() {
 
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
+	}
 
 }

@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import android.content.Context;
+
 import io.openkit.*;
 import io.openkit.facebook.*;
 import io.openkit.facebook.Request.GraphUserCallback;
@@ -43,6 +45,27 @@ public class FacebookUtilities
 	public interface GetFBUserIDRequestHandler
 	{
 		public void onCompletion(GraphUser user);
+	}
+
+
+	/**
+	 * CreateOrUpdate the OKUser from Facebook and cache the user locally if successful
+	 * @param context Context required to store cached user
+	 */
+	public static void CreateOrUpdateOKUserFromFacebook(final Context context)
+	{
+		CreateOrUpdateOKUserFromFacebook(new CreateOrUpdateOKUserRequestHandler() {
+
+			@Override
+			public void onSuccess(OKUser user) {
+				OKManager.INSTANCE.handlerUserLoggedIn(user, context);
+			}
+
+			@Override
+			public void onFail(Throwable error) {
+				OKLog.v("Failed to create or update OKUser with FacebookID, error: " + error);
+			}
+		});
 	}
 
 	/**

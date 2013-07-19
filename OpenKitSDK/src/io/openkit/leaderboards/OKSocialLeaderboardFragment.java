@@ -9,10 +9,14 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKLog;
+import io.openkit.OKManager;
 import io.openkit.OKScore;
+import io.openkit.OKUser;
 import io.openkit.facebook.Session;
 import io.openkit.facebook.SessionState;
 import io.openkit.facebookutils.FacebookUtilities;
+import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
+import io.openkit.user.OKUserUtilities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -99,7 +103,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		if(friendsScoresListAdapter != null && friendsScoresListAdapter.getCount() > 0) {
 			mergeAdapter.addAdapter(friendsScoresListAdapter);
 		} else if (isShowingSocialScoresProgressBar()) {
-			mergeAdapter.addView(getHeaderView("Loading social scores"));
+			mergeAdapter.addView(getSpinnerRow());
 		} else if (!FacebookUtilities.isFBSessionOpen()) {
 			mergeAdapter.addView(getFBLoginRow());
 		} else {
@@ -118,7 +122,27 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		LayoutInflater inflater = this.getActivity().getLayoutInflater();
 		int fbLoginRowID = getResources().getIdentifier("io_openkit_list_fb_login", "layout", getActivity().getPackageName());
 		View fbLoginRow = inflater.inflate(fbLoginRowID, null);
+
+
+		int loginButtonID = getResources().getIdentifier("io_openkit_fbSignInButton", "id", getActivity().getPackageName());
+		Button fbLoginButton = (Button)fbLoginRow.findViewById(loginButtonID);
+
+		fbLoginButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				loginToFacebook();
+			}
+		});
 		return fbLoginRow;
+	}
+
+	private View getSpinnerRow()
+	{
+		LayoutInflater inflater = this.getActivity().getLayoutInflater();
+		int spinnerRowID = getResources().getIdentifier("io_openkit_list_spinner", "layout", getActivity().getPackageName());
+		View spinnerRow = inflater.inflate(spinnerRowID, null);
+		return spinnerRow;
 	}
 
 	private View getFBInviteRow()
@@ -161,18 +185,15 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void getScores()
 	{
-		OKLog.v("Getting Scores");
-
 		showProgress();
 
+		OKLog.v("Getting global Scores");
 		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.AllTime);
-
 		currentLeaderboard.getLeaderboardScores(new OKScoresResponseHandler() {
 
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
 				scoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-				OKSocialLeaderboardFragment.this.setListAdapter(scoresListAdapter);
 				hideProgress();
 			}
 
@@ -181,6 +202,12 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 				hideProgress();
 			}
 		});
+
+		getSocialScores();
+	}
+
+	private void getSocialScores()
+	{
 
 	}
 
@@ -202,10 +229,9 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		updateListView();
 	}
 
-	/*
+
 	private void loginToFacebook()
 	{
-
 			Session session = Session.getActiveSession();
 
 			if(!session.isOpened() && !session.isClosed()){
@@ -216,13 +242,20 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 			else if(session.isOpened())
 			{
 				//Facebook session is already open, just authorize the user with OpenKit
-				authorizeFBUserWithOpenKit();
+				loggedIntoFB();
 			}
 			else {
 				Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
 			}
 	}
-	*/
+
+
+	private void loggedIntoFB()
+	{
+		FacebookUtilities.CreateOrUpdateOKUserFromFacebook(this.getActivity().getApplicationContext());
+
+	}
+
 
 
 	/* Facebook session state change handler. This method handles all cases of Facebook auth */
@@ -232,28 +265,26 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		public void call(Session session, SessionState state, Exception exception) {
 
 			// Log all facebook exceptions
-			if(exception != null)
-			{
+			if(exception != null){
 				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
 			}
 
 			FacebookUtilities.logSessionState(state);
 
-			// If the session is opened, authorize the user, if the session is closed
+			// If the session is opened, authorize the user, if the session is closed then display an error message if necessary
 			if (state.isOpened())
 			{
 				OKLog.v("FB Session is Open");
-				/*if(fbLoginButtonClicked){
-					OKLog.v("Authorizing user with Facebook");
-					authorizeFBUserWithOpenKit();
-					fbLoginButtonClicked = false;
-				}*/
+				loggedIntoFB();
+
 			} else if (state.isClosed()) {
 				OKLog.v("FB Session is Closed");
-				/*if(fbLoginButtonClicked) {
-					facebookLoginFailed(exception);
-					fbLoginButtonClicked = false;
-				}*/
+				if(exception != null) {
+					String errorMessage = FacebookUtilities.ShouldShowFacebookError(exception);
+					if(errorMessage != null) {
+						OKUserUtilities.showErrorMessage(errorMessage, OKSocialLeaderboardFragment.this.getActivity());
+					}
+				}
 			}
 		}
 	};
