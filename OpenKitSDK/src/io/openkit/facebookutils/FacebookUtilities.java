@@ -16,12 +16,13 @@
 
 package io.openkit.facebookutils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
+import android.app.AlertDialog;
 import android.content.Context;
-
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import io.openkit.*;
 import io.openkit.facebook.*;
 import io.openkit.facebook.Request.GraphUserCallback;
@@ -199,7 +200,7 @@ public class FacebookUtilities
 
 	public interface GetFBFriendsRequestHandler
 	{
-		public void onSuccess(JSONArray friendsArray);
+		public void onSuccess(ArrayList<Long> friendsArray);
 		public void onFail(FacebookRequestError error);
 	}
 
@@ -223,12 +224,14 @@ public class FacebookUtilities
 					} else {
 						OKLog.d("Got %d facebook friends", users.size());
 						// Munge the Facebook friends into a JSONArray of friend IDs
-						JSONArray array = new JSONArray();
+
+						ArrayList<Long> friendsIDsArrayList = new ArrayList<Long>();
+
 						for(int x = 0; x < users.size(); x++) {
-							GraphUser user = users.get(x);
-							array.put(user.getId());
+							String friendFbID = users.get(x).getId();
+							friendsIDsArrayList.add(Long.parseLong(friendFbID));
 						}
-						requestHandler.onSuccess(array);
+						requestHandler.onSuccess(friendsIDsArrayList);
 					}
 				}
 			});
@@ -264,6 +267,25 @@ public class FacebookUtilities
 		else {
 			return "There was an unknown error while logging into Facebook. Please try again";
 		}
+	}
+
+	public static void showErrorMessage(String message, Context context)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle("Error");
+		builder.setMessage(message);
+		builder.setNegativeButton("OK", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+
+		// create alert dialog
+		AlertDialog alertDialog = builder.create();
+
+		// show it
+		alertDialog.show();
 	}
 
 
