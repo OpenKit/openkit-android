@@ -19,6 +19,7 @@ package io.openkit;
 import io.openkit.asynchttp.*;
 import io.openkit.leaderboards.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.json.*;
 
@@ -211,6 +212,7 @@ public class OKLeaderboard implements Parcelable{
 		}
 	}
 
+
 	/**
 	 * Required for parcelable
 	 * @return
@@ -235,6 +237,27 @@ public class OKLeaderboard implements Parcelable{
 		}
 	};
 
+	/**
+	 * @return Get a score Comparator for this leaderboard based on leaderboard's sortType
+	 */
+	public Comparator<OKScore> getScoreComparator()
+	{
+		if(getSortType() == LeaderboardSortType.HighValue) {
+			return new Comparator<OKScore>() {
+				@Override
+			    public int compare(OKScore s1, OKScore s2) {
+			        return (s1.getScoreValue()>s2.getScoreValue() ? -1 : (s1.getScoreValue()==s2.getScoreValue() ? 0 : 1));
+			    }
+			};
+		} else {
+			return new Comparator<OKScore>() {
+				@Override
+			    public int compare(OKScore s1, OKScore s2) {
+			        return (s1.getScoreValue()>s2.getScoreValue() ? 1 : (s1.getScoreValue()==s2.getScoreValue() ? 0 : -1));
+			    }
+			};
+		}
+	}
 
 	/**
 	 * Gets a list of leaderboards for the app

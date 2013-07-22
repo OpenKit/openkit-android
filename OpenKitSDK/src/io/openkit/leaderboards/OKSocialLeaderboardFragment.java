@@ -1,6 +1,7 @@
 package io.openkit.leaderboards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -271,167 +272,178 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		});
 	}
 
-
-private void getSocialScores()
-{
-	getSocialScoresFromOpenKit();
-}
-
-private void getSocialScoresFromOpenKit()
-{
-	if(FacebookUtilities.isFBSessionOpen())
+	private void getSocialScores()
 	{
-
-		startedSocialRequest();
-
-		FacebookUtilities.GetFBFriends(new GetFBFriendsRequestHandler() {
-
-			@Override
-			public void onSuccess(ArrayList<Long> friendsArray) {
-				currentLeaderboard.getFacebookFriendsScoresWithFacebookFriends(friendsArray, new OKScoresResponseHandler() {
-
-					@Override
-					public void onSuccess(List<OKScore> scoresList) {
-						OKLog.v("Got %d social scores!", scoresList.size());
-						friendsScoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
-						stoppedSocialRequest();
-					}
-
-					@Override
-					public void onFailure(Throwable e, JSONObject errorResponse) {
-						OKLog.v("Failed to get social scores from OpenKit: " + e);
-						stoppedSocialRequest();
-					}
-				});
-			}
-
-			@Override
-			public void onFail(FacebookRequestError error) {
-				OKLog.v("Failed to get Facebook friends");
-				stoppedSocialRequest();
-			}
-		});
+		getSocialScoresFromOpenKit();
 	}
-}
 
-
-private OKLeaderboard getLeaderboard()
-{
-	return (OKLeaderboard)getArguments().getParcelable(OKLeaderboard.LEADERBOARD_KEY);
-}
-
-private void showProgress()
-{
-	spinnerBar.setVisibility(View.VISIBLE);
-	listView.setVisibility(View.INVISIBLE);
-}
-
-private void hideProgress()
-{
-	listView.setVisibility(View.VISIBLE);
-	spinnerBar.setVisibility(View.INVISIBLE);
-	updateListView();
-}
-
-private void startedSocialRequest()
-{
-	numSocialRequestsRunning++;
-	if(numSocialRequestsRunning == 1)
-		updateListView();
-}
-
-private void stoppedSocialRequest()
-{
-	numSocialRequestsRunning--;
-	if(numSocialRequestsRunning <= 0)
-		updateListView();
-}
-
-
-private void loginToFacebook()
-{
-	Session session = Session.getActiveSession();
-
-	if(!session.isOpened() && !session.isClosed()){
-		session.openForRead(new Session.OpenRequest(this)
-		//.setPermissions(Arrays.asList("basic_info"))
-		.setCallback(sessionStatusCallback));
-	}
-	else if(session.isOpened())
+	private void getSocialScoresFromOpenKit()
 	{
-		//Facebook session is already open, just authorize the user with OpenKit
-		loggedIntoFB();
-	}
-	else {
-		Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
-	}
-}
-
-
-private void loggedIntoFB()
-{
-	FacebookUtilities.CreateOrUpdateOKUserFromFacebook(this.getActivity().getApplicationContext());
-	getSocialScoresFromOpenKit();
-}
-
-/* Facebook session state change handler. This method handles all cases of Facebook auth */
-private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
-
-	@Override
-	public void call(Session session, SessionState state, Exception exception) {
-
-		// Log all facebook exceptions
-		if(exception != null){
-			OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
-		}
-
-		FacebookUtilities.logSessionState(state);
-
-		// If the session is opened, authorize the user, if the session is closed then display an error message if necessary
-		if (state.isOpened())
+		if(FacebookUtilities.isFBSessionOpen())
 		{
-			OKLog.v("FB Session is Open");
-			loggedIntoFB();
 
-		} else if (state.isClosed()) {
-			OKLog.v("FB Session is Closed");
-			if(exception != null) {
-				String errorMessage = FacebookUtilities.ShouldShowFacebookError(exception);
-				if(errorMessage != null) {
-					FacebookUtilities.showErrorMessage(errorMessage, OKSocialLeaderboardFragment.this.getActivity());
+			startedSocialRequest();
+
+			FacebookUtilities.GetFBFriends(new GetFBFriendsRequestHandler() {
+
+				@Override
+				public void onSuccess(ArrayList<Long> friendsArray) {
+					currentLeaderboard.getFacebookFriendsScoresWithFacebookFriends(friendsArray, new OKScoresResponseHandler() {
+
+						@Override
+						public void onSuccess(List<OKScore> scoresList) {
+							OKLog.v("Got %d social scores!", scoresList.size());
+							sortSocialScores(scoresList);
+							friendsScoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+							stoppedSocialRequest();
+						}
+
+						@Override
+						public void onFailure(Throwable e, JSONObject errorResponse) {
+							OKLog.v("Failed to get social scores from OpenKit: " + e);
+							stoppedSocialRequest();
+						}
+					});
+				}
+
+				@Override
+				public void onFail(FacebookRequestError error) {
+					OKLog.v("Failed to get Facebook friends");
+					stoppedSocialRequest();
+				}
+			});
+		}
+	}
+
+	private void sortSocialScores(List<OKScore> scoresList)
+	{
+		//Sort social scores and set their relative ranks
+		Collections.sort(scoresList, currentLeaderboard.getScoreComparator());
+
+		for(int x = 0; x < scoresList.size(); x++)
+		{
+			scoresList.get(x).setRank(x+1);
+		}
+	}
+
+
+	private OKLeaderboard getLeaderboard()
+	{
+		return (OKLeaderboard)getArguments().getParcelable(OKLeaderboard.LEADERBOARD_KEY);
+	}
+
+	private void showProgress()
+	{
+		spinnerBar.setVisibility(View.VISIBLE);
+		listView.setVisibility(View.INVISIBLE);
+	}
+
+	private void hideProgress()
+	{
+		listView.setVisibility(View.VISIBLE);
+		spinnerBar.setVisibility(View.INVISIBLE);
+		updateListView();
+	}
+
+	private void startedSocialRequest()
+	{
+		numSocialRequestsRunning++;
+		if(numSocialRequestsRunning == 1)
+			updateListView();
+	}
+
+	private void stoppedSocialRequest()
+	{
+		numSocialRequestsRunning--;
+		if(numSocialRequestsRunning <= 0)
+			updateListView();
+	}
+
+
+	private void loginToFacebook()
+	{
+		Session session = Session.getActiveSession();
+
+		if(!session.isOpened() && !session.isClosed()){
+			session.openForRead(new Session.OpenRequest(this)
+			//.setPermissions(Arrays.asList("basic_info"))
+			.setCallback(sessionStatusCallback));
+		}
+		else if(session.isOpened())
+		{
+			//Facebook session is already open, just authorize the user with OpenKit
+			loggedIntoFB();
+		}
+		else {
+			Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
+		}
+	}
+
+
+	private void loggedIntoFB()
+	{
+		FacebookUtilities.CreateOrUpdateOKUserFromFacebook(this.getActivity().getApplicationContext());
+		getSocialScoresFromOpenKit();
+	}
+
+	/* Facebook session state change handler. This method handles all cases of Facebook auth */
+	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
+
+		@Override
+		public void call(Session session, SessionState state, Exception exception) {
+
+			// Log all facebook exceptions
+			if(exception != null){
+				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
+			}
+
+			FacebookUtilities.logSessionState(state);
+
+			// If the session is opened, authorize the user, if the session is closed then display an error message if necessary
+			if (state.isOpened())
+			{
+				OKLog.v("FB Session is Open");
+				loggedIntoFB();
+
+			} else if (state.isClosed()) {
+				OKLog.v("FB Session is Closed");
+				if(exception != null) {
+					String errorMessage = FacebookUtilities.ShouldShowFacebookError(exception);
+					if(errorMessage != null) {
+						FacebookUtilities.showErrorMessage(errorMessage, OKSocialLeaderboardFragment.this.getActivity());
+					}
 				}
 			}
 		}
+	};
+
+
+	/* Below methods are overridden to add the Facebook session lifecycle callbacks */
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Session.getActiveSession().addCallback(sessionStatusCallback);
 	}
-};
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		Session.getActiveSession().removeCallback(sessionStatusCallback);
+	}
 
-/* Below methods are overridden to add the Facebook session lifecycle callbacks */
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		// Handle activity result for Facebook auth
+		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
+	}
 
-@Override
-public void onStart() {
-	super.onStart();
-	Session.getActiveSession().addCallback(sessionStatusCallback);
-}
-
-@Override
-public void onStop() {
-	super.onStop();
-	Session.getActiveSession().removeCallback(sessionStatusCallback);
-}
-
-@Override
-public void onActivityResult(int requestCode, int resultCode, Intent data)
-{
-	super.onActivityResult(requestCode, resultCode, data);
-	// Handle activity result for Facebook auth
-	Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
-}
-
-@Override
-public void onSaveInstanceState(Bundle outState) {
-	super.onSaveInstanceState(outState);
-	Session session = Session.getActiveSession();
-	Session.saveSession(session, outState);
-}
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Session session = Session.getActiveSession();
+		Session.saveSession(session, outState);
+	}
 }
