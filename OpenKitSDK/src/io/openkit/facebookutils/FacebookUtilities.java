@@ -19,15 +19,20 @@ package io.openkit.facebookutils;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.os.Bundle;
+import android.widget.Toast;
 import io.openkit.*;
 import io.openkit.facebook.*;
 import io.openkit.facebook.Request.GraphUserCallback;
 import io.openkit.facebook.Request.GraphUserListCallback;
 import io.openkit.facebook.model.GraphUser;
+import io.openkit.facebook.widget.WebDialog;
+import io.openkit.facebook.widget.WebDialog.OnCompleteListener;
 import io.openkit.user.OKUserIDType;
 import io.openkit.user.OKUserUtilities;
 import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
@@ -67,6 +72,45 @@ public class FacebookUtilities
 				OKLog.v("Failed to create or update OKUser with FacebookID, error: " + error);
 			}
 		});
+	}
+
+	public static void showAppRequestsDialog(String message, Activity activity, final Context applicationContext)
+	{
+		Bundle params = new Bundle();
+		params.putString("message", message);
+
+		if(!isFBSessionOpen())
+			return;
+
+	    WebDialog requestsDialog = (
+	        new WebDialog.RequestsDialogBuilder(activity,
+	            Session.getActiveSession(),
+	            params))
+	            .setOnCompleteListener(new OnCompleteListener() {
+
+	                @Override
+	                public void onComplete(Bundle values,
+	                    FacebookException error) {
+	                    if (error != null) {
+	                        if (error instanceof FacebookOperationCanceledException) {
+	                          // request cancelled
+	                        } else {
+	                            Toast.makeText(applicationContext,
+	                                "Network Error",
+	                                Toast.LENGTH_SHORT).show();
+	                        }
+	                    } else {
+	                        final String requestId = values.getString("request");
+	                        if (requestId != null) {
+	                           // request sent
+	                        } else {
+	                            //Request cancelled
+	                        }
+	                    }
+	                }
+	            })
+	            .build();
+	    requestsDialog.show();
 	}
 
 	/**
