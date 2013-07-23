@@ -12,6 +12,7 @@ import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKLog;
 import io.openkit.OKScore;
+import io.openkit.OKUser;
 import io.openkit.facebook.FacebookRequestError;
 import io.openkit.facebook.Session;
 import io.openkit.facebook.SessionState;
@@ -109,24 +110,31 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void updateListView()
 	{
+		if(this.getActivity() == null)
+			return;
+
 		MergeAdapter mergeAdapter = new MergeAdapter();
 
 		mergeAdapter.addView(getHeaderView("Friends"));
 
 		if(friendsScoresListAdapter != null && friendsScoresListAdapter.getCount() > 0) {
 			mergeAdapter.addAdapter(friendsScoresListAdapter);
-		} else if (isShowingSocialScoresProgressBar()) {
+		}
+
+		if (isShowingSocialScoresProgressBar()) {
 			mergeAdapter.addView(getSpinnerRow());
-		} else if (!FacebookUtilities.isFBSessionOpen()) {
+		}
+
+		if (!FacebookUtilities.isFBSessionOpen()) {
 			mergeAdapter.addView(getFBLoginRow());
-		} else {
+		} else if(FacebookUtilities.isFBSessionOpen() && friendsScoresListAdapter != null && friendsScoresListAdapter.getCount() <= 1 && !isShowingSocialScoresProgressBar()) {
 			// Show invite friends
 			mergeAdapter.addView(getFBInviteRow());
 		}
 
 		mergeAdapter.addView(getHeaderView("All Players"));
 
-		if(scoresListAdapter != null) {
+		if(scoresListAdapter != null && scoresListAdapter.getCount() > 0) {
 			mergeAdapter.addAdapter(scoresListAdapter);
 			mergeAdapter.addView(moreScoresButton);
 		}
@@ -203,10 +211,6 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		return listHeaderView;
 	}
 
-	private boolean isShowingSocialScoresProgressBar()
-	{
-		return (numSocialRequestsRunning > 0);
-	}
 
 	private void getScores()
 	{
@@ -275,6 +279,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	private void getSocialScores()
 	{
 		getSocialScoresFromOpenKit();
+		getUsersTopScoreFromOpenKit();
 	}
 
 	private void getSocialScoresFromOpenKit()
@@ -293,8 +298,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 						@Override
 						public void onSuccess(List<OKScore> scoresList) {
 							OKLog.v("Got %d social scores!", scoresList.size());
-							sortSocialScores(scoresList);
-							friendsScoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+							addScoresToSocialScoresListAdapater(scoresList);
 							stoppedSocialRequest();
 						}
 
@@ -315,6 +319,50 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		}
 	}
 
+	private void addScoresToSocialScoresListAdapater(List<OKScore> scoresList)
+	{
+		if(this.getActivity() == null)
+			return;
+
+		if(friendsScoresListAdapter == null) {
+			sortSocialScores(scoresList);
+			friendsScoresListAdapter = new OKScoresListAdapter(this.getActivity(), android.R.layout.simple_list_item_1, scoresList);
+		} else {
+			List<OKScore> previousScoresList, newScoreslist;
+			previousScoresList = friendsScoresListAdapter.getItems();
+			previousScoresList.addAll(scoresList);
+			newScoreslist = previousScoresList;
+			sortSocialScores(newScoreslist);
+			friendsScoresListAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, newScoreslist);
+		}
+
+		updateListView();
+	}
+
+	private void getUsersTopScoreFromOpenKit()
+	{
+		if(OKUser.getCurrentUser() == null)
+			return;
+
+		startedSocialRequest();
+		OKLog.v("Getting users top score from OpenKit");
+		currentLeaderboard.setDisplayedTimeRange(OKLeaderboardTimeRange.AllTime);
+		currentLeaderboard.getUsersTopScoreForLeaderboard(new OKScoresResponseHandler() {
+
+			@Override
+			public void onSuccess(List<OKScore> scoresList) {
+				stoppedSocialRequest();
+				addScoresToSocialScoresListAdapater(scoresList);
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				stoppedSocialRequest();
+				OKLog.v("Failed to get user's top score");
+			}
+		});
+	}
+
 	private void sortSocialScores(List<OKScore> scoresList)
 	{
 		//Sort social scores and set their relative ranks
@@ -325,7 +373,6 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 			scoresList.get(x).setRank(x+1);
 		}
 	}
-
 
 	private OKLeaderboard getLeaderboard()
 	{
@@ -357,6 +404,11 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		numSocialRequestsRunning--;
 		if(numSocialRequestsRunning <= 0)
 			updateListView();
+	}
+
+	private boolean isShowingSocialScoresProgressBar()
+	{
+		return (numSocialRequestsRunning > 0);
 	}
 
 
