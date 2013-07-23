@@ -31,6 +31,15 @@ public class OpenKit {
 	}
 
 	/**
+	 * Initialize the OpenKit SDK. Should be called from your onCreate methods
+	 * @param context
+	 */
+	public static void initialize(Context context)
+	{
+		OKManager.INSTANCE.initialize(context);
+	}
+
+	/**
 	 * Get current OKUser
 	 * @return Returns OKUser, or null if not logged in
 	 */
@@ -45,6 +54,16 @@ public class OpenKit {
 	public static String getAppKey()
 	{
 		return OKManager.INSTANCE.getAppKey();
+	}
+
+	public static void setAppKey(String appKey)
+	{
+		OKManager.INSTANCE.setAppKey(appKey);
+	}
+
+	public static void setSecretKey(String secretKey)
+	{
+		OKManager.INSTANCE.setSecretKey(secretKey);
 	}
 
 	/**

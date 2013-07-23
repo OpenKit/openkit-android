@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import io.openkit.OKAchievementScore;
 import io.openkit.OKLoginActivity;
+import io.openkit.OKManager;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
 import io.openkit.OKScore.ScoreRequestResponseHandler;
@@ -22,19 +23,21 @@ public class UnityPlugin {
 	}
 
 
-	/**
-	 * Initialize OpenKit SDK with the given App ID
-	 * @param appID
-	 */
-
-	/*
 	public static void setAppKey(String appKey)
 	{
-		logD("Initialized OpenKit");
-		OpenKit.initialize(UnityPlayer.currentActivity, appKey);
-		OKManager.INSTANCE.
+		OKManager.INSTANCE.setAppKey(appKey);
 	}
-	*/
+
+	public static void setSecretKey(String secretKey)
+	{
+		OKManager.INSTANCE.setSecretKey(secretKey);
+	}
+
+	public static void initialize()
+	{
+		logD("Initializing OpenKit native Android");
+		OpenKit.initialize(UnityPlayer.currentActivity);
+	}
 
 	/**
 	 * Initialize OpenKit SDK with the given AppKey and Secret Key
