@@ -31,65 +31,73 @@ import android.widget.TextView;
 
 public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 {
+	private final List<OKScore>items;
+
 	public OKScoresListAdapter(Context context, int resource, List<OKScore> objects)
 	{
 		super(context, resource, objects);
+		this.items = objects;
 	}
-	
-	
+
+	public List<OKScore> getItems()
+	{
+		return items;
+	}
+
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		View row = convertView;
-		
+
 		if(row == null){
 			int listItemID = getContext().getResources().getIdentifier("io_openkit_listitem_okscore", "layout", getContext().getPackageName());
 			LayoutInflater inflater = LayoutInflater.from(this.getContext());
 			row = inflater.inflate(listItemID,  parent, false);
 		}
-		
+
 		OKScore currentScore = this.getItem(position);
-		
+
 		int label1Id, label2Id, rankLabelId, pictureViewId;
-		
+
 		label1Id = getContext().getResources().getIdentifier("text1", "id", getContext().getPackageName());
 		label2Id = getContext().getResources().getIdentifier("text2", "id", getContext().getPackageName());
 		rankLabelId = getContext().getResources().getIdentifier("io_openkit_scoreRankTextView", "id", getContext().getPackageName());
 		pictureViewId = getContext().getResources().getIdentifier("io_openkit_scorePicView", "id", getContext().getPackageName());
-		
+
 		TextView label1 = (TextView)row.findViewById(label1Id);
 		TextView label2 = (TextView)row.findViewById(label2Id);
 		TextView rankLabel = (TextView)row.findViewById(rankLabelId);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(pictureViewId);
-		
+
 		/*
 		TextView label1 = (TextView)row.findViewById(io.openkit.R.id.text1);
 		TextView label2 = (TextView)row.findViewById(io.openkit.R.id.text2);
 		TextView rankLabel = (TextView)row.findViewById(io.openkit.R.id.io_openkit_scoreRankTextView);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(io.openkit.R.id.io_openkit_scorePicView);
 		*/
-		
+
 		// If the display string is not null, show that, otherwise show
 		// the score value as a fallback
-		
+
 		if(currentScore.getDisplayString() != null) {
 			label2.setText(currentScore.getDisplayString());
 		} else {
 			label2.setText(Long.toString(currentScore.getScoreValue()));
 		}
-		
-		
+
+
 		rankLabel.setText(Integer.toString(currentScore.getRank()));
 		pictureView.setCropped(true);
-		
+
 		if(currentScore.getOKUser() != null)
 		{
 			label1.setText(currentScore.getOKUser().getUserNick());
 			pictureView.setProfileId(Long.toString(currentScore.getOKUser().getFBUserID()));
 		}
-		
+
 		row.setTag(position);
-		
+
 		return row;
 	}
 
