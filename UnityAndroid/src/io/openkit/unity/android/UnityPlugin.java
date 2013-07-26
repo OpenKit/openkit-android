@@ -58,6 +58,13 @@ public class UnityPlugin {
 		OpenKit.setEndpoint(endpoint);
 	}
 
+
+	public static void logoutOfOpenKit()
+	{
+		OKManager.INSTANCE.logoutCurrentUser(UnityPlayer.currentActivity.getApplicationContext());
+		logD("Logging out of OpenKit");
+	}
+
 	/**
 	 * Shows OpenKit leaderboads for the given app
 	 */
