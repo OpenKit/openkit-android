@@ -30,7 +30,7 @@ import org.json.JSONObject;
  */
 public class ScoreCreator {
 
-	public static void CreateScores(int aNumScores, int aLeaderboardID, int maxScoreValue)
+	public static void CreateGlobalScores(int aNumScores, int aLeaderboardID, final int maxScoreValue)
 	{
 		final int numScores = aNumScores;
 		final int leaderboardID = aLeaderboardID;
@@ -52,19 +52,17 @@ public class ScoreCreator {
 						//requestHandler.onFail(error);
 					} else {
 						OKLog.d("Got %d facebook friends", users.size());
-						// Munge the Facebook friends into a JSONArray of friend IDs
 
-//						ArrayList<Long> friendsIDsArrayList = new ArrayList<Long>();
 
 						Random generator = new Random();
 
 						for(int x = 0; x < numScores; x++) {
 
 							int friendIndex = generator.nextInt(users.size());
-							CreateScoreForFBUser(users.get(friendIndex), leaderboardID, x);
+							CreateScoreForFBUser(users.get(friendIndex), leaderboardID, x, maxScoreValue);
 						}
 
-//						requestHandler.onSuccess(friendsIDsArrayList);
+
 					}
 				}
 			});
@@ -72,27 +70,113 @@ public class ScoreCreator {
 			friendsRequest.executeAsync();
 		} else {
 			OKLog.v("FB session not open");
-			//requestHandler.onFail(new FacebookRequestError(FacebookRequestError.INVALID_ERROR_CODE, "OpenKit", "Facebook session is not open"));
 		}
 	}
 
-	public static void CreateScoreForFBUser(GraphUser user, final int leaderboardID, int seed)
+	public static void CreateFriendsScores(int aNumScores, int aLeaderboardID, int maxScoreValue)
 	{
-		String fbID = user.getId();
+		final int numScores = aNumScores;
+		final int leaderboardID = aLeaderboardID;
+
+		OKLog.d("Getting list of FB friends");
+
+		Session session = Session.getActiveSession();
+
+		if(session != null && session.isOpened())
+		{
+			Request friendsRequest = Request.newMyFriendsRequest(session, new GraphUserListCallback() {
+
+				@Override
+				public void onCompleted(List<GraphUser> users, Response response) {
+					FacebookRequestError error = response.getError();
+
+					if(error != null) {
+						OKLog.d("Error getting Facebook friends");
+					} else {
+						OKLog.d("Got %d facebook friends", users.size());
+
+
+						Random generator = new Random();
+
+						for(int x = 0; x < numScores; x++) {
+
+							int friendIndex = generator.nextInt(users.size());
+							CreateFriendScore(users.get(friendIndex), leaderboardID, x);
+						}
+
+					}
+				}
+			});
+
+			friendsRequest.executeAsync();
+		} else {
+			OKLog.v("FB session not open");
+		}
+	}
+
+	public static void CreateScoreForFBUser(GraphUser user, final int leaderboardID, int seed, final int maxScoreSize)
+	{
+
+		long fbIDLong = Long.parseLong(user.getId());
+		long newFBID = fbIDLong + 5;
+
+
 		String userName = user.getName();
 
 		final Random generator = new Random(seed);
 
-		final Random generator2 = new Random();
 
-		OKUserUtilities.createOKUser(OKUserIDType.values()[generator2.nextInt(4)], fbID, userName, new CreateOrUpdateOKUserRequestHandler() {
+
+		OKUserUtilities.createOKUser(OKUserIDType.FacebookID, String.valueOf(newFBID), userName, new CreateOrUpdateOKUserRequestHandler() {
 
 			@Override
 			public void onSuccess(OKUser user) {
 				OKScore score = new OKScore();
 				score.setOKLeaderboardID(leaderboardID);
 				score.setOKUser(user);
-				score.setScoreValue(generator.nextInt(5000000));
+				score.setScoreValue(generator.nextInt(maxScoreSize));
+
+				submitScoreForUser(user, score, new ScoreRequestResponseHandler() {
+
+					@Override
+					public void onSuccess() {
+						OKLog.v("Submitted score");
+
+					}
+
+					@Override
+					public void onFailure(Throwable error) {
+						OKLog.v("Score submission failed");
+					}
+				});
+			}
+
+			@Override
+			public void onFail(Throwable error) {
+				// TODO Auto-generated method stub
+				OKLog.v("failed to create user");
+			}
+		});
+	}
+
+
+
+	public static void CreateFriendScore(GraphUser user, final int leaderboardID, int seed)
+	{
+		String fbID = user.getId();
+		String userName = user.getName();
+
+		final Random generator = new Random(seed);
+
+
+		OKUserUtilities.createOKUser(OKUserIDType.FacebookID, fbID, userName, new CreateOrUpdateOKUserRequestHandler() {
+
+			@Override
+			public void onSuccess(OKUser user) {
+				OKScore score = new OKScore();
+				score.setOKLeaderboardID(leaderboardID);
+				score.setOKUser(user);
+				score.setScoreValue(generator.nextInt(10000));
 
 				submitScoreForUser(user, score, new ScoreRequestResponseHandler() {
 
