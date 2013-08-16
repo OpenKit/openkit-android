@@ -1,10 +1,13 @@
 package io.openkit.leaderboards;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.openkit.OKLog;
 import io.openkit.OKScore;
+import io.openkit.OKUser;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -134,10 +137,87 @@ public class OKScoreCache extends SQLiteOpenHelper{
 				scoresList.add(score);
 			} while (cursor.moveToNext());
 		}
+		db.close();
 		return scoresList;
 	}
 
+	public void clearCache()
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
+		this.onCreate(db);
+	}
 
+	private void submitCachedScore(final OKScore score)
+	{
+		if(OKUser.getCurrentUser() != null) {
+			score.setOKUser(OKUser.getCurrentUser());
+			score.cachedScoreSubmit(new OKScore.ScoreRequestResponseHandler() {
 
+				@Override
+				public void onSuccess() {
+					OKLog.v("Submitted cached score successfully: " + score);
+					updateCachedScoreSubmitted(score);
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					OKLog.v("Failed to submit cached score");
+				}
+			});
+		} else {
+			OKLog.v("Tried to submit cached score without having an OKUser logged in");
+		}
+	}
+
+	public void submitAllCachedScores()
+	{
+		if(OKUser.getCurrentUser() == null) {
+			return;
+		}
+
+		List<OKScore> cachedScores = getUnsubmittedCachedScores();
+
+		for(int x = 0; x < cachedScores.size(); x++)
+		{
+			OKScore score = cachedScores.get(x);
+			submitCachedScore(score);
+		}
+	}
+
+	public boolean storeScoreInCacheIfBetterThanLocalCachedScores(OKScore score)
+	{
+		List<OKScore> cachedScores = getCachedScoresForLeaderboardID(score.getOKLeaderboardID());
+
+		if(cachedScores.size() <= 1) {
+			insertScore(score);
+			return true;
+		} else {
+			// Sort the scores in descending order
+			Comparator<OKScore> descendingComparator = new Comparator<OKScore>() {
+				@Override
+				public int compare(OKScore s1, OKScore s2) {
+			        return (s1.getScoreValue()>s2.getScoreValue() ? -1 : (s1.getScoreValue()==s2.getScoreValue() ? 0 : 1));
+			    }
+			};
+
+			Collections.sort(cachedScores,descendingComparator);
+
+			OKScore higestScore = cachedScores.get(0);
+			OKScore lowestScore = cachedScores.get(cachedScores.size()-1);
+
+			if(score.getScoreValue() > higestScore.getScoreValue()) {
+				deleteScore(higestScore);
+				insertScore(score);
+				return true;
+			} else if (score.getScoreValue() < lowestScore.getScoreValue()) {
+				deleteScore(lowestScore);
+				insertScore(score);
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 }

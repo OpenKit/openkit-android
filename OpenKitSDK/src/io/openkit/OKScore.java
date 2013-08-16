@@ -140,12 +140,42 @@ public class OKScore {
 	public void submitScore(final ScoreRequestResponseHandler responseHandler)
 	{
 		OKUser currentUser = OKUser.getCurrentUser();
+		setOKUser(currentUser);
 
-		if(currentUser == null) {
-			responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit"));
-			return;
+		boolean shouldSubmit = OKManager.INSTANCE.getSharedCache().storeScoreInCacheIfBetterThanLocalCachedScores(this);
+
+		if(currentUser != null && shouldSubmit) {
+			submitScoreBase(new ScoreRequestResponseHandler() {
+
+				@Override
+				public void onSuccess() {
+					OKManager.INSTANCE.getSharedCache().updateCachedScoreSubmitted(OKScore.this);
+					responseHandler.onSuccess();
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					responseHandler.onFailure(error);
+				}
+			});
+		} else {
+			OKLog.v("Score was not submitted");
+			if(currentUser == null) {
+				responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit"));
+			} else {
+				responseHandler.onFailure(new Throwable("The score was not submitted to the OpenKit server because it is not better than previous submitted score."));
+			}
 		}
 
+	}
+
+	public void cachedScoreSubmit(final ScoreRequestResponseHandler responseHandler)
+	{
+		submitScoreBase(responseHandler);
+	}
+
+	private void submitScoreBase(final ScoreRequestResponseHandler responseHandler)
+	{
 		try {
 			JSONObject scoreJSON = getScoreAsJSON();
 
@@ -158,6 +188,7 @@ public class OKScore {
 				@Override
 				public void onSuccess(JSONObject object) {
 					responseHandler.onSuccess();
+					OKScore.this.setSubmitted(true);
 				}
 
 				@Override
@@ -165,26 +196,31 @@ public class OKScore {
 					//This should not be called, submitting a score should
 					// not return an array, so this is an errror case
 					responseHandler.onFailure(new Throwable("Unknown error from OpenKit servers. Received an array when expecting an object"));
+					OKScore.this.setSubmitted(false);
 				}
 
 				@Override
 				public void onFailure(Throwable error, String content) {
 					responseHandler.onFailure(error);
+					OKScore.this.setSubmitted(false);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONArray errorResponse) {
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
+					OKScore.this.setSubmitted(false);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONObject errorResponse) {
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
+					OKScore.this.setSubmitted(false);
 				}
 			});
 
 		} catch (JSONException e) {
 			responseHandler.onFailure(new Throwable("OpenKit JSON parsing error"));
+			OKScore.this.setSubmitted(false);
 		}
 
 	}
