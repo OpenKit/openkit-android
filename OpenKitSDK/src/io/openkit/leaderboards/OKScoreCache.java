@@ -57,13 +57,57 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		OKLog.v("Inserted score into db: " + score);
 	}
 
-	public List<OKScore> getAllCachedScores()
+	public void deleteScore(OKScore score)
 	{
-		String selectQuery = "SELECT * FROM " + TABLE_SCORES;
+		if(score.getOKScoreID() <=0) {
+			OKLog.v("Tried to delete a score from cache without an ID");
+			return;
+		}
+
+		SQLiteDatabase db = this.getWritableDatabase();
+	    db.delete(TABLE_SCORES , KEY_ID + " = ?",
+	            new String[] { String.valueOf(score.getOKScoreID()) });
+	    db.close();
+	}
+
+	public void updateCachedScoreSubmitted(OKScore score)
+	{
+		if(score.getOKScoreID() <=0) {
+			OKLog.v("Tried to update a score from cache without an ID");
+			return;
+		}
+
+	    ContentValues values = new ContentValues();
+	    values.put(KEY_SUBMITTED, score.isSubmitted());
+
+	    SQLiteDatabase db = this.getWritableDatabase();
+	    db.update(TABLE_SCORES , values, KEY_ID + " = ?", new String[] { String.valueOf(score.getOKScoreID()) });
+		db.close();
+	}
+
+	public List<OKScore> getCachedScoresForLeaderboardID(int leaderboardID)
+	{
+		String queryFormat = "SELECT * FROM %s WHERE leaderboardID=%d";
+		String selectQuery = String.format(queryFormat, TABLE_SCORES, leaderboardID);
 		return getScoresWithQuerySQL(selectQuery);
 	}
 
-	public List<OKScore> getScoresWithQuerySQL(String querySQL)
+	public List<OKScore> getUnsubmittedCachedScores()
+	{
+		String queryFormat = "SELECT * FROM %s WHERE submitted=0";
+		String selectQuery = String.format(queryFormat, TABLE_SCORES);
+		return getScoresWithQuerySQL(selectQuery);
+	}
+
+
+	public List<OKScore> getAllCachedScores()
+	{
+		String queryFormat = "SELECT * FROM %s";
+		String selectQuery = String.format(queryFormat, TABLE_SCORES);
+		return getScoresWithQuerySQL(selectQuery);
+	}
+
+	private List<OKScore> getScoresWithQuerySQL(String querySQL)
 	{
 		List<OKScore> scoresList = new ArrayList<OKScore>();
 

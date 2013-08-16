@@ -204,7 +204,7 @@ public class OKScore {
 
 	@Override
 	public String toString() {
-		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted " + submitted;
+		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted: " + submitted;
 	}
 
 }
