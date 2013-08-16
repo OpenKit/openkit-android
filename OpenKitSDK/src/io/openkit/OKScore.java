@@ -23,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class OKScore {
-	
+
 	private int OKScoreID;
 	private long scoreValue;
 	private int OKLeaderboardID;
@@ -31,13 +31,14 @@ public class OKScore {
 	private int rank;
 	private int metadata;
 	private String displayString;
-	
+	private boolean submitted;
+
 	public OKScore()
 	{
 		super();
 	}
-	
-	
+
+
 	/**
 	 * Creates OKScore object from JSON
 	 * @param scoreJSON
@@ -47,16 +48,16 @@ public class OKScore {
 		super();
 		initFromJSON(scoreJSON);
 	}
-	
+
 	private void initFromJSON(JSONObject scoreJSON)
-	{	
+	{
 		this.OKLeaderboardID = OKJSONParser.safeParseInt("leaderboard_id", scoreJSON);
 		this.OKScoreID = OKJSONParser.safeParseInt("id", scoreJSON);
 		this.rank = OKJSONParser.safeParseInt("rank", scoreJSON);
 		this.metadata = OKJSONParser.safeParseInt("metadata", scoreJSON);
 		this.displayString = OKJSONParser.safeParseString("display_string", scoreJSON);
 		this.scoreValue = OKJSONParser.safeParseLong("value",scoreJSON);
-		
+
 		try {
 			this.user = new OKUser(scoreJSON.getJSONObject("user"));
 		} catch (JSONException e){
@@ -64,83 +65,78 @@ public class OKScore {
 			OKLog.d("OpenKit", "Error parsing score JSON: " + e.toString());
 		}
 	}
-	
-	public int getRank()
-	{
+
+	public int getRank() {
 		return rank;
 	}
-	
-	public void setRank(int aRank)
-	{
+
+	public void setRank(int aRank) {
 		this.rank = aRank;
 	}
-	
-	public int getOKScoreID()
-	{
+
+	public int getOKScoreID() {
 		return OKScoreID;
 	}
-	
-	public void setOKScoreID(int aID)
-	{
+
+	public void setOKScoreID(int aID) {
 		this.OKScoreID = aID;
 	}
-	
-	public long getScoreValue()
-	{
+
+	public long getScoreValue() {
 		return scoreValue;
 	}
-	
-	public void setScoreValue(long aValue)
-	{
+
+	public void setScoreValue(long aValue) {
 		this.scoreValue = aValue;
 	}
-	
-	public int getOKLeaderboardID()
-	{
+
+	public int getOKLeaderboardID() {
 		return OKLeaderboardID;
 	}
-	
-	public void setOKLeaderboardID(int aID)
-	{
+
+	public void setOKLeaderboardID(int aID) {
 		this.OKLeaderboardID = aID;
 	}
-	
-	public OKUser getOKUser()
-	{
+
+	public OKUser getOKUser() {
 		return user;
 	}
-	
-	public void setOKUser(OKUser aUser)
-	{
+
+	public void setOKUser(OKUser aUser) {
 		this.user = aUser;
 	}
-	
-	public void setMetadata(int aMetadata)
-	{
+
+	public void setMetadata(int aMetadata) {
 		this.metadata = aMetadata;
 	}
-	
-	public int getMetadata()
-	{
+
+	public int getMetadata() {
 		return metadata;
 	}
-	
-	public void setDisplayString(String aDisplayValue)
-	{
+
+	public void setDisplayString(String aDisplayValue) {
 		this.displayString = aDisplayValue;
 	}
-	
-	public String getDisplayString()
-	{
+
+	public String getDisplayString() {
 		return this.displayString;
 	}
-	
+
+	public boolean isSubmitted() {
+		return submitted;
+	}
+
+	public void setSubmitted(boolean submitted) {
+		this.submitted = submitted;
+	}
+
+
 	public interface ScoreRequestResponseHandler
 	{
 		void onSuccess();
 		void onFailure(Throwable error);
 	}
-	
+
 	public void submitScore(final ScoreRequestResponseHandler responseHandler)
 	{
 		OKUser currentUser = OKUser.getCurrentUser();
@@ -152,7 +148,7 @@ public class OKScore {
 
 		try {
 			JSONObject scoreJSON = getScoreAsJSON();
-			
+
 			JSONObject requestParams = new JSONObject();
 			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("score", scoreJSON);
@@ -192,18 +188,23 @@ public class OKScore {
 		}
 
 	}
-	
+
 	private JSONObject getScoreAsJSON() throws JSONException
 	{
 		JSONObject scoreJSON = new JSONObject();
-		
+
 		scoreJSON.put("value", this.scoreValue);
 		scoreJSON.put("leaderboard_id", this.OKLeaderboardID);
 		scoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
 		scoreJSON.put("metadata", this.metadata);
 		scoreJSON.put("display_string", this.displayString);
-		
+
 		return scoreJSON;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted " + submitted;
+	}
+
 }
