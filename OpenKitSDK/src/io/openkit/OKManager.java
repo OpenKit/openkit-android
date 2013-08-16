@@ -19,6 +19,7 @@ package io.openkit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import io.openkit.facebook.Session;
+import io.openkit.leaderboards.OKScoreCache;
 
 /**
  * Singleton instance that stores OpenKit global items
@@ -34,6 +35,7 @@ public enum OKManager {
 	private OKUser currentUser;
 	private String appKey;
 	private String secretKey;
+	private OKScoreCache scoreCache;
 
 	/**
 	 * OpenKit internal only, developers should use OpenKit.initialize()
@@ -45,12 +47,13 @@ public enum OKManager {
 	{
 		this.appKey = appKey;
 		this.secretKey = secretKey;
-		initialize(context);
+		initialize(context.getApplicationContext());
 	}
 
 	public void initialize(Context context)
 	{
-		this.getCurrentUser(context);
+		this.getCurrentUser(context.getApplicationContext());
+		scoreCache = new OKScoreCache(context.getApplicationContext());
 	}
 
 	/**
@@ -80,6 +83,11 @@ public enum OKManager {
 	public void setSecretKey(String secretKey)
 	{
 		this.secretKey = secretKey;
+	}
+
+	public OKScoreCache getSharedCache()
+	{
+		return scoreCache;
 	}
 
 	/**
