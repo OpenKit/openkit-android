@@ -113,7 +113,8 @@ public enum OKManager {
 	public void handlerUserLoggedIn(OKUser aUser, Context context)
 	{
 		this.currentUser = aUser;
-		saveOKUserInSharedPrefs(context, currentUser);
+		saveOKUserInSharedPrefs(context.getApplicationContext(), currentUser);
+		getSharedCache().submitAllCachedScores();
 	}
 
 	/**
@@ -123,10 +124,12 @@ public enum OKManager {
 	public void logoutCurrentUser(Context context)
 	{
 		this.currentUser = null;
-		deleteUserInSharedPrefs(context);
+		deleteUserInSharedPrefs(context.getApplicationContext());
 		Session session = Session.getActiveSession();
 		if(session != null)
 			session.closeAndClearTokenInformation();
+
+		getSharedCache().clearCache();
 	}
 
 	/**
