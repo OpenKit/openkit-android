@@ -187,34 +187,34 @@ public class OKScore {
 
 				@Override
 				public void onSuccess(JSONObject object) {
-					responseHandler.onSuccess();
 					OKScore.this.setSubmitted(true);
+					responseHandler.onSuccess();
 				}
 
 				@Override
 				public void onSuccess(JSONArray array) {
 					//This should not be called, submitting a score should
 					// not return an array, so this is an errror case
-					responseHandler.onFailure(new Throwable("Unknown error from OpenKit servers. Received an array when expecting an object"));
 					OKScore.this.setSubmitted(false);
+					responseHandler.onFailure(new Throwable("Unknown error from OpenKit servers. Received an array when expecting an object"));
 				}
 
 				@Override
 				public void onFailure(Throwable error, String content) {
-					responseHandler.onFailure(error);
 					OKScore.this.setSubmitted(false);
+					responseHandler.onFailure(error);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONArray errorResponse) {
-					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 					OKScore.this.setSubmitted(false);
+					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONObject errorResponse) {
-					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 					OKScore.this.setSubmitted(false);
+					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 			});
 
@@ -240,7 +240,7 @@ public class OKScore {
 
 	@Override
 	public String toString() {
-		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted: " + submitted;
+		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted: " + submitted + "\n";
 	}
 
 }
