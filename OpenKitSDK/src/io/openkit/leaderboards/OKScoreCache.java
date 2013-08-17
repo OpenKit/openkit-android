@@ -55,7 +55,8 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		values.put(KEY_SUBMITTED, score.isSubmitted());
 
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.insert(TABLE_SCORES, null, values);
+		long rowID = db.insert(TABLE_SCORES, null, values);
+		score.setOKScoreID((int)rowID);
 		db.close();
 		OKLog.v("Inserted score into db: " + score);
 	}
@@ -88,9 +89,14 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		db.close();
 	}
 
-	public List<OKScore> getCachedScoresForLeaderboardID(int leaderboardID)
+	public List<OKScore> getCachedScoresForLeaderboardID(int leaderboardID, boolean submittedScoresOnly)
 	{
-		String queryFormat = "SELECT * FROM %s WHERE leaderboardID=%d";
+		String queryFormat;
+		if(submittedScoresOnly) {
+			queryFormat = "SELECT * FROM %s WHERE leaderboardID=%d AND submitted=1";
+		} else {
+			queryFormat = "SELECT * FROM %s WHERE leaderboardID=%d";
+		}
 		String selectQuery = String.format(queryFormat, TABLE_SCORES, leaderboardID);
 		return getScoresWithQuerySQL(selectQuery);
 	}
@@ -187,7 +193,17 @@ public class OKScoreCache extends SQLiteOpenHelper{
 
 	public boolean storeScoreInCacheIfBetterThanLocalCachedScores(OKScore score)
 	{
-		List<OKScore> cachedScores = getCachedScoresForLeaderboardID(score.getOKLeaderboardID());
+		List<OKScore> cachedScores;
+		// If there is a user logged in, we should compare against scores that have already been submitted to decide whether
+		// to submit the new score, and not all scores. E.g. if there is an unsubmitted score for some reason that has a higher value than the
+		// one to submit, we should still submit it. This is because for some reason there might be an unsubmitted score stored that will never
+		// get submitted for some unknown reason.
+
+		if(OKUser.getCurrentUser() != null) {
+			cachedScores = getCachedScoresForLeaderboardID(score.getOKLeaderboardID(), true);
+		} else {
+			cachedScores = getCachedScoresForLeaderboardID(score.getOKLeaderboardID(), false);
+		}
 
 		if(cachedScores.size() <= 1) {
 			insertScore(score);

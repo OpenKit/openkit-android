@@ -54,6 +54,7 @@ public enum OKManager {
 	{
 		this.getCurrentUser(context.getApplicationContext());
 		scoreCache = new OKScoreCache(context.getApplicationContext());
+		scoreCache.submitAllCachedScores();
 	}
 
 	/**
