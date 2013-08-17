@@ -23,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class OKScore {
-	
+
 	private int OKScoreID;
 	private long scoreValue;
 	private int OKLeaderboardID;
@@ -31,13 +31,14 @@ public class OKScore {
 	private int rank;
 	private int metadata;
 	private String displayString;
-	
+	private boolean submitted;
+
 	public OKScore()
 	{
 		super();
 	}
-	
-	
+
+
 	/**
 	 * Creates OKScore object from JSON
 	 * @param scoreJSON
@@ -47,16 +48,16 @@ public class OKScore {
 		super();
 		initFromJSON(scoreJSON);
 	}
-	
+
 	private void initFromJSON(JSONObject scoreJSON)
-	{	
+	{
 		this.OKLeaderboardID = OKJSONParser.safeParseInt("leaderboard_id", scoreJSON);
 		this.OKScoreID = OKJSONParser.safeParseInt("id", scoreJSON);
 		this.rank = OKJSONParser.safeParseInt("rank", scoreJSON);
 		this.metadata = OKJSONParser.safeParseInt("metadata", scoreJSON);
 		this.displayString = OKJSONParser.safeParseString("display_string", scoreJSON);
 		this.scoreValue = OKJSONParser.safeParseLong("value",scoreJSON);
-		
+
 		try {
 			this.user = new OKUser(scoreJSON.getJSONObject("user"));
 		} catch (JSONException e){
@@ -64,95 +65,120 @@ public class OKScore {
 			OKLog.d("OpenKit", "Error parsing score JSON: " + e.toString());
 		}
 	}
-	
-	public int getRank()
-	{
+
+	public int getRank() {
 		return rank;
 	}
-	
-	public void setRank(int aRank)
-	{
+
+	public void setRank(int aRank) {
 		this.rank = aRank;
 	}
-	
-	public int getOKScoreID()
-	{
+
+	public int getOKScoreID() {
 		return OKScoreID;
 	}
-	
-	public void setOKScoreID(int aID)
-	{
+
+	public void setOKScoreID(int aID) {
 		this.OKScoreID = aID;
 	}
-	
-	public long getScoreValue()
-	{
+
+	public long getScoreValue() {
 		return scoreValue;
 	}
-	
-	public void setScoreValue(long aValue)
-	{
+
+	public void setScoreValue(long aValue) {
 		this.scoreValue = aValue;
 	}
-	
-	public int getOKLeaderboardID()
-	{
+
+	public int getOKLeaderboardID() {
 		return OKLeaderboardID;
 	}
-	
-	public void setOKLeaderboardID(int aID)
-	{
+
+	public void setOKLeaderboardID(int aID) {
 		this.OKLeaderboardID = aID;
 	}
-	
-	public OKUser getOKUser()
-	{
+
+	public OKUser getOKUser() {
 		return user;
 	}
-	
-	public void setOKUser(OKUser aUser)
-	{
+
+	public void setOKUser(OKUser aUser) {
 		this.user = aUser;
 	}
-	
-	public void setMetadata(int aMetadata)
-	{
+
+	public void setMetadata(int aMetadata) {
 		this.metadata = aMetadata;
 	}
-	
-	public int getMetadata()
-	{
+
+	public int getMetadata() {
 		return metadata;
 	}
-	
-	public void setDisplayString(String aDisplayValue)
-	{
+
+	public void setDisplayString(String aDisplayValue) {
 		this.displayString = aDisplayValue;
 	}
-	
-	public String getDisplayString()
-	{
+
+	public String getDisplayString() {
 		return this.displayString;
 	}
-	
+
+	public boolean isSubmitted() {
+		return submitted;
+	}
+
+	public void setSubmitted(boolean submitted) {
+		this.submitted = submitted;
+	}
+
+
 	public interface ScoreRequestResponseHandler
 	{
 		void onSuccess();
 		void onFailure(Throwable error);
 	}
-	
+
 	public void submitScore(final ScoreRequestResponseHandler responseHandler)
 	{
 		OKUser currentUser = OKUser.getCurrentUser();
+		setOKUser(currentUser);
 
-		if(currentUser == null) {
-			responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit"));
-			return;
+		boolean shouldSubmit = OKManager.INSTANCE.getSharedCache().storeScoreInCacheIfBetterThanLocalCachedScores(this);
+
+		if(currentUser != null && shouldSubmit) {
+			submitScoreBase(new ScoreRequestResponseHandler() {
+
+				@Override
+				public void onSuccess() {
+					OKManager.INSTANCE.getSharedCache().updateCachedScoreSubmitted(OKScore.this);
+					responseHandler.onSuccess();
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					responseHandler.onFailure(error);
+				}
+			});
+		} else {
+			OKLog.v("Score was not submitted");
+			if(currentUser == null) {
+				responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit"));
+			} else {
+				responseHandler.onFailure(new Throwable("The score was not submitted to the OpenKit server because it is not better than previous submitted score."));
+			}
 		}
 
+	}
+
+	public void cachedScoreSubmit(final ScoreRequestResponseHandler responseHandler)
+	{
+		submitScoreBase(responseHandler);
+	}
+
+	private void submitScoreBase(final ScoreRequestResponseHandler responseHandler)
+	{
 		try {
 			JSONObject scoreJSON = getScoreAsJSON();
-			
+
 			JSONObject requestParams = new JSONObject();
 			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("score", scoreJSON);
@@ -161,6 +187,7 @@ public class OKScore {
 
 				@Override
 				public void onSuccess(JSONObject object) {
+					OKScore.this.setSubmitted(true);
 					responseHandler.onSuccess();
 				}
 
@@ -168,42 +195,52 @@ public class OKScore {
 				public void onSuccess(JSONArray array) {
 					//This should not be called, submitting a score should
 					// not return an array, so this is an errror case
+					OKScore.this.setSubmitted(false);
 					responseHandler.onFailure(new Throwable("Unknown error from OpenKit servers. Received an array when expecting an object"));
 				}
 
 				@Override
 				public void onFailure(Throwable error, String content) {
+					OKScore.this.setSubmitted(false);
 					responseHandler.onFailure(error);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONArray errorResponse) {
+					OKScore.this.setSubmitted(false);
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONObject errorResponse) {
+					OKScore.this.setSubmitted(false);
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 			});
 
 		} catch (JSONException e) {
 			responseHandler.onFailure(new Throwable("OpenKit JSON parsing error"));
+			OKScore.this.setSubmitted(false);
 		}
 
 	}
-	
+
 	private JSONObject getScoreAsJSON() throws JSONException
 	{
 		JSONObject scoreJSON = new JSONObject();
-		
+
 		scoreJSON.put("value", this.scoreValue);
 		scoreJSON.put("leaderboard_id", this.OKLeaderboardID);
 		scoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
 		scoreJSON.put("metadata", this.metadata);
 		scoreJSON.put("display_string", this.displayString);
-		
+
 		return scoreJSON;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "OKScore id: " + OKScoreID + " value: " + scoreValue +  " leaderboard ID: " + OKLeaderboardID + " metadata: " + metadata + " display string: " + displayString + " submitted: " + submitted + "\n";
+	}
+
 }

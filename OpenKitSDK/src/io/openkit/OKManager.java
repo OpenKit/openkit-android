@@ -19,6 +19,7 @@ package io.openkit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import io.openkit.facebook.Session;
+import io.openkit.leaderboards.OKScoreCache;
 
 /**
  * Singleton instance that stores OpenKit global items
@@ -34,6 +35,7 @@ public enum OKManager {
 	private OKUser currentUser;
 	private String appKey;
 	private String secretKey;
+	private OKScoreCache scoreCache;
 
 	/**
 	 * OpenKit internal only, developers should use OpenKit.initialize()
@@ -45,12 +47,14 @@ public enum OKManager {
 	{
 		this.appKey = appKey;
 		this.secretKey = secretKey;
-		initialize(context);
+		initialize(context.getApplicationContext());
 	}
 
 	public void initialize(Context context)
 	{
-		this.getCurrentUser(context);
+		this.getCurrentUser(context.getApplicationContext());
+		scoreCache = new OKScoreCache(context.getApplicationContext());
+		scoreCache.submitAllCachedScores();
 	}
 
 	/**
@@ -82,6 +86,11 @@ public enum OKManager {
 		this.secretKey = secretKey;
 	}
 
+	public OKScoreCache getSharedCache()
+	{
+		return scoreCache;
+	}
+
 	/**
 	 * Get current user from shared preferences if stored
 	 * @param Context, required to pull current user stored in SharedPreferences
@@ -105,7 +114,8 @@ public enum OKManager {
 	public void handlerUserLoggedIn(OKUser aUser, Context context)
 	{
 		this.currentUser = aUser;
-		saveOKUserInSharedPrefs(context, currentUser);
+		saveOKUserInSharedPrefs(context.getApplicationContext(), currentUser);
+		getSharedCache().submitAllCachedScores();
 	}
 
 	/**
@@ -115,10 +125,12 @@ public enum OKManager {
 	public void logoutCurrentUser(Context context)
 	{
 		this.currentUser = null;
-		deleteUserInSharedPrefs(context);
+		deleteUserInSharedPrefs(context.getApplicationContext());
 		Session session = Session.getActiveSession();
 		if(session != null)
 			session.closeAndClearTokenInformation();
+
+		getSharedCache().clearCache();
 	}
 
 	/**
