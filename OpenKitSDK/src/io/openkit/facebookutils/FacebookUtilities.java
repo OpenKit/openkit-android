@@ -132,8 +132,7 @@ public class FacebookUtilities
 
 						if(OKUser.getCurrentUser().getFBUserID() == 0) {
 							OKUser.getCurrentUser().setFBUserID(fbID);
-							//TODO
-							// Should we set the user's nickname to their facebook name?
+							OKUser.getCurrentUser().setUserNick(user.getName());
 							OKLog.v("Updating cached user with Facebook ID");
 							OKUserUtilities.updateOKUser(OKUser.getCurrentUser(), requestHandler);
 						} else {

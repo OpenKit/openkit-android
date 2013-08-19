@@ -16,8 +16,6 @@
 
 package io.openkit;
 
-import java.lang.ref.WeakReference;
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,7 +26,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 {
 	private OKLoginFragment loginDialog;
 
-	private static WeakReference<OKLoginActivity> wrActivity = null;
+	//private static WeakReference<OKLoginActivity> wrActivity = null;
 
 	private static final String TAG_LOGINFRAGMENT = "OKLoginFragment";
 
@@ -36,7 +34,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		wrActivity = new WeakReference<OKLoginActivity>(this);
+		//wrActivity = new WeakReference<OKLoginActivity>(this);
 
 		if(loginDialog != null) {
 			loginDialog.setDelegate(this);
@@ -53,8 +51,8 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	public void onLoginSucceeded()
 	{
 		loginDialog.dismiss();
-		OKLog.v("Successfully logged in, now showing nick update view");
-		//showUserNickUpdateFragment();
+		OKLog.v("Successfully logged in, dismissing LoginActivity");
+		OKLoginActivity.this.finish();
 	}
 
 	@Override

@@ -20,7 +20,6 @@ package io.openkit;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 
 import io.openkit.facebookutils.*;
-import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.accounts.Account;
@@ -187,6 +186,7 @@ public class OKLoginFragment extends DialogFragment
 
 	private void performGoogleAuth(Account account)
 	{
+
 		mGoogAuthRequest = new GoogleAuthRequest(OKLoginFragment.this,account);
 
 		showSpinner();
@@ -196,7 +196,6 @@ public class OKLoginFragment extends DialogFragment
 			public void onUserCancelled() {
 				hideSpinner();
 				dialogDelegate.onLoginCancelled();
-
 			}
 
 			@Override
@@ -210,7 +209,6 @@ public class OKLoginFragment extends DialogFragment
 						GoogleUtils.createOrUpdateOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOrUpdateOKUserRequestHandler() {
 							@Override
 							public void onSuccess(OKUser user) {
-								OKLog.v("Correct callback is called");
 								hideSpinner();
 								OKLog.v("Created OKUser successfully!");
 								OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginFragment.this.getActivity());
