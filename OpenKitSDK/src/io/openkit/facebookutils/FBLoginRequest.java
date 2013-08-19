@@ -77,13 +77,17 @@ public class FBLoginRequest {
 			if (state.isOpened())
 			{
 				OKLog.v("FB Session is Open");
-				requestHandler.onFBLoginSucceeded();
+				if(requestHandler != null) {
+					requestHandler.onFBLoginSucceeded();
+				}
 
 			} else if (state.isClosed()) {
 				OKLog.v("FB Session is Closed");
 				if(exception != null) {
 					String errorMessage = FacebookUtilities.ShouldShowFacebookError(exception);
-					requestHandler.onFBLoginError(errorMessage);
+					if(requestHandler != null) {
+						requestHandler.onFBLoginError(errorMessage);
+					}
 				}
 			}
 		}
