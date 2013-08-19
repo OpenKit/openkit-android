@@ -21,7 +21,6 @@ import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 
 import io.openkit.facebookutils.*;
 import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
-import io.openkit.facebook.*;
 import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.accounts.Account;
@@ -48,7 +47,6 @@ public class OKLoginFragment extends DialogFragment
 	private Button fbLoginButton, googleLoginButton, twitterLoginButton,guestLoginButton, dontLoginButton;
 	private ProgressBar spinner;
 	private TextView loginTextView;
-	private boolean fbLoginButtonClicked = false;
 
 	private static boolean fbLoginEnabled = true;
 	private static boolean googleLoginEnabled = true;
@@ -56,6 +54,8 @@ public class OKLoginFragment extends DialogFragment
 	private static boolean guestLoginEnabled = false;
 
 	private boolean isShowingSpinner = false;
+
+	private FBLoginRequest fbLoginRequest;
 
 	private OKLoginFragmentDelegate dialogDelegate;
 
@@ -84,9 +84,11 @@ public class OKLoginFragment extends DialogFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setRetainInstance(true);
-		super.onCreate(savedInstanceState);
+		fbLoginRequest = new FBLoginRequest();
+		OKLog.v("OKLoginFragment oncreate");
 		setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 		setCancelable(false);
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -102,6 +104,8 @@ public class OKLoginFragment extends DialogFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		getDialog().setTitle("Login");
+
+		fbLoginRequest.onCreateView(savedInstanceState, this);
 
 		int viewID, fbLoginButtonId, dontLoginButtonId, spinnerId, loginTextViewID, googleLoginButtonID, twitterLoginButtonID, guestLoginButtonID;
 
@@ -144,21 +148,6 @@ public class OKLoginFragment extends DialogFragment
 		fbLoginButton.setOnClickListener(fbLoginButtonClick);
 		googleLoginButton.setOnClickListener(googleLoginButtonClick);
 		dontLoginButton.setOnClickListener(dismissSignInClick);
-
-		Session session = Session.getActiveSession();
-		if (session == null) {
-			if (savedInstanceState != null) {
-				session = Session.restoreSession(getActivity(), null, sessionStatusCallback, savedInstanceState);
-			}
-			if (session == null) {
-				session = new Session(getActivity());
-			}
-			Session.setActiveSession(session);
-			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) {
-				session.openForRead(new Session.OpenRequest(this).setCallback(sessionStatusCallback));
-			}
-		}
-
 
 		return view;
 	}
@@ -218,7 +207,7 @@ public class OKLoginFragment extends DialogFragment
 
 					@Override
 					public void run() {
-						GoogleUtils.createOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOrUpdateOKUserRequestHandler() {
+						GoogleUtils.createOrUpdateOKUserFromGoogle(OKLoginFragment.this.getActivity(), authToken, new CreateOrUpdateOKUserRequestHandler() {
 							@Override
 							public void onSuccess(OKUser user) {
 								OKLog.v("Correct callback is called");
@@ -283,7 +272,6 @@ public class OKLoginFragment extends DialogFragment
 		@Override
 		public void onClick(View v) {
 			OKLog.v("Pressed FB login button");
-			fbLoginButtonClicked = true;
 			loginToFB();
 		}
 	};
@@ -347,23 +335,31 @@ public class OKLoginFragment extends DialogFragment
 	 */
 	private void loginToFB()
 	{
+		FBLoginRequestHandler loginRequestHandler = new FBLoginRequestHandler() {
+
+			@Override
+			public void onFBLoginSucceeded() {
+				authorizeFBUserWithOpenKit();
+			}
+
+			@Override
+			public void onFBLoginError(String errorMessage) {
+				hideSpinner();
+				if(errorMessage != null) {
+					FacebookUtilities.showErrorMessage(errorMessage, OKLoginFragment.this.getActivity());
+				}
+			}
+
+			@Override
+			public void onFBLoginCancelled() {
+				OKLog.v("FB Login cancelled");
+				hideSpinner();
+			}
+		};
+
+		fbLoginRequest.setRequestHandler(loginRequestHandler);
 		showSpinner();
-
-		Session session = Session.getActiveSession();
-
-		if(!session.isOpened() && !session.isClosed()){
-			session.openForRead(new Session.OpenRequest(this)
-			//.setPermissions(Arrays.asList("basic_info"))
-			.setCallback(sessionStatusCallback));
-		}
-		else if(session.isOpened())
-		{
-			//Facebook session is already open, just authorize the user with OpenKit
-			authorizeFBUserWithOpenKit();
-		}
-		else {
-			Session.openActiveSession(getActivity(), this, true, sessionStatusCallback);
-		}
+		fbLoginRequest.loginToFacebook(this);
 	}
 
 	/**
@@ -386,7 +382,6 @@ public class OKLoginFragment extends DialogFragment
 			public void onFail(Throwable error) {
 				hideSpinner();
 				OKLog.v("Failed to create OKUSER: " + error);
-
 				showLoginErrorMessage("Sorry, but there was an error reaching the OpenKit server. Please try again later");
 			}
 		});
@@ -421,105 +416,19 @@ public class OKLoginFragment extends DialogFragment
 		alertDialog.show();
 	}
 
-	static String keyhashErrorString = "remote_app_id does not match stored id ";
 
-	/**
-	 * Handler function for when Facebook login fails
-	 * @param exception Exception from Facebook SDK
-	 */
-	private void facebookLoginFailed(Exception exception)
-	{
-		OKLog.v("Facebook login failed");
-
-		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
-		{
-			OKLog.v("User cancelled Facebook login");
-
-			//Special check for the keyhash issue, otherwise just dismiss because the user cancelled
-			if(exception.getMessage().equalsIgnoreCase(keyhashErrorString))
-			{
-				showLoginErrorMessage("There was an error logging in with Facebook. Your Facebook application may not be configured correctly. Make sure you have added the correct Android keyhash(es) to your Facebook application");
-				return;
-			} else {
-				dialogDelegate.onLoginCancelled();
-			}
-		}
-		else {
-			showLoginErrorMessage("There was an unknown error while logging into Facebook. Please try again");
-		}
-	}
-
-	/* Facebook session state change handler. This method handles all cases of Facebook auth */
-	private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
-
-		@Override
-		public void call(Session session, SessionState state, Exception exception) {
-
-			// Log all facebook exceptions
-			if(exception != null)
-			{
-				OKLog.v("SessionState changed exception: " + exception + " hash code: " + exception.hashCode());
-			}
-
-			//Log what is happening with the Facebook session for debug help
-			switch (state) {
-			case OPENING:
-				OKLog.v("SessionState Opening");
-				break;
-			case CREATED:
-				OKLog.v("SessionState Created");
-				break;
-			case OPENED:
-				OKLog.v("SessionState Opened");
-				break;
-			case CLOSED_LOGIN_FAILED:
-				OKLog.v("SessionState Closed Login Failed");
-				break;
-			case OPENED_TOKEN_UPDATED:
-				OKLog.v("SessionState Opened Token Updated");
-				break;
-			case CREATED_TOKEN_LOADED:
-				OKLog.v("SessionState created token loaded" );
-				break;
-			case CLOSED:
-				OKLog.v("SessionState closed");
-				break;
-			default:
-				OKLog.v("Session State Default case");
-				break;
-			}
-
-			// If the session is opened, authorize the user, if the session is closed
-			if (state.isOpened())
-			{
-				OKLog.v("FB Session is Open");
-				if(fbLoginButtonClicked){
-					OKLog.v("Authorizing user with Facebook");
-					authorizeFBUserWithOpenKit();
-					fbLoginButtonClicked = false;
-				}
-			} else if (state.isClosed()) {
-				OKLog.v("FB Session is Closed");
-				if(fbLoginButtonClicked) {
-					facebookLoginFailed(exception);
-					fbLoginButtonClicked = false;
-				}
-			}
-		}
-	};
-
-	/* Below methods are overridden to add the Facebook session lifecycle callbacks */
+	/* Below methods are overridden to add the Facebook session and Google auth lifecycle callbacks */
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		Session.getActiveSession().addCallback(sessionStatusCallback);
+		fbLoginRequest.onStart();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		Session.getActiveSession().removeCallback(sessionStatusCallback);
+		fbLoginRequest.onStop();
 	}
 
 	@Override
@@ -532,18 +441,14 @@ public class OKLoginFragment extends DialogFragment
 			}
 			return;
 		}
+
+		fbLoginRequest.onActivityResult(this, requestCode, resultCode, data);
 		super.onActivityResult(requestCode, resultCode, data);
-		// Handle activity result for Facebook auth
-		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		Session session = Session.getActiveSession();
-		Session.saveSession(session, outState);
+		fbLoginRequest.onSaveInstanceState(outState);
 	}
-
-
-
 }

@@ -18,7 +18,6 @@ package io.openkit;
 
 import java.lang.ref.WeakReference;
 
-import io.openkit.user.OKLoginUpdateNickFragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,7 +27,6 @@ import android.support.v4.app.FragmentManager;
 public class OKLoginActivity extends FragmentActivity implements OKLoginFragmentDelegate
 {
 	private OKLoginFragment loginDialog;
-	private OKLoginUpdateNickFragment updateNickDialog;
 
 	private static WeakReference<OKLoginActivity> wrActivity = null;
 
@@ -51,19 +49,22 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 		}
 	}
 
+	@Override
 	public void onLoginSucceeded()
 	{
 		loginDialog.dismiss();
 		OKLog.v("Successfully logged in, now showing nick update view");
-		showUserNickUpdateFragment();
+		//showUserNickUpdateFragment();
 	}
 
+	@Override
 	public void onLoginFailed() {
 		loginDialog.dismiss();
 		OKLog.v("Login failed, dismissing login activity");
 		OKLoginActivity.this.finish();
 	}
 
+	@Override
 	public void onLoginCancelled() {
 		loginDialog.dismiss();
 		OKLog.v("Login canceled by user, dismissing login activity");
@@ -78,6 +79,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 		loginDialog.show(fm, TAG_LOGINFRAGMENT);
 	}
 
+	/*
 	private void showUserNickUpdateFragment()
 	{
 		if((wrActivity.get() != null && (wrActivity.get().isFinishing() != true))) {
@@ -94,6 +96,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 			});
 		}
 	}
+	*/
 
 
 
