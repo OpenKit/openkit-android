@@ -2,6 +2,7 @@ package io.openkit.user;
 
 
 import io.openkit.OKLog;
+import io.openkit.OKUser;
 import io.openkit.asynchttp.AsyncHttpClient;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import io.openkit.asynchttp.RequestParams;
@@ -105,7 +106,8 @@ public class GoogleUtils {
 		});
 	}
 
-	public static void createOKUserFromGoogle(final Context ctx, final String googleAuthToken, final CreateOrUpdateOKUserRequestHandler requestHandler)
+
+	public static void createOrUpdateOKUserFromGoogle(final Context ctx, final String googleAuthToken, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		getGoogleUserInfo(googleAuthToken, new GetGoogleUserInfoRequestHandler() {
 
@@ -126,10 +128,23 @@ public class GoogleUtils {
 					userNick = userinfo.getString("name");
 				} catch (JSONException e) {
 					//If the google account doesn't return a name we just give them a nickname
-					userNick = "Enter a name";
+					userNick = "Me";
 				}
 
-				OKUserUtilities.createOKUser(OKUserIDType.GoogleID, googleID, userNick, requestHandler);
+
+				OKUser currentUser = OKUser.getCurrentUser();
+
+				if(currentUser != null) {
+					if(currentUser.getGoogleID() != null && currentUser.getGoogleID().equalsIgnoreCase(googleID)) {
+						requestHandler.onSuccess(currentUser);
+					} else {
+						currentUser.setGoogleID(googleID);
+						OKUserUtilities.updateOKUser(currentUser, requestHandler);
+					}
+
+				} else {
+					OKUserUtilities.createOKUser(OKUserIDType.GoogleID, googleID, userNick, requestHandler);
+				}
 			}
 
 			@Override

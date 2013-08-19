@@ -54,25 +54,6 @@ public class FacebookUtilities
 	}
 
 
-	/**
-	 * CreateOrUpdate the OKUser from Facebook and cache the user locally if successful
-	 * @param context Context required to store cached user
-	 */
-	public static void CreateOrUpdateOKUserFromFacebook(final Context context)
-	{
-		CreateOrUpdateOKUserFromFacebook(new CreateOrUpdateOKUserRequestHandler() {
-
-			@Override
-			public void onSuccess(OKUser user) {
-				OKManager.INSTANCE.handlerUserLoggedIn(user, context);
-			}
-
-			@Override
-			public void onFail(Throwable error) {
-				OKLog.v("Failed to create or update OKUser with FacebookID, error: " + error);
-			}
-		});
-	}
 
 	public static void showAppRequestsDialog(String message, Activity activity, final Context applicationContext)
 	{
@@ -113,6 +94,28 @@ public class FacebookUtilities
 	    requestsDialog.show();
 	}
 
+
+	/**
+	 * CreateOrUpdate the OKUser from Facebook and cache the user locally if successful
+	 * @param context Context required to store cached user
+	 */
+	public static void CreateOrUpdateOKUserFromFacebook(final Context context)
+	{
+		CreateOrUpdateOKUserFromFacebook(new CreateOrUpdateOKUserRequestHandler() {
+
+			@Override
+			public void onSuccess(OKUser user) {
+				OKManager.INSTANCE.handlerUserLoggedIn(user, context);
+			}
+
+			@Override
+			public void onFail(Throwable error) {
+				OKLog.v("Failed to create or update OKUser with FacebookID, error: " + error);
+			}
+		});
+	}
+
+
 	/**
 	 * Update the
 	 * @param requestHandler
@@ -129,8 +132,7 @@ public class FacebookUtilities
 
 						if(OKUser.getCurrentUser().getFBUserID() == 0) {
 							OKUser.getCurrentUser().setFBUserID(fbID);
-							//TODO
-							// Should we set the user's nickname to their facebook name?
+							OKUser.getCurrentUser().setUserNick(user.getName());
 							OKLog.v("Updating cached user with Facebook ID");
 							OKUserUtilities.updateOKUser(OKUser.getCurrentUser(), requestHandler);
 						} else {

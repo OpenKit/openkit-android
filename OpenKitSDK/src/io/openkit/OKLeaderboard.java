@@ -18,7 +18,10 @@ package io.openkit;
 
 import io.openkit.asynchttp.*;
 import io.openkit.leaderboards.*;
+import io.openkit.user.OKUserUtilities;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.json.*;
@@ -329,6 +332,23 @@ public class OKLeaderboard implements Parcelable{
 	}
 
 
+	public List<OKScore> getPlayerTopScoreFromCache()
+	{
+		List<OKScore> topScoreList = new ArrayList<OKScore>();
+
+		List<OKScore> localScores = OKManager.INSTANCE.getSharedCache().getCachedScoresForLeaderboardID(this.OKLeaderboard_id, false);
+
+		if(localScores.size() > 0) {
+			Comparator<OKScore> comparator = getScoreComparator();
+			Collections.sort(localScores, comparator);
+			OKScore topScore = localScores.get(0);
+			topScore.setOKUser(OKUserUtilities.getGuestUser());
+			topScoreList.add(localScores.get(0));
+		}
+
+		return topScoreList;
+	}
+
 	/**
 	 * Gets the current user's top score for this leaderboard. If the user is not logged in, calls onFailure and returns.
 	 * @param responseHandler Response handler for the request.
@@ -337,9 +357,8 @@ public class OKLeaderboard implements Parcelable{
 	{
 		OKUser currentUser = OpenKit.getCurrentUser();
 
-		if(currentUser == null)
-		{
-			responseHandler.onFailure(new Throwable("User is not logged in, no top score"), null);
+		if(currentUser == null) {
+			responseHandler.onSuccess(getPlayerTopScoreFromCache());
 			return;
 		}
 
