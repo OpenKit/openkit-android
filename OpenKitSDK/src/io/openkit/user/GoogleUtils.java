@@ -128,7 +128,7 @@ public class GoogleUtils {
 					userNick = userinfo.getString("name");
 				} catch (JSONException e) {
 					//If the google account doesn't return a name we just give them a nickname
-					userNick = "Enter a name";
+					userNick = "Me";
 				}
 
 
