@@ -355,8 +355,6 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void getUsersTopScoreFromOpenKit()
 	{
-		if(OKUser.getCurrentUser() == null)
-			return;
 
 		startedSocialRequest();
 		OKLog.v("Getting users top score from OpenKit");
