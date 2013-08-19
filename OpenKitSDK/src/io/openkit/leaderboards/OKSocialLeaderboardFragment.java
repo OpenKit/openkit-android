@@ -12,7 +12,6 @@ import io.openkit.OKLeaderboard;
 import io.openkit.OKLeaderboardTimeRange;
 import io.openkit.OKLog;
 import io.openkit.OKScore;
-import io.openkit.OKUser;
 import io.openkit.facebook.FacebookRequestError;
 import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.facebookutils.FBLoginRequestHandler;
