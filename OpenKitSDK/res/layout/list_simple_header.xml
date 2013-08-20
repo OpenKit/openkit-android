@@ -19,23 +19,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/io_openkit_list_header_bg" >
+    
+    <View
+	    android:id="@+id/line_top"
+    	android:layout_width="fill_parent"
+    	android:layout_height="1dp"
+    	android:background="@color/io_openkit_dark_gray"/>
     
     <TextView
         android:id="@+id/headerTextView"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-		android:background="@android:color/white"
 		android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
+        android:paddingLeft="10dp"
         android:textStyle="bold" 
         android:textIsSelectable="false" />    
          
 	<View
-	    android:id="@+id/line"
+	    android:id="@+id/line_bottom"
     	android:layout_width="fill_parent"
     	android:layout_height="1dp"
-    	android:background="@color/io_openkit_light_gray"/>
+    	android:background="@color/io_openkit_dark_gray"/>
 
 </LinearLayout>

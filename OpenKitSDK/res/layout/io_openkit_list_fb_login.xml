@@ -8,27 +8,22 @@
     
      <TextView
             android:id="@+id/io_openkit_fbloginTitleTextView"
-            style="@style/OKLoginText"
-            android:padding="8dip"
            	android:layout_alignParentLeft="true"
            	android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/io_openkit_login_text_include"
-            android:textAlignment="center" />
+            android:textStyle="bold"
+            android:text="@string/io_openkit_login_text_include" />
 
     <Button
         android:id="@+id/io_openkit_fbSignInButton"
-        style="@style/OKLoginButton"
+        style="@style/OKLoginButtonSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="30dip"
    		android:layout_alignParentRight="true"
    		android:layout_centerVertical="true"
-        android:layout_marginBottom="10dip"
-        android:layout_marginTop="0dip"
         android:background="@drawable/io_openkit_facebook_button"
-        android:padding="8dip"
         android:shadowColor="@color/io_openkit_facebook_shadow"
         android:text="@string/io_openkit_fb"
         android:textColor="@android:color/white" />
