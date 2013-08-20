@@ -293,6 +293,14 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 					scoresListAdapter.add(scoresList.get(x));
 				}
 
+				if(topScoreAdapter != null && topScoreAdapter.getCount() > 0) {
+					OKScore topScore = topScoreAdapter.getItem(0);
+
+					if(topScore.getRank() <= scoresListAdapter.getCount()) {
+						topScoreAdapter.remove(topScore);
+					}
+				}
+
 				moreScoresButton.setEnabled(true);
 			}
 
