@@ -14,59 +14,56 @@
     limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:background="@android:color/white"
-    android:orientation="vertical"
-    android:paddingBottom="20dip"
-    android:paddingLeft="20dip"
-    android:paddingRight="20dip"
-    android:paddingTop="20dip" >
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:background="@android:color/white"
+       android:orientation="vertical"
+       android:layout_gravity="center"
+       android:paddingBottom="20dip"
+       android:paddingLeft="20dip"
+       android:paddingRight="20dip"
+       android:paddingTop="20dip" >
 
-    <TextView
-        android:id="@+id/io_openkit_loginTitleTextView"
-        style="@style/OKLoginText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/io_openkit_fbprompt_title"
-        android:textAlignment="center" 
-        android:padding="5dip" />
-
-    <TextView
-        android:id="@+id/io_openkit_loginSubTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingBottom="10dp"
-        android:text="@string/io_openkit_fbprompt_subtext"
-        android:textAlignment="center"
-        android:textColor="@color/io_openkit_gray" />
-
-    <Button
-        android:id="@+id/io_openkit_fbSignInButton"
-        style="@style/OKLoginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:layout_marginTop="0dip"
-        android:background="@drawable/io_openkit_facebook_button"
-        android:shadowColor="@color/io_openkit_facebook_shadow"
-        android:text="@string/io_openkit_fbprompt_include_friends"
-        android:textColor="@android:color/white" />
-
-    <Button
-        android:id="@+id/io_openkit_dontSignInButton"
-        style="@style/OKLoginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/io_openkit_dismiss_button"
-        android:text="@string/io_openkit_dont_sign_in"
-        android:textColor="@color/io_openkit_gray" />
+	    <TextView
+	        android:id="@+id/io_openkit_loginTitleTextView"
+	        style="@style/OKLoginText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:text="@string/io_openkit_fbprompt_title"
+	        android:textAlignment="center" />
+	
+	    <TextView
+	        android:id="@+id/io_openkit_loginSubTitleTextView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:paddingBottom="10dp"
+	        android:text="@string/io_openkit_fbprompt_subtext"
+	        android:textAlignment="center"
+	        android:textColor="@color/io_openkit_gray" />
+	
+	    <Button
+	        android:id="@+id/io_openkit_fbSignInButton"
+	        style="@style/OKLoginButton"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dip"
+	        android:layout_marginTop="15dip"
+	        android:background="@drawable/io_openkit_facebook_button"
+	        android:shadowColor="@color/io_openkit_facebook_shadow"
+	        android:text="@string/io_openkit_fbprompt_include_friends"
+	        android:textColor="@android:color/white" />
+	
+	    <Button
+	        android:id="@+id/io_openkit_dontSignInButton"
+	        style="@style/OKLoginButton"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:background="@drawable/io_openkit_dismiss_button"
+	        android:text="@string/io_openkit_dont_sign_in"
+	        android:textColor="@color/io_openkit_gray" />
 
 </LinearLayout>

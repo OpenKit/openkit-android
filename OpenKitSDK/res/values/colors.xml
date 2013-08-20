@@ -22,6 +22,7 @@
     
     <color name="io_openkit_gray">#777777</color>
 	<color name="io_openkit_light_gray">#e5e5e5</color>
+	<color name="io_openkit_dark_gray">#c5c5c5</color>
     <color name="io_openkit_actionBarBgColor">#dddddd</color>
     <color name="transparent">#00000000</color>
     
@@ -57,5 +58,6 @@
     <color name="io_openkit_dismiss_default">#eee</color>
     
     <color name="io_openkit_player_top_score_bg">#eef8ff</color>
+    <color name="io_openkit_list_header_bg">#f2f2f2</color>
     
 </resources>
