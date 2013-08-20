@@ -16,6 +16,8 @@
 
 package io.openkit;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import io.openkit.facebook.Session;
@@ -36,6 +38,8 @@ public enum OKManager {
 	private String appKey;
 	private String secretKey;
 	private OKScoreCache scoreCache;
+
+	private ArrayList<Long> fbFriendsArrayList;
 
 	/**
 	 * OpenKit internal only, developers should use OpenKit.initialize()
@@ -91,6 +95,14 @@ public enum OKManager {
 		return scoreCache;
 	}
 
+	public ArrayList<Long> getFbFriendsArrayList() {
+		return fbFriendsArrayList;
+	}
+
+	public void setFbFriendsArrayList(ArrayList<Long> fbFriendsArrayList) {
+		this.fbFriendsArrayList = fbFriendsArrayList;
+	}
+
 	/**
 	 * Get current user from shared preferences if stored
 	 * @param Context, required to pull current user stored in SharedPreferences
@@ -127,8 +139,9 @@ public enum OKManager {
 		this.currentUser = null;
 		deleteUserInSharedPrefs(context.getApplicationContext());
 		Session session = Session.getActiveSession();
-		if(session != null)
+		if(session != null) {
 			session.closeAndClearTokenInformation();
+		}
 
 		getSharedCache().clearCache();
 	}
@@ -188,4 +201,5 @@ public enum OKManager {
 			return user;
 		}
 	}
+
 }
