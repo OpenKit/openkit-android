@@ -40,6 +40,7 @@ public enum OKManager {
 	private OKScoreCache scoreCache;
 
 	private ArrayList<Long> fbFriendsArrayList;
+	private boolean hasShownFBLoginPrompt = false;
 
 	/**
 	 * OpenKit internal only, developers should use OpenKit.initialize()
@@ -64,34 +65,27 @@ public enum OKManager {
 	/**
 	 * @return Returns the OpenKit application key.
 	 */
-	public String getAppKey()
-	{
+	public String getAppKey() {
 		return this.appKey;
 	}
 
-	public void setAppKey(String appKey)
-	{
+	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
 
-
-	public OKUser getCurrentUser()
-	{
+	public OKUser getCurrentUser() {
 		return currentUser;
 	}
 
-	public String getSecretKey()
-	{
+	public String getSecretKey() {
 		return secretKey;
 	}
 
-	public void setSecretKey(String secretKey)
-	{
+	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
 	}
 
-	public OKScoreCache getSharedCache()
-	{
+	public OKScoreCache getSharedCache() {
 		return scoreCache;
 	}
 
@@ -101,6 +95,14 @@ public enum OKManager {
 
 	public void setFbFriendsArrayList(ArrayList<Long> fbFriendsArrayList) {
 		this.fbFriendsArrayList = fbFriendsArrayList;
+	}
+
+	public boolean hasShownFBLoginPrompt() {
+		return hasShownFBLoginPrompt;
+	}
+
+	public void setHasShownFBLoginPrompt(boolean hasShownFBLoginPrompt) {
+		this.hasShownFBLoginPrompt = hasShownFBLoginPrompt;
 	}
 
 	/**
@@ -201,5 +203,6 @@ public enum OKManager {
 			return user;
 		}
 	}
+
 
 }
