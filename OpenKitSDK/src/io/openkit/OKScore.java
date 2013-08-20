@@ -52,13 +52,14 @@ public class OKScore {
 	public OKScore(OKScore toBeCopied)
 	{
 		super();
-		this.OKLeaderboardID = toBeCopied.OKLeaderboardID;
 		this.OKScoreID = toBeCopied.OKScoreID;
+		this.scoreValue = toBeCopied.scoreValue;
+		this.OKLeaderboardID = toBeCopied.OKLeaderboardID;
+		this.user = toBeCopied.user;
 		this.rank = toBeCopied.rank;
 		this.metadata = toBeCopied.metadata;
 		this.displayString = toBeCopied.displayString;
 		this.submitted = toBeCopied.submitted;
-		this.user = toBeCopied.user;
 	}
 
 	private void initFromJSON(JSONObject scoreJSON)
