@@ -209,8 +209,8 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		TextView fbTextView = (TextView)fbLoginRow.findViewById(textViewId);
 		Button loginButton = (Button)fbLoginRow.findViewById(fbLoginbuttonId);
 
-		fbTextView.setText("Invite some friends");
-		loginButton.setText("Invite some friends");
+		fbTextView.setText("Invite some friends from");
+		loginButton.setText("Facebook");
 
 		loginButton.setOnClickListener(new View.OnClickListener() {
 
