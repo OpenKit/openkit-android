@@ -15,12 +15,11 @@ import io.openkit.OKManager;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
 import io.openkit.facebook.FacebookRequestError;
+import io.openkit.facebookutils.FBLoginPrompt;
 import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.facebookutils.FBLoginRequestHandler;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.facebookutils.FacebookUtilities.GetFBFriendsRequestHandler;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -473,32 +472,18 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void showPromptForFacebook()
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-		builder.setTitle("More Friends, More Fun!");
-		builder.setMessage("Leaderboards are more fun when you're playing against your friends!");
+		FBLoginPrompt prompt = new FBLoginPrompt();
 
-		builder.setPositiveButton("Connect Facebook", new DialogInterface.OnClickListener() {
-
+		prompt.setDelegate(new FBLoginPrompt.FBLoginPromptDelegate() {
 			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				loginToFacebook();
+			public void onDialogComplete(int buttonPressed) {
+				if(buttonPressed == 1) {
+					loginToFacebook();
+				}
 			}
 		});
 
-		builder.setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-		// create alert dialog
-		AlertDialog alertDialog = builder.create();
-
-		// show it
-		alertDialog.show();
+		prompt.show(getFragmentManager(), "FBLOGINPROMPT");
 	}
 
 
