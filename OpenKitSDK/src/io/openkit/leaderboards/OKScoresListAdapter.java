@@ -32,6 +32,7 @@ import android.widget.TextView;
 public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 {
 	private final List<OKScore>items;
+	private boolean showAlternateBG;
 
 	public OKScoresListAdapter(Context context, int resource, List<OKScore> objects)
 	{
@@ -44,6 +45,11 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		return items;
 	}
 
+	public void showAlternateBGColor()
+	{
+		showAlternateBG =true;
+	}
+
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
@@ -54,6 +60,12 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 			int listItemID = getContext().getResources().getIdentifier("io_openkit_listitem_okscore", "layout", getContext().getPackageName());
 			LayoutInflater inflater = LayoutInflater.from(this.getContext());
 			row = inflater.inflate(listItemID,  parent, false);
+		}
+
+		if(showAlternateBG) {
+			int backgroundColorId = getContext().getResources().getIdentifier("io_openkit_player_top_score_bg", "color", getContext().getPackageName());
+			int bgColor = getContext().getResources().getColor(backgroundColorId);
+			row.setBackgroundColor(bgColor);
 		}
 
 		OKScore currentScore = this.getItem(position);
@@ -70,13 +82,6 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		TextView rankLabel = (TextView)row.findViewById(rankLabelId);
 		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(pictureViewId);
 
-		/*
-		TextView label1 = (TextView)row.findViewById(io.openkit.R.id.text1);
-		TextView label2 = (TextView)row.findViewById(io.openkit.R.id.text2);
-		TextView rankLabel = (TextView)row.findViewById(io.openkit.R.id.io_openkit_scoreRankTextView);
-		ProfilePictureView pictureView = (ProfilePictureView)row.findViewById(io.openkit.R.id.io_openkit_scorePicView);
-		*/
-
 		// If the display string is not null, show that, otherwise show
 		// the score value as a fallback
 
@@ -86,8 +91,12 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 			label2.setText(Long.toString(currentScore.getScoreValue()));
 		}
 
+		if(currentScore.getRank() == 0) {
+			rankLabel.setText("");
+		} else {
+			rankLabel.setText(Integer.toString(currentScore.getRank()));
+		}
 
-		rankLabel.setText(Integer.toString(currentScore.getRank()));
 		pictureView.setCropped(true);
 
 		if(currentScore.getOKUser() != null)

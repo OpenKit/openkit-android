@@ -37,6 +37,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	private Button moreScoresButton;
 	private OKScoresListAdapter scoresListAdapter;
 	private OKScoresListAdapter friendsScoresListAdapter;
+	private OKScoresListAdapter topScoreAdapter;
 	private FBLoginRequest fbLoginRequest;
 	private int numSocialRequestsRunning = 0;
 
@@ -150,6 +151,19 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 		if(scoresListAdapter != null && scoresListAdapter.getCount() > 0) {
 			mergeAdapter.addAdapter(scoresListAdapter);
+			//mergeAdapter.addView(moreScoresButton);
+		}
+
+		// Show the top score if the rank of the top score == 0 || rank < numTopScores shown
+		if(topScoreAdapter != null && scoresListAdapter != null) {
+			int playerRank = topScoreAdapter.getItem(0).getRank();
+
+			if(playerRank == 0 || playerRank > scoresListAdapter.getCount()) {
+				mergeAdapter.addAdapter(topScoreAdapter);
+			}
+		}
+
+		if(scoresListAdapter != null && scoresListAdapter.getCount() > 0) {
 			mergeAdapter.addView(moreScoresButton);
 		}
 
@@ -362,8 +376,20 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 			@Override
 			public void onSuccess(List<OKScore> scoresList) {
+
+				if(scoresList.size() > 0) {
+					// Need to create a copy of the top score because the user's top score has 2 different ranks: a social rank and a global rank.
+					// The social section sets the rank to the relative rank in that section
+					OKScore topScore = scoresList.get(0);
+					OKScore copiedTopScore = new OKScore(topScore);
+					List<OKScore> copiedTopScoreList = new ArrayList<OKScore>(1);
+					copiedTopScoreList.add(copiedTopScore);
+					topScoreAdapter = new OKScoresListAdapter(OKSocialLeaderboardFragment.this.getActivity(), android.R.layout.simple_list_item_1, copiedTopScoreList);
+					topScoreAdapter.showAlternateBGColor();
+
+					addScoresToSocialScoresListAdapater(scoresList);
+				}
 				stoppedSocialRequest();
-				addScoresToSocialScoresListAdapater(scoresList);
 			}
 
 			@Override
