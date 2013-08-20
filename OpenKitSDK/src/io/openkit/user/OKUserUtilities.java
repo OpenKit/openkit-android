@@ -175,10 +175,16 @@ public class OKUserUtilities
 		try {
 			object.putOpt("nick", user.getUserNick());
 			object.putOpt("id", user.getOKUserID());
-			object.putOpt("fb_id", user.getFBUserID());
-			object.putOpt("twitter_id", user.getTwitterUserID());
+			if(user.getFBUserID() != 0) {
+				object.putOpt("fb_id", user.getFBUserID());
+			}
+			if(user.getTwitterUserID() != 0) {
+				object.putOpt("twitter_id", user.getTwitterUserID());
+			}
 			object.putOpt("google_id", user.getGoogleID());
-			object.putOpt("custom_id", user.getCustomID());
+			if(user.getCustomID() != 0) {
+				object.putOpt("custom_id", user.getCustomID());
+			}
 		}
 		catch (JSONException e) {
 			Log.e("Tag","Exception thrown when converting user to JSON object: " + e);
