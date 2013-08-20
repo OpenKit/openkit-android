@@ -252,6 +252,12 @@ public class FacebookUtilities
 
 	public static void GetFBFriends(final GetFBFriendsRequestHandler requestHandler)
 	{
+		if(OKManager.INSTANCE.getFbFriendsArrayList() != null) {
+			OKLog.v("Using cached list of FB friends");
+			requestHandler.onSuccess(OKManager.INSTANCE.getFbFriendsArrayList());
+			return;
+		}
+
 		OKLog.d("Getting list of FB friends");
 
 		Session session = Session.getActiveSession();
@@ -277,6 +283,9 @@ public class FacebookUtilities
 							String friendFbID = users.get(x).getId();
 							friendsIDsArrayList.add(Long.parseLong(friendFbID));
 						}
+
+						OKManager.INSTANCE.setFbFriendsArrayList(friendsIDsArrayList);
+
 						requestHandler.onSuccess(friendsIDsArrayList);
 					}
 				}
