@@ -56,4 +56,6 @@
     <color name="io_openkit_dismiss_hovered">#ddd</color>
     <color name="io_openkit_dismiss_default">#eee</color>
     
+    <color name="io_openkit_player_top_score_bg">#eef8ff</color>
+    
 </resources>

@@ -49,6 +49,18 @@ public class OKScore {
 		initFromJSON(scoreJSON);
 	}
 
+	public OKScore(OKScore toBeCopied)
+	{
+		super();
+		this.OKLeaderboardID = toBeCopied.OKLeaderboardID;
+		this.OKScoreID = toBeCopied.OKScoreID;
+		this.rank = toBeCopied.rank;
+		this.metadata = toBeCopied.metadata;
+		this.displayString = toBeCopied.displayString;
+		this.submitted = toBeCopied.submitted;
+		this.user = toBeCopied.user;
+	}
+
 	private void initFromJSON(JSONObject scoreJSON)
 	{
 		this.OKLeaderboardID = OKJSONParser.safeParseInt("leaderboard_id", scoreJSON);

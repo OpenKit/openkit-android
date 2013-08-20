@@ -343,7 +343,7 @@ public class OKLeaderboard implements Parcelable{
 			Collections.sort(localScores, comparator);
 			OKScore topScore = localScores.get(0);
 			topScore.setOKUser(OKUserUtilities.getGuestUser());
-			topScoreList.add(localScores.get(0));
+			topScoreList.add(topScore);
 		}
 
 		return topScoreList;
