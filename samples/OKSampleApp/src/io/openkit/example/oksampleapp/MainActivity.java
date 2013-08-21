@@ -54,6 +54,8 @@ public class MainActivity extends Activity {
 		OpenKit.setEndpoint("http://development.openkit.io");
 		OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
 
+		//OKManager.INSTANCE.setAchievementsEnabled(false);
+
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
 		loginToOpenKitButton = (Button)findViewById(R.id.OKLoginButton);
 		submitScoresButton = (Button)findViewById(R.id.submitScoreButton);
