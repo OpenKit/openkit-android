@@ -36,10 +36,17 @@ public class OKScoresActivity extends FragmentActivity {
 
 		currentLeaderboard = getIntent().getParcelableExtra(OKLeaderboard.LEADERBOARD_KEY);
 
-		this.setTitle(currentLeaderboard.getName());
-
 		if(savedInstanceState == null) {
-			OKSocialLeaderboardFragment fragment = OKSocialLeaderboardFragment.newInstance(currentLeaderboard);
+			OKSocialLeaderboardFragment fragment;
+
+			if(currentLeaderboard != null) {
+				this.setTitle(currentLeaderboard.getName());
+				fragment = OKSocialLeaderboardFragment.newInstance(currentLeaderboard);
+			} else {
+				//this.setTitle("Leaderboard");
+				int currentLeaderboardID = getIntent().getIntExtra(OKLeaderboard.LEADERBOARD_ID_KEY, 0);
+				fragment = OKSocialLeaderboardFragment.newInstance(currentLeaderboardID);
+			}
 			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.add(android.R.id.content, fragment);
 			ft.commit();
