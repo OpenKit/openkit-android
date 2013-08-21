@@ -58,6 +58,10 @@ public class UnityPlugin {
 		OpenKit.setEndpoint(endpoint);
 	}
 
+	public static void setAchievementsEnabled(boolean enabled) {
+		OKManager.INSTANCE.setAchievementsEnabled(enabled);
+	}
+
 
 	public static void logoutOfOpenKit()
 	{
