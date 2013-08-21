@@ -43,6 +43,8 @@ public class OKLeaderboard implements Parcelable{
 
 	public static final String LEADERBOARD_KEY = "OKLeaderboard";
 
+	public static final String LEADERBOARD_ID_KEY = "OKLeaderboardID";
+
 	public static final int NUM_SCORES_PER_PAGE = 25;
 
 	@Override
@@ -106,6 +108,7 @@ public class OKLeaderboard implements Parcelable{
 		super();
 		initFromJSON(leaderboardJSON);
 	}
+
 
 	public String getName(){
 		return name;
@@ -262,10 +265,57 @@ public class OKLeaderboard implements Parcelable{
 		}
 	}
 
+
+
+	/** Gets info for one leaderboard **/
+
+	public static void getLeaderboard(int leaderboardID, final OKLeaderboardsListResponseHandler responseHandler)
+	{
+		OKLog.d("Getting leaderboard ID:" + leaderboardID);
+		RequestParams params = new RequestParams();
+
+		String requestPath = "leaderboards/" + leaderboardID;
+
+		OKHTTPClient.get(requestPath, params, new OKJsonHttpResponseHandler() {
+
+			@Override
+			public void onSuccess(JSONObject object) {
+				OKLeaderboard leaderboard = new OKLeaderboard(object);
+				List<OKLeaderboard> leaderboardList = new ArrayList<OKLeaderboard>(1);
+				leaderboardList.add(leaderboard);
+				responseHandler.onSuccess(leaderboardList, leaderboard.playerCount);
+			}
+
+			@Override
+			public void onSuccess(JSONArray array) {
+				responseHandler.onFailure(new IllegalArgumentException("Got back an array of leaderboards when expecting a single one"), null);
+			}
+
+			@Override
+			public void onFailure(Throwable error, String content) {
+				responseHandler.onFailure(error, null);
+
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONArray errorResponse) {
+				responseHandler.onFailure(e, null);
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				responseHandler.onFailure(e, errorResponse);
+			}
+		});
+
+	}
+
 	/**
 	 * Gets a list of leaderboards for the app
 	 * @param responseHandler Response handler interface with callbacks to be overridden, typically anonymously
 	 */
+
+
 	public static void getLeaderboards(OKLeaderboardsListResponseHandler responseHandler)
 	{
 		RequestParams params = new RequestParams();
