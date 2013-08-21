@@ -39,6 +39,8 @@ public enum OKManager {
 	private String secretKey;
 	private OKScoreCache scoreCache;
 
+	private boolean isAchievementsEnabled = true;
+
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
@@ -103,6 +105,14 @@ public enum OKManager {
 
 	public void setHasShownFBLoginPrompt(boolean hasShownFBLoginPrompt) {
 		this.hasShownFBLoginPrompt = hasShownFBLoginPrompt;
+	}
+
+	public boolean isAchievementsEnabled() {
+		return isAchievementsEnabled;
+	}
+
+	public void setAchievementsEnabled(boolean isAchievementsEnabled) {
+		this.isAchievementsEnabled = isAchievementsEnabled;
 	}
 
 	/**
@@ -203,6 +213,7 @@ public enum OKManager {
 			return user;
 		}
 	}
+
 
 
 }

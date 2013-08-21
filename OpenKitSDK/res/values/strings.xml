@@ -42,6 +42,8 @@
 	<string name="io_openkit_fbprompt_subtext">Leaderboards are more fun when you play against friends! </string>
 	<string name="io_openkit_fbprompt_include_friends">Include Facebook Friends</string>
 	
+	<string name="io_openkit_inviteFriends">Invite Friends</string>
+	
     
     <string name="io_openkit_title_leaderboards">Leaderboards</string>
     <string name="io_openkit_title_achievements">Achievements</string>

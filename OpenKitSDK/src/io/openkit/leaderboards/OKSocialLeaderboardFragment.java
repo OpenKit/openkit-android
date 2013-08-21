@@ -20,10 +20,14 @@ import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.facebookutils.FBLoginRequestHandler;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.facebookutils.FacebookUtilities.GetFBFriendsRequestHandler;
+import android.R.bool;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -58,8 +62,28 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 	{
 		setRetainInstance(true);
 		fbLoginRequest = new FBLoginRequest();
-		OKLog.v("Fragment oncreate");
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+		int menuID = getActivity().getResources().getIdentifier("io_openkit_menu_activity_scores", "menu", getActivity().getPackageName());
+	    inflater.inflate(menuID, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int inviteButtonID = getResources().getIdentifier("io_openkit_menu_inviteButton", "id", getActivity().getPackageName());
+
+		if(item.getItemId() == inviteButtonID) {
+			showFacebookRequestsDialog();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+
 	}
 
 	@Override
@@ -99,7 +123,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		return view;
 	}
 
-	private void loginToFacebook()
+	private void loginToFacebook(final boolean showRequestsDialog)
 	{
 		FBLoginRequestHandler loginRequestHandler = new FBLoginRequestHandler() {
 
@@ -107,6 +131,9 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 			public void onFBLoginSucceeded() {
 				FacebookUtilities.CreateOrUpdateOKUserFromFacebook(OKSocialLeaderboardFragment.this.getActivity().getApplicationContext());
 				getSocialScoresFromOpenKit();
+				if(showRequestsDialog) {
+					showFacebookRequestsDialog();
+				}
 			}
 
 			@Override
@@ -190,7 +217,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 			@Override
 			public void onClick(View v) {
-				loginToFacebook();
+				loginToFacebook(false);
 			}
 		});
 		return fbLoginRow;
@@ -227,6 +254,15 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		});
 
 		return fbLoginRow;
+	}
+
+	private void showFacebookRequestsDialog()
+	{
+		if(FacebookUtilities.isFBSessionOpen()) {
+			FacebookUtilities.showAppRequestsDialog("Check out this game!", getActivity(), getActivity().getApplicationContext());
+		} else {
+			loginToFacebook(true);
+		}
 	}
 
 	private View getHeaderView(String headerText)
@@ -478,7 +514,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 			@Override
 			public void onDialogComplete(int buttonPressed) {
 				if(buttonPressed == 1) {
-					loginToFacebook();
+					loginToFacebook(false);
 				}
 			}
 		});
