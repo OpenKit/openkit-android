@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.List;
 import org.json.*;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -266,9 +268,15 @@ public class OKLeaderboard implements Parcelable{
 	}
 
 
+	public static Intent getLeaderboardIntent(Context ctx, int leaderboardID)
+	{
+		Intent leaderboardIntent = new Intent(ctx, OKScoresActivity.class);
+		leaderboardIntent.putExtra(OKLeaderboard.LEADERBOARD_ID_KEY, leaderboardID);
+		return leaderboardIntent;
+	}
+
 
 	/** Gets info for one leaderboard **/
-
 	public static void getLeaderboard(int leaderboardID, final OKLeaderboardsListResponseHandler responseHandler)
 	{
 		OKLog.d("Getting leaderboard ID:" + leaderboardID);

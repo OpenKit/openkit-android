@@ -20,7 +20,6 @@ import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.facebookutils.FBLoginRequestHandler;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.facebookutils.FacebookUtilities.GetFBFriendsRequestHandler;
-import android.R.bool;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -35,6 +34,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class OKSocialLeaderboardFragment extends ListFragment {
 
@@ -57,6 +57,15 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		return fragment;
 	}
 
+	public static OKSocialLeaderboardFragment newInstance(int leaderboardID)
+	{
+		OKSocialLeaderboardFragment fragment = new OKSocialLeaderboardFragment();
+		Bundle args = new Bundle();
+		args.putInt(OKLeaderboard.LEADERBOARD_ID_KEY, leaderboardID);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -64,6 +73,38 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		fbLoginRequest = new FBLoginRequest();
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+	}
+
+	private void getLeaderboardFromOpenKitWithID()
+	{
+		int currentLeaderboardID = getArguments().getInt(OKLeaderboard.LEADERBOARD_ID_KEY);
+
+		showProgress();
+
+		OKLeaderboard.getLeaderboard(currentLeaderboardID, new OKLeaderboardsListResponseHandler() {
+
+			@Override
+			public void onSuccess(List<OKLeaderboard> leaderboardList, int playerCount) {
+				if(leaderboardList.size() > 0) {
+					currentLeaderboard = leaderboardList.get(0);
+					OKSocialLeaderboardFragment.this.getActivity().setTitle(currentLeaderboard.getName());
+					getScores();
+				} else {
+					errorLoadingLeaderboard();
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable e, JSONObject errorResponse) {
+				OKLog.d("Error getting leaderboard: " + e + errorResponse);
+				errorLoadingLeaderboard();
+			}
+		});
+	}
+
+	private void errorLoadingLeaderboard() {
+		spinnerBar.setVisibility(View.INVISIBLE);
+		Toast.makeText(this.getActivity(), "Sorry, but the leaderboard can't be loaded right now. Please try again later. ", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -100,13 +141,17 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 		spinnerBarId = getResources().getIdentifier("progressSpinner", "id", getActivity().getPackageName());
 		spinnerBar = (ProgressBar)view.findViewById(spinnerBarId);
 
-		if(currentLeaderboard == null)
-		{
-			currentLeaderboard = getLeaderboard();
-		}
+		// Start loading the scores if the current leaderboard is already available
+		// Current leaderboard may have to be fetched from server if view was
+		// initiated with only a leaderboard ID
 
-		if(scoresListAdapter == null)
+		currentLeaderboard = getLeaderboard();
+
+		if(scoresListAdapter == null && currentLeaderboard != null) {
 			getScores();
+		} else if(currentLeaderboard == null) {
+			getLeaderboardFromOpenKitWithID();
+		}
 
 		moreScoresButton = new Button(this.getActivity());
 		moreScoresButton.setText("Show more scores");

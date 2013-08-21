@@ -15,14 +15,9 @@
  */
 package io.openkit.example.oksampleapp;
 
-
-
-
 import io.openkit.facebook.widget.ProfilePictureView;
-
 import io.openkit.*;
 import io.openkit.leaderboards.*;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -51,8 +46,12 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		OpenKit.setEndpoint("http://development.openkit.io");
-		OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
+		//OpenKit.setEndpoint("http://development.openkit.io");
+		//OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
+
+		OpenKit.setEndpoint("http://10.1.10.33:3000/");
+		OpenKit.initialize(this,"InPL3e5tO2IpRG0Cimus","x7cLt7Vo3r7sVKFQRA19TDWCkH67gJw2x69le3dS");
+
 
 		//OKManager.INSTANCE.setAchievementsEnabled(false);
 
@@ -226,9 +225,13 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onClick(View v) {
-
+			/*
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
+			*/
+
+			Intent leaderboardIntent = OKLeaderboard.getLeaderboardIntent(MainActivity.this, 89);
+			startActivity(leaderboardIntent);
 		}
 	};
 
