@@ -3,6 +3,7 @@ package io.openkit.unity.android;
 import java.util.Locale;
 
 import io.openkit.OKAchievementScore;
+import io.openkit.OKLeaderboard;
 import io.openkit.OKLoginActivity;
 import io.openkit.OKManager;
 import io.openkit.OKScore;
@@ -76,12 +77,24 @@ public class UnityPlugin {
 	{
 		logD("Launching Leaderboards UI");
 		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
-			  @Override
+			@Override
 			public void run() {
-					Intent leaderboards = new Intent(UnityPlayer.currentActivity, OKLeaderboardsActivity.class);
-					UnityPlayer.currentActivity.startActivity(leaderboards);
-			  }
-			});
+				Intent leaderboards = new Intent(UnityPlayer.currentActivity, OKLeaderboardsActivity.class);
+				UnityPlayer.currentActivity.startActivity(leaderboards);
+			}
+		});
+	}
+
+	public static void showLeaderboard(final int leaderboardID)
+	{
+		logD("Launching Leaderboard with id: " + leaderboardID);
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Intent leaderboardIntent = OKLeaderboard.getLeaderboardIntent(UnityPlayer.currentActivity,leaderboardID);
+				UnityPlayer.currentActivity.startActivity(leaderboardIntent);
+			}
+		});
 	}
 
 	/**
@@ -91,12 +104,12 @@ public class UnityPlugin {
 	{
 		logD("Launching Login UI");
 		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
-			  @Override
+			@Override
 			public void run() {
-					Intent loginUI = new Intent(UnityPlayer.currentActivity, OKLoginActivity.class);
-					UnityPlayer.currentActivity.startActivity(loginUI);
-			  }
-			});
+				Intent loginUI = new Intent(UnityPlayer.currentActivity, OKLoginActivity.class);
+				UnityPlayer.currentActivity.startActivity(loginUI);
+			}
+		});
 	}
 
 	/**
