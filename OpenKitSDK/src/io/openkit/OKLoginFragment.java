@@ -293,15 +293,15 @@ public class OKLoginFragment extends DialogFragment
 
 	// If the button is Visible, set it to Invisible (e.g. do not set View.Gone to View.Invisible)
 	private void setButtonInvisibleIfNotGone(Button button) {
-		if(button.getVisibility() == View.VISIBLE) {
+		if(button.getVisibility() != View.GONE) {
 			button.setVisibility(View.INVISIBLE);
 		}
 	}
 
 	// If the button is Invisible, set it it Visible (e.g. do not set View.gone to View.Visible)
 	private void setButtonVisibleIfNotGone(Button button) {
-		if(button.getVisibility() == View.INVISIBLE) {
-			button.setVisibility(View.INVISIBLE);
+		if(button.getVisibility() != View.GONE) {
+			button.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -309,22 +309,24 @@ public class OKLoginFragment extends DialogFragment
 	{
 		isShowingSpinner = true;
 		spinner.setVisibility(View.VISIBLE);
+		dontLoginButton.setVisibility(View.INVISIBLE);
+
 		setButtonInvisibleIfNotGone(fbLoginButton);
 		setButtonInvisibleIfNotGone(twitterLoginButton);
 		setButtonInvisibleIfNotGone(googleLoginButton);
 		setButtonInvisibleIfNotGone(guestLoginButton);
-		setButtonInvisibleIfNotGone(dontLoginButton);
 	}
 
 	private void hideSpinner()
 	{
 		isShowingSpinner = false;
 		spinner.setVisibility(View.INVISIBLE);
+		dontLoginButton.setVisibility(View.VISIBLE);
+
 		setButtonVisibleIfNotGone(fbLoginButton);
 		setButtonVisibleIfNotGone(twitterLoginButton);
 		setButtonVisibleIfNotGone(googleLoginButton);
 		setButtonVisibleIfNotGone(guestLoginButton);
-		setButtonVisibleIfNotGone(dontLoginButton);
 	}
 
 	/**
@@ -342,6 +344,7 @@ public class OKLoginFragment extends DialogFragment
 
 			@Override
 			public void onFBLoginError(String errorMessage) {
+				OKLog.v("Fb login failed in the callback");
 				hideSpinner();
 				if(errorMessage != null) {
 					FacebookUtilities.showErrorMessage(errorMessage, OKLoginFragment.this.getActivity());
