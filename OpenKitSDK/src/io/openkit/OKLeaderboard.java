@@ -49,6 +49,8 @@ public class OKLeaderboard implements Parcelable{
 
 	public static final int NUM_SCORES_PER_PAGE = 25;
 
+	private static final String DEFAULT_LEADERBOARD_LIST_TAG = "v1";
+
 	@Override
 	public void writeToParcel(Parcel out, int flags)
 	{
@@ -322,13 +324,27 @@ public class OKLeaderboard implements Parcelable{
 	 * Gets a list of leaderboards for the app
 	 * @param responseHandler Response handler interface with callbacks to be overridden, typically anonymously
 	 */
-
-
 	public static void getLeaderboards(OKLeaderboardsListResponseHandler responseHandler)
 	{
-		RequestParams params = new RequestParams();
+		  // By default, if a leaderboard list tag is not defined through OKManger, we
+	    // load the leaderboards with the tag = 'v1'. In the OK Dashboard, new leaderboards
+	    // have a default tag of v1. This sets up future proofing so a developer can issue
+	    // a set of leaderboards in the first version of their game, and then change the leaderboards
+	    // in a future version of their game
 
-		OKLog.d("Getting list of leaderboards");
+		if(OKManager.INSTANCE.getLeaderboardListTag() == null) {
+			getLeaderboards(DEFAULT_LEADERBOARD_LIST_TAG, responseHandler);
+		} else {
+			getLeaderboards(OKManager.INSTANCE.getLeaderboardListTag(), responseHandler);
+		}
+	}
+
+	private static void getLeaderboards(String leaderboardListTag, OKLeaderboardsListResponseHandler responseHandler)
+	{
+		RequestParams params = new RequestParams();
+		params.put("tag", leaderboardListTag);
+
+		OKLog.d("Getting list of leaderboards for tag: " + leaderboardListTag);
 
 		final OKLeaderboardsListResponseHandler finalResponseHandler = responseHandler;
 

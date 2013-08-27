@@ -63,6 +63,13 @@ public class UnityPlugin {
 		OKManager.INSTANCE.setAchievementsEnabled(enabled);
 	}
 
+	public static void setLeaderboardListTag(String tag){
+		OKManager.INSTANCE.setLeaderboardListTag(tag);
+	}
+
+	public static void setGoogleLoginEnabled(boolean enabled) {
+		OKManager.INSTANCE.setGoogleLoginEnabled(enabled);
+	}
 
 	public static void logoutOfOpenKit()
 	{
