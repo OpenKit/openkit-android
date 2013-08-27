@@ -38,6 +38,9 @@ public enum OKManager {
 	private String appKey;
 	private String secretKey;
 	private OKScoreCache scoreCache;
+	private String leaderboardListTag;
+
+
 
 	private boolean isAchievementsEnabled = true;
 
@@ -113,6 +116,18 @@ public enum OKManager {
 
 	public void setAchievementsEnabled(boolean isAchievementsEnabled) {
 		this.isAchievementsEnabled = isAchievementsEnabled;
+	}
+
+	public String getLeaderboardListTag() {
+		return leaderboardListTag;
+	}
+
+	public void setGoogleLoginEnabled(boolean enabled) {
+		OKLoginFragment.setGoogleLoginEnabled(enabled);
+	}
+
+	public void setLeaderboardListTag(String leaderboardListTag) {
+		this.leaderboardListTag = leaderboardListTag;
 	}
 
 	/**
@@ -213,7 +228,6 @@ public enum OKManager {
 			return user;
 		}
 	}
-
 
 
 }

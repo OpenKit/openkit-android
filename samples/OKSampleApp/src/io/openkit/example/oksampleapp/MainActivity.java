@@ -15,6 +15,7 @@
  */
 package io.openkit.example.oksampleapp;
 
+
 import io.openkit.facebook.widget.ProfilePictureView;
 import io.openkit.*;
 import io.openkit.leaderboards.*;
@@ -46,14 +47,22 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//OpenKit.setEndpoint("http://development.openkit.io");
-		//OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
+		OpenKit.setEndpoint("http://development.openkit.io");
+		OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
 
-		OpenKit.setEndpoint("http://10.1.10.33:3000/");
-		OpenKit.initialize(this,"InPL3e5tO2IpRG0Cimus","x7cLt7Vo3r7sVKFQRA19TDWCkH67gJw2x69le3dS");
-
-
+		// To disable achievements from showing in the UI, setAchievementsEnabled(false)
 		//OKManager.INSTANCE.setAchievementsEnabled(false);
+
+		// Set the leaderboard list tag. By default, client asks
+	    // for tag = "v1". In the OpenKit dashboard, new leaderboards
+	    // have a default tag of "v1" as well. You can use this
+	    // tag feature to display different leaderboards in different
+	    // versions of your game. Each leaderboard can have multiple tags, but the client
+	    // will only display one tag.
+		//OKManager.INSTANCE.setLeaderboardListTag("v2");
+
+		// Showing how to disable GoogleAuth from the UI if you don't want to use it
+		//OKManager.INSTANCE.setGoogleLoginEnabled(false);
 
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
 		loginToOpenKitButton = (Button)findViewById(R.id.OKLoginButton);
@@ -225,13 +234,10 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			/*
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
-			*/
 
-			Intent leaderboardIntent = OKLeaderboard.getLeaderboardIntent(MainActivity.this, 89);
-			startActivity(leaderboardIntent);
+			ScoreCreator.CreateGlobalScores(60, 56, 4000);
 		}
 	};
 
