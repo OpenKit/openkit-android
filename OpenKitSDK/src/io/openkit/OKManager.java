@@ -179,9 +179,10 @@ public enum OKManager {
 
 	private static final String OK_PREFS_NAME = "openkit_pref";
 	private static final String KEY_fbUserId = "FBUserID";
-	private static final String KEY_twitterUserID = "twitterUserID";
 	private static final String KEY_userNick = "userNick";
 	private static final String KEY_okUserID = "OKuserID";
+	private static final String KEY_googleUserID = "googleUserID";
+	private static final String KEY_customID = "customUserID";
 
 
 	private void saveOKUserInSharedPrefs(Context ctx, OKUser user)
@@ -192,7 +193,8 @@ public enum OKManager {
 		editor.putString(KEY_userNick, user.getUserNick());
 		editor.putInt(KEY_okUserID, user.getOKUserID());
 		editor.putLong(KEY_fbUserId, user.getFBUserID());
-		editor.putLong(KEY_twitterUserID, user.getTwitterUserID());
+		editor.putString(KEY_googleUserID, user.getGoogleID());
+		editor.putLong(KEY_customID, user.getCustomID());
 
 		editor.commit();
 	}
@@ -205,7 +207,8 @@ public enum OKManager {
 		editor.remove(KEY_userNick);
 		editor.remove(KEY_okUserID);
 		editor.remove(KEY_fbUserId);
-		editor.remove(KEY_twitterUserID);
+		editor.remove(KEY_googleUserID);
+		editor.remove(KEY_customID);
 
 		editor.commit();
 	}
@@ -217,8 +220,9 @@ public enum OKManager {
 
 		user.setFBUserID(settings.getLong(KEY_fbUserId, 0));
 		user.setOKUserID(settings.getInt(KEY_okUserID, 0));
-		user.setTwitterUserID(settings.getLong(KEY_twitterUserID, 0));
 		user.setUserNick(settings.getString(KEY_userNick, null));
+		user.setGoogleID(settings.getString(KEY_googleUserID, null));
+		user.setCustomID(settings.getLong(KEY_customID, 0));
 
 		if(user.getOKUserID() == 0)
 			return null;
