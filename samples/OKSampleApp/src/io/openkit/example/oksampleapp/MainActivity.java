@@ -236,8 +236,6 @@ public class MainActivity extends Activity {
 		public void onClick(View v) {
 			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
 			startActivity(launchCloudDemo);
-
-			ScoreCreator.CreateGlobalScores(60, 56, 4000);
 		}
 	};
 
