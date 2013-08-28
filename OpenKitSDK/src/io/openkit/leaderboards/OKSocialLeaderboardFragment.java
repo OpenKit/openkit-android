@@ -104,7 +104,9 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void errorLoadingLeaderboard() {
 		spinnerBar.setVisibility(View.INVISIBLE);
-		Toast.makeText(this.getActivity(), "Sorry, but the leaderboard can't be loaded right now. Please try again later. ", Toast.LENGTH_LONG).show();
+		if(this.getActivity() != null) {
+			Toast.makeText(this.getActivity(), "Sorry, but the leaderboard can't be loaded right now. Please try again later. ", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
