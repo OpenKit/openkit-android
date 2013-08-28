@@ -116,8 +116,10 @@ public class OKLeaderboardsFragment extends ListFragment {
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				spinnerBar.setVisibility(View.INVISIBLE);
-				Toast toast = Toast.makeText(OKLeaderboardsFragment.this.getActivity(), "Couldn't connect to server to get leaderboards", Toast.LENGTH_LONG);
-				toast.show();
+				if(OKLeaderboardsFragment.this.getActivity() != null) {
+					Toast toast = Toast.makeText(OKLeaderboardsFragment.this.getActivity(), "Couldn't connect to server to get leaderboards", Toast.LENGTH_LONG);
+					toast.show();
+				}
 			}
 		});
 	}
