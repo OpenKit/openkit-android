@@ -194,9 +194,13 @@ public class MainActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 
-			//Get the leaderboards
+			//Show the entire list of leaderboards
 			Intent launchOKLeaderboards = new Intent(MainActivity.this, OKLeaderboardsActivity.class);
 			startActivity(launchOKLeaderboards);
+
+			// Code below shows how to launch directly to a specific leaderboard ID
+			//Intent launchleaderboard = OKLeaderboard.getLeaderboardIntent(MainActivity.this, 30);
+			//startActivity(launchleaderboard);
 		}
 	};
 
