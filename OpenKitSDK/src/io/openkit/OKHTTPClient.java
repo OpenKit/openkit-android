@@ -38,7 +38,9 @@ import org.json.JSONObject;
 
 
 public class OKHTTPClient {
-	
+
+	private static final String DEFAULT_BASE_URL = "http://api.openkit.io/";
+
 	private static AsyncHttpClient initializeClient()
 	{
 		AsyncHttpClient asyncClient = new AsyncHttpClient();
@@ -47,35 +49,35 @@ public class OKHTTPClient {
 		asyncClient.setTimeout(10000);
 		return asyncClient;
 	}
-	
-	private static String BASE_URL = "http://stage.openkit.io/";
-		
+
+	private static String BASE_URL = DEFAULT_BASE_URL;
+
 	private static AsyncHttpClient client = initializeClient();
 	private static CommonsHttpOAuthConsumer oauthConsumer = null;
-	
+
 	public String getAppKey()
 	{
 		return OpenKit.getAppKey();
 	}
-	
+
 	public static void setEndpoint(String endpoint)
 	{
 		BASE_URL = endpoint;
 	}
-	
+
 	public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler)
 	{
 		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(getAbsoluteUrl(url), params));
 		sign(request);
 		client.get(request, responseHandler);
 	}
-	
-	
+
+
 	public static void postJSON(String url, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
 	{
 		StringEntity sEntity = getJSONString(requestParams);
 		HttpPost request = new HttpPost(getAbsoluteUrl(url));
-		
+
 		if(sEntity == null) {
 			responseHandler.onFailure(new Throwable("JSON encoding error"), "JSON encoding error");
 		}
@@ -85,12 +87,12 @@ public class OKHTTPClient {
 			client.post(request, "application/json", responseHandler);
 		}
 	}
-	
+
 	public static void putJSON(String url, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
 	{
 		StringEntity sEntity = getJSONString(requestParams);
 		HttpPut request = new HttpPut(getAbsoluteUrl(url));
-		
+
 		if(sEntity == null) {
 			responseHandler.onFailure(new Throwable("JSON encoding error"), "JSON encoding error");
 		}
@@ -110,13 +112,16 @@ public class OKHTTPClient {
 			oauthConsumer.sign(request);
 		} catch (OAuthMessageSignerException e) {
 			OKLog.v("Oauth Signature Failed (1).");
+			oauthConsumer = null;
 		} catch (OAuthExpectationFailedException e) {
 			OKLog.v("Oauth Signature Failed (2).");
+			oauthConsumer = null;
 		} catch (OAuthCommunicationException e) {
 			OKLog.v("Oauth Signature Failed (3).");
+			oauthConsumer = null;
 		}
 	}
-	
+
 	private static StringEntity getJSONString(JSONObject jsonObject)
 	{
 		StringEntity sEntity = null;
@@ -128,7 +133,7 @@ public class OKHTTPClient {
 			return null;
 		}
 	}
-	
+
 	private static String getAbsoluteUrl(String relativeURL)
 	{
 		if(BASE_URL.endsWith("/")) {
