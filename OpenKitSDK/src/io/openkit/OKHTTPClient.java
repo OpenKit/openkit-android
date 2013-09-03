@@ -39,7 +39,7 @@ import org.json.JSONObject;
 
 public class OKHTTPClient {
 
-	private static final String DEFAULT_BASE_URL = "http://api.openkit.io/";
+	private static final String DEFAULT_BASE_URL = "http://development.openkit.io/";
 
 	private static AsyncHttpClient initializeClient()
 	{
