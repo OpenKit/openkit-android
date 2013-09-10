@@ -298,6 +298,23 @@ public class FacebookUtilities
 	}
 
 
+	public static String getSerializedListOfFBFriends(ArrayList<Long> friendsArray)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		int x;
+		for (x = 0; x < friendsArray.size(); x++) {
+			sb.append(friendsArray.get(x));
+			sb.append(",");
+		}
+
+		if(x > 0) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+
+		return sb.toString();
+	}
+
 	/**
 	 * Given a facebook login exception, returns a string to display as an error message if one should be shown, otherwise returns null
 	 * @param exception

@@ -1,5 +1,6 @@
 package io.openkit.unity.android;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import io.openkit.OKAchievementScore;
@@ -10,6 +11,8 @@ import io.openkit.OKScore;
 import io.openkit.OKUser;
 import io.openkit.OKScore.ScoreRequestResponseHandler;
 import io.openkit.OpenKit;
+import io.openkit.facebook.FacebookRequestError;
+import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.leaderboards.OKLeaderboardsActivity;
 import android.content.Intent;
 import android.util.Log;
@@ -18,11 +21,14 @@ import com.unity3d.player.UnityPlayer;
 
 public class UnityPlugin {
 
+	public static final String ASYNC_CALL_SUCCEEDED = "asyncCallSucceeded";
+	public static final String ASYNC_CALL_FAILED = "asyncCallFailed";
 
 	public static void logD(String format, Object... args) {
 		Log.d("OpenKitPlugin", String.format(Locale.getDefault(), format, args));
 	}
 
+	/* Set functions for various settings */
 
 	public static void setAppKey(String appKey)
 	{
@@ -34,26 +40,6 @@ public class UnityPlugin {
 		OKManager.INSTANCE.setSecretKey(secretKey);
 	}
 
-	public static void initialize()
-	{
-		logD("Initializing OpenKit native Android");
-		OpenKit.initialize(UnityPlayer.currentActivity);
-	}
-
-	/**
-	 * Initialize OpenKit SDK with the given AppKey and Secret Key
-	 * @param appID
-	 */
-	public static void initialize(String appKey, String secretKey)
-	{
-		logD("Initializing OpenKit");
-		OpenKit.initialize(UnityPlayer.currentActivity, appKey, secretKey);
-	}
-
-	/**
-	 * Sets the server endpoint for OpenKit calls
-	 * @param endpoint Base URL for endpoint, e.g. "http://stage.openkit.io/"
-	 */
 	public static void setEndpoint(String endpoint)
 	{
 		OpenKit.setEndpoint(endpoint);
@@ -71,15 +57,30 @@ public class UnityPlugin {
 		OKManager.INSTANCE.setGoogleLoginEnabled(enabled);
 	}
 
+	/* Initialize method required for Android */
+
+	public static void initialize()
+	{
+		logD("Initializing OpenKit native Android");
+		OpenKit.initialize(UnityPlayer.currentActivity);
+	}
+
+	public static void initialize(String appKey, String secretKey)
+	{
+		logD("Initializing OpenKit");
+		OpenKit.initialize(UnityPlayer.currentActivity, appKey, secretKey);
+	}
+
+
 	public static void logoutOfOpenKit()
 	{
 		OKManager.INSTANCE.logoutCurrentUser(UnityPlayer.currentActivity.getApplicationContext());
 		logD("Logging out of OpenKit");
 	}
 
-	/**
-	 * Shows OpenKit leaderboads for the given app
-	 */
+
+	/* Show UI methods */
+
 	public static void showLeaderboards()
 	{
 		logD("Launching Leaderboards UI");
@@ -118,6 +119,10 @@ public class UnityPlugin {
 			}
 		});
 	}
+
+
+	/* Submit scores */
+
 
 	/**
 	 * Submits a given score value and leaderboard ID. Uses UnitySendMessage to send a success or fail message to the gameobjectname specified
@@ -176,6 +181,8 @@ public class UnityPlugin {
 		});
 	}
 
+	/* Get stuff from native to Unity */
+
 	public static int getCurrentUserOKID()
 	{
 		if(OpenKit.getCurrentUser() != null)
@@ -208,6 +215,25 @@ public class UnityPlugin {
 			return 0;
 	}
 
+	public static void getFacebookFriendsList(final String gameObjectName)
+	{
+		FacebookUtilities.GetFBFriends(new FacebookUtilities.GetFBFriendsRequestHandler() {
+			@Override
+			public void onSuccess(ArrayList<Long> friendsArray) {
+				String friendsList = FacebookUtilities.getSerializedListOfFBFriends(friendsArray);
+				UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_SUCCEEDED, friendsList);
+			}
+
+			@Override
+			public void onFail(FacebookRequestError error) {
+				if(error != null){
+					UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, error.getErrorMessage());
+				} else {
+					UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, "Unknown error when trying to get friends from Android native");
+				}
+			}
+		});
+	}
 
 
 }
