@@ -36,7 +36,6 @@ public class OKLeaderboard implements Parcelable{
 	private String name;
 	private int OKAPP_id;
 	private int OKLeaderboard_id;
-	private boolean inDevelopment;
 	private LeaderboardSortType sortType;
 	private String icon_url;
 	private int playerCount;
@@ -60,8 +59,6 @@ public class OKLeaderboard implements Parcelable{
 		out.writeInt(OKAPP_id);
 		//private int OKLeaderboard_id;
 		out.writeInt(OKLeaderboard_id);
-		//private boolean inDevelopment;
-		out.writeInt(boolToInt(inDevelopment));
 		//private LeaderboardSortType sortType;
 		out.writeString((sortType == null) ? "" : sortType.name());
 		//private String icon_url;
@@ -78,8 +75,6 @@ public class OKLeaderboard implements Parcelable{
 		OKAPP_id = in.readInt();
 		//private int OKLeaderboard_id;
 		OKLeaderboard_id = in.readInt();
-		//private boolean inDevelopment;
-		inDevelopment = intToBool(in.readInt());
 		//private LeaderboardSortType sortType;
 		try{
 			sortType = LeaderboardSortType.valueOf(in.readString());
@@ -93,6 +88,7 @@ public class OKLeaderboard implements Parcelable{
 		playerCount = in.readInt();
 	}
 
+	/*
 	private static int boolToInt(boolean a)
 	{
 		return (a) ? 1 : 0;
@@ -102,7 +98,7 @@ public class OKLeaderboard implements Parcelable{
 	{
 		return a == 1;
 	}
-
+*/
 
 	/**
 	 * Creates OKLeaderboard from JSON
@@ -141,16 +137,6 @@ public class OKLeaderboard implements Parcelable{
 	public void setOKLeaderboard_id(int aID)
 	{
 		this.OKLeaderboard_id = aID;
-	}
-
-	public boolean getInDevelopment()
-	{
-		return inDevelopment;
-	}
-
-	public void setInDevelopment(boolean aInDevelopment)
-	{
-		this.inDevelopment = aInDevelopment;
 	}
 
 	public LeaderboardSortType getSortType()
@@ -201,14 +187,13 @@ public class OKLeaderboard implements Parcelable{
 	private void initFromJSON(JSONObject leaderboardJSON)
 	{
 		try{
-			this.name = leaderboardJSON.getString("name");
+			this.name = leaderboardJSON.optString("name");
 			this.OKLeaderboard_id = leaderboardJSON.getInt("id");
-			this.OKAPP_id = leaderboardJSON.getInt("app_id");
-			this.inDevelopment = leaderboardJSON.getBoolean("in_development");
-			this.icon_url = leaderboardJSON.getString("icon_url");
-			this.playerCount = leaderboardJSON.getInt("player_count");
+			this.OKAPP_id = leaderboardJSON.optInt("app_id");
+			this.icon_url = leaderboardJSON.optString("icon_url");
+			this.playerCount = leaderboardJSON.optInt("player_count");
 
-			String sortTypeString = leaderboardJSON.getString("sort_type");
+			String sortTypeString = leaderboardJSON.optString("sort_type");
 
 			if(sortTypeString.equalsIgnoreCase("HighValue")){
 				this.sortType = LeaderboardSortType.HighValue;
