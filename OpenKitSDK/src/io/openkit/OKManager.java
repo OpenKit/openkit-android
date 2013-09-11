@@ -43,6 +43,19 @@ public enum OKManager {
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
+
+	/**
+	 * Initialize the OpenKit SDK with your credentials
+	 * @param context Context needed, pass in your activity or app context
+	 * @param appKey Your App key from the OpenKit dashboard
+	 * @param secretKey Your SecretKey from the OpenKit dashboard
+	 * @param secretKey
+	 */
+	public void configure(Context context, String appKey, String secretKey)
+	{
+		configure(context, appKey, secretKey, null);
+	}
+
 	/**
 	 * Initialize the OpenKit SDK with your credentials
 	 * @param context Context needed, pass in your activity or app context
@@ -63,18 +76,6 @@ public enum OKManager {
 
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
-	}
-
-	/**
-	 * Initialize the OpenKit SDK with your credentials
-	 * @param context Context needed, pass in your activity or app context
-	 * @param appKey Your App key from the OpenKit dashboard
-	 * @param secretKey Your SecretKey from the OpenKit dashboard
-	 * @param secretKey
-	 */
-	public void configure(Context context, String appKey, String secretKey)
-	{
-		configure(context, appKey, secretKey, null);
 	}
 
 	/**
