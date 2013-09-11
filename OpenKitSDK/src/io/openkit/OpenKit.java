@@ -24,20 +24,13 @@ public class OpenKit {
 	 * @param context A context (usually the activity)
 	 * @param appKey Your OpenKit app key, taken from the developer dashboard
 	 * @param secretKey Your OpenKit secret key, taken from the developer dashboard
+	 * @param endpoint OpenKit server endpoint you want to use. If none is specified, the default endpoint is used
 	 */
-	public static void initialize(Context context, String appKey, String secretKey)
+	public static void configure(Context context, String appKey, String secretKey, String endpoint)
 	{
-		OKManager.INSTANCE.initialize(context, appKey, secretKey);
+		OKManager.INSTANCE.configure(context, appKey, secretKey);
 	}
 
-	/**
-	 * Initialize the OpenKit SDK. Should be called from your onCreate methods
-	 * @param context
-	 */
-	public static void initialize(Context context)
-	{
-		OKManager.INSTANCE.initialize(context);
-	}
 
 	/**
 	 * Get current OKUser
@@ -56,15 +49,6 @@ public class OpenKit {
 		return OKManager.INSTANCE.getAppKey();
 	}
 
-	public static void setAppKey(String appKey)
-	{
-		OKManager.INSTANCE.setAppKey(appKey);
-	}
-
-	public static void setSecretKey(String secretKey)
-	{
-		OKManager.INSTANCE.setSecretKey(secretKey);
-	}
 
 	/**
 	 * Sets the base URL that the OpenKit SDK will use

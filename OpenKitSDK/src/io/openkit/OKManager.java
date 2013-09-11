@@ -39,32 +39,42 @@ public enum OKManager {
 	private String secretKey;
 	private OKScoreCache scoreCache;
 	private String leaderboardListTag;
-
-
-
 	private boolean isAchievementsEnabled = true;
-
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
 	/**
-	 * OpenKit internal only, developers should use OpenKit.initialize()
-	 * @param context
-	 * @param appKey
-	 * @param secretKey
+	 * Initialize the OpenKit SDK with your credentials
+	 * @param context Context needed, pass in your activity or app context
+	 * @param appKey Your App key from the OpenKit dashboard
+	 * @param secretKey Your SecretKey from the OpenKit dashboard
+	 * @param endpoint OpenKit server endpoint. Leave as null for default or specify your own URL
 	 */
-	public void initialize(Context context, String appKey, String secretKey)
+	public void configure(Context context, String appKey, String secretKey, String endpoint)
 	{
 		this.appKey = appKey;
 		this.secretKey = secretKey;
-		initialize(context.getApplicationContext());
-	}
 
-	public void initialize(Context context)
-	{
-		this.getCurrentUser(context.getApplicationContext());
+		if(endpoint != null) {
+			OKHTTPClient.setEndpoint(endpoint);
+		} else {
+			OKHTTPClient.setEndpoint(OKHTTPClient.DEFAULT_ENDPOINT);
+		}
+
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
+	}
+
+	/**
+	 * Initialize the OpenKit SDK with your credentials
+	 * @param context Context needed, pass in your activity or app context
+	 * @param appKey Your App key from the OpenKit dashboard
+	 * @param secretKey Your SecretKey from the OpenKit dashboard
+	 * @param secretKey
+	 */
+	public void configure(Context context, String appKey, String secretKey)
+	{
+		configure(context, appKey, secretKey, null);
 	}
 
 	/**
@@ -74,20 +84,13 @@ public enum OKManager {
 		return this.appKey;
 	}
 
-	public void setAppKey(String appKey) {
-		this.appKey = appKey;
-	}
-
-	public OKUser getCurrentUser() {
-		return currentUser;
-	}
-
 	public String getSecretKey() {
 		return secretKey;
 	}
 
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
+
+	public OKUser getCurrentUser() {
+		return currentUser;
 	}
 
 	public OKScoreCache getSharedCache() {
@@ -122,27 +125,13 @@ public enum OKManager {
 		return leaderboardListTag;
 	}
 
-	public void setGoogleLoginEnabled(boolean enabled) {
-		OKLoginFragment.setGoogleLoginEnabled(enabled);
-	}
-
 	public void setLeaderboardListTag(String leaderboardListTag) {
 		this.leaderboardListTag = leaderboardListTag;
 	}
 
-	/**
-	 * Get current user from shared preferences if stored
-	 * @param Context, required to pull current user stored in SharedPreferences
-	 * @return Current user, or null if user is not logged in
-	 */
-	private OKUser getCurrentUser(Context ctx)
-	{
-		if(currentUser != null) {
-			return currentUser;
-		}
-		else {
-			return getOKUserInSharedPrefs(ctx);
-		}
+
+	public void setGoogleLoginEnabled(boolean enabled) {
+		OKLoginFragment.setGoogleLoginEnabled(enabled);
 	}
 
 	/**
@@ -172,6 +161,25 @@ public enum OKManager {
 
 		getSharedCache().clearCache();
 	}
+
+	/**
+	 * Get current user from shared preferences if stored
+	 * @param Context, required to pull current user stored in SharedPreferences
+	 * @return Current user, or null if user is not logged in
+	 */
+	public OKUser getCurrentUser(Context ctx)
+	{
+		if(currentUser != null) {
+			return currentUser;
+		}
+		else {
+			return getOKUserInSharedPrefs(ctx);
+		}
+	}
+
+/* ----------------------------------------------------------------------------------------
+ * region: private
+ */
 
 	/**
 	 * Constants used for saving and retrieving OKUser in user preferences
