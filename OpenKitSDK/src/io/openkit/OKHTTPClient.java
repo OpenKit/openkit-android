@@ -39,7 +39,7 @@ import org.json.JSONObject;
 
 public class OKHTTPClient {
 
-	private static final String DEFAULT_BASE_URL = "http://development.openkit.io/";
+	public static final String DEFAULT_ENDPOINT = "http://development.openkit.io/";
 
 	private static AsyncHttpClient initializeClient()
 	{
@@ -50,7 +50,7 @@ public class OKHTTPClient {
 		return asyncClient;
 	}
 
-	private static String BASE_URL = DEFAULT_BASE_URL;
+	private static String BASE_URL = DEFAULT_ENDPOINT;
 
 	private static AsyncHttpClient client = initializeClient();
 	private static CommonsHttpOAuthConsumer oauthConsumer = null;

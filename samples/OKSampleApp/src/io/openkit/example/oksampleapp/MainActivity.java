@@ -47,8 +47,13 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		OpenKit.setEndpoint("http://development.openkit.io");
-		OpenKit.initialize(this,"zRn4FrBcWi6ntUmWnEwm","rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu");
+
+		String myEndpoint = "http://development.openkit.io";
+		String myAppKey = "zRn4FrBcWi6ntUmWnEwm";
+		String mySecretKey = "rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu";
+
+		// Initialize OpenKit. You must call this when your app starts (so we call it in onCreate in our MainActivity)
+		OpenKit.configure(this, myAppKey, mySecretKey, myEndpoint);
 
 		// To disable achievements from showing in the UI, setAchievementsEnabled(false)
 		//OKManager.INSTANCE.setAchievementsEnabled(false);
