@@ -160,7 +160,7 @@ public enum OKManager {
 			session.closeAndClearTokenInformation();
 		}
 
-		getSharedCache().clearCache();
+		getSharedCache().clearCachedSubmittedScores();
 	}
 
 	/**

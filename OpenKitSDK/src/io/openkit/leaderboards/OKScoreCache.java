@@ -147,12 +147,35 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		return scoresList;
 	}
 
-	public void clearCache()
+	public void clearCachedSubmittedScores()
+	{
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("DELETE FROM " + TABLE_SCORES + " WHERE " + KEY_SUBMITTED + "=1");
+		db.close();
+		//logScoreCache();
+	}
+
+	// Unused for now, use clearCachedSubmittedScores() instead. This drops the entire table, where as clearCachedSubmitted() is used to clear
+	// out scores that have been submitted when a userID changes
+	/*
+	private void clearCache()
 	{
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
 		this.onCreate(db);
-	}
+	}*/
+
+	/*
+	private void logScoreCache()
+	{
+		List<OKScore> scoreList = getAllCachedScores();
+
+		OKLog.d("Score cache contains:");
+		for(int x =0; x < scoreList.size(); x++)
+		{
+			OKLog.d("1: " + scoreList.get(x));
+		}
+	}*/
 
 	private void submitCachedScore(final OKScore score)
 	{
@@ -175,6 +198,7 @@ public class OKScoreCache extends SQLiteOpenHelper{
 			OKLog.v("Tried to submit cached score without having an OKUser logged in");
 		}
 	}
+
 
 	public void submitAllCachedScores()
 	{
