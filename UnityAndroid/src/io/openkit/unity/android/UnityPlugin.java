@@ -21,29 +21,33 @@ import com.unity3d.player.UnityPlayer;
 
 public class UnityPlugin {
 
-	public static final String ASYNC_CALL_SUCCEEDED = "asyncCallSucceeded";
-	public static final String ASYNC_CALL_FAILED = "asyncCallFailed";
+	private static final String ASYNC_CALL_SUCCEEDED = "asyncCallSucceeded";
+	private static final String ASYNC_CALL_FAILED = "asyncCallFailed";
 
-	public static void logD(String format, Object... args) {
+	private static void OKBridgeLog(String format, Object... args) {
 		Log.d("OpenKitPlugin", String.format(Locale.getDefault(), format, args));
 	}
 
-	/* Set functions for various settings */
-
-	public static void setAppKey(String appKey)
+	/*-------------------------------------------------------------------------
+	 * Region:  Initialize method required for Android
+	 */
+	public static void configure(String appKey, String secretKey, String endpoint)
 	{
-		OKManager.INSTANCE.setAppKey(appKey);
+		OKBridgeLog("Initializing OpenKit from Android native");
+		OpenKit.configure(UnityPlayer.currentActivity, appKey, secretKey, endpoint);
 	}
 
-	public static void setSecretKey(String secretKey)
+	public static void logoutOfOpenKit()
 	{
-		OKManager.INSTANCE.setSecretKey(secretKey);
+		OKManager.INSTANCE.logoutCurrentUser(UnityPlayer.currentActivity.getApplicationContext());
+		OKBridgeLog("Logging out of OpenKit");
 	}
 
-	public static void setEndpoint(String endpoint)
-	{
-		OpenKit.setEndpoint(endpoint);
-	}
+
+
+	/*-------------------------------------------------------------------------
+	 * Region:  Set functions for various settings
+	 */
 
 	public static void setAchievementsEnabled(boolean enabled) {
 		OKManager.INSTANCE.setAchievementsEnabled(enabled);
@@ -57,33 +61,13 @@ public class UnityPlugin {
 		OKManager.INSTANCE.setGoogleLoginEnabled(enabled);
 	}
 
-	/* Initialize method required for Android */
-
-	public static void initialize()
-	{
-		logD("Initializing OpenKit native Android");
-		OpenKit.initialize(UnityPlayer.currentActivity);
-	}
-
-	public static void initialize(String appKey, String secretKey)
-	{
-		logD("Initializing OpenKit");
-		OpenKit.initialize(UnityPlayer.currentActivity, appKey, secretKey);
-	}
-
-
-	public static void logoutOfOpenKit()
-	{
-		OKManager.INSTANCE.logoutCurrentUser(UnityPlayer.currentActivity.getApplicationContext());
-		logD("Logging out of OpenKit");
-	}
-
-
-	/* Show UI methods */
+	/*-------------------------------------------------------------------------
+	 * Region: showUI methods
+	 */
 
 	public static void showLeaderboards()
 	{
-		logD("Launching Leaderboards UI");
+		OKBridgeLog("Launching Leaderboards UI");
 		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -95,7 +79,7 @@ public class UnityPlugin {
 
 	public static void showLeaderboard(final int leaderboardID)
 	{
-		logD("Launching Leaderboard with id: " + leaderboardID);
+		OKBridgeLog("Launching Leaderboard with id: " + leaderboardID);
 		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -110,7 +94,7 @@ public class UnityPlugin {
 	 */
 	public static void showLoginUI()
 	{
-		logD("Launching Login UI");
+		OKBridgeLog("Launching Login UI");
 		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -121,8 +105,9 @@ public class UnityPlugin {
 	}
 
 
-	/* Submit scores */
-
+	/*-------------------------------------------------------------------------
+	 * Region: Submit scores methods
+	 */
 
 	/**
 	 * Submits a given score value and leaderboard ID. Uses UnitySendMessage to send a success or fail message to the gameobjectname specified
@@ -132,7 +117,7 @@ public class UnityPlugin {
 	 */
 	public static void submitScore(long scoreValue, int leaderboardID, int metadata, String displayString, final String gameObjectName)
 	{
-		logD("Submitting score");
+		OKBridgeLog("Submitting score");
 		OKScore score = new OKScore();
 		score.setScoreValue(scoreValue);
 		score.setOKLeaderboardID(leaderboardID);
@@ -160,7 +145,7 @@ public class UnityPlugin {
 
 	public static void submitAchievementScore(int progress, int achievementID, final String gameObjectName)
 	{
-		logD("Submitting achievement score");
+		OKBridgeLog("Submitting achievement score");
 
 		OKAchievementScore achievementScore = new OKAchievementScore();
 		achievementScore.setOKAchievementId(achievementID);
@@ -169,19 +154,22 @@ public class UnityPlugin {
 		achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
 			@Override
 			public void onSuccess() {
-				logD("Achievement score submitted successfully");
+				OKBridgeLog("Achievement score submitted successfully");
 				UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionSucceeded", "");
 			}
 
 			@Override
 			public void onFailure(Throwable error) {
-				logD("Achievement score submission failed");
+				OKBridgeLog("Achievement score submission failed");
 				UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionFailed", error.getLocalizedMessage());
 			}
 		});
 	}
 
-	/* Get stuff from native to Unity */
+
+	/*-------------------------------------------------------------------------
+	 * Region: Get stuff from native to Unity
+	 */
 
 	public static int getCurrentUserOKID()
 	{

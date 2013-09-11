@@ -62,7 +62,11 @@ public class OKHTTPClient {
 
 	public static void setEndpoint(String endpoint)
 	{
-		BASE_URL = endpoint;
+		if(endpoint != null) {
+			BASE_URL = endpoint;
+		} else {
+			BASE_URL = DEFAULT_ENDPOINT;
+		}
 	}
 
 	public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler)
