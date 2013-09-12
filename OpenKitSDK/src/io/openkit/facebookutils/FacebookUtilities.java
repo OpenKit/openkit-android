@@ -105,7 +105,7 @@ public class FacebookUtilities
 
 			@Override
 			public void onSuccess(OKUser user) {
-				OKManager.INSTANCE.handlerUserLoggedIn(user, context);
+				OKManager.INSTANCE.handlerUserLoggedIn(user, context.getApplicationContext());
 			}
 
 			@Override

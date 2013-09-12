@@ -68,6 +68,9 @@ public class OKUser {
 
 	private void initFromJSON(JSONObject userJSON)
 	{
+		// Set to 0 as default value
+		this.OKUserID = 0;
+
 		try {
 			this.OKUserID = userJSON.getInt("id");
 			this.userNick = userJSON.getString("nick");
