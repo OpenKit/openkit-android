@@ -39,7 +39,9 @@ import org.json.JSONObject;
 
 public class OKHTTPClient {
 
+	/* Client SDK default parameters */
 	public static final String DEFAULT_ENDPOINT = "http://development.openkit.io/";
+	public static final String SERVER_API_VERSION = "v1";
 
 	private static AsyncHttpClient initializeClient()
 	{
@@ -69,18 +71,18 @@ public class OKHTTPClient {
 		}
 	}
 
-	public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler)
+	public static void get(String relativeUrl, RequestParams params, AsyncHttpResponseHandler responseHandler)
 	{
-		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(getAbsoluteUrl(url), params));
+		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(getAbsoluteUrl(relativeUrl), params));
 		sign(request);
 		client.get(request, responseHandler);
 	}
 
 
-	public static void postJSON(String url, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
+	public static void postJSON(String relativeUrl, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
 	{
 		StringEntity sEntity = getJSONString(requestParams);
-		HttpPost request = new HttpPost(getAbsoluteUrl(url));
+		HttpPost request = new HttpPost(getAbsoluteUrl(relativeUrl));
 
 		if(sEntity == null) {
 			responseHandler.onFailure(new Throwable("JSON encoding error"), "JSON encoding error");
@@ -92,10 +94,10 @@ public class OKHTTPClient {
 		}
 	}
 
-	public static void putJSON(String url, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
+	public static void putJSON(String relativeUrl, JSONObject requestParams, AsyncHttpResponseHandler responseHandler)
 	{
 		StringEntity sEntity = getJSONString(requestParams);
-		HttpPut request = new HttpPut(getAbsoluteUrl(url));
+		HttpPut request = new HttpPut(getAbsoluteUrl(relativeUrl));
 
 		if(sEntity == null) {
 			responseHandler.onFailure(new Throwable("JSON encoding error"), "JSON encoding error");
@@ -140,19 +142,10 @@ public class OKHTTPClient {
 
 	private static String getAbsoluteUrl(String relativeURL)
 	{
-		if(BASE_URL.endsWith("/")) {
-			if(relativeURL.startsWith("/")) {
-				return BASE_URL + relativeURL.substring(1);
-			} else {
-				return BASE_URL + relativeURL;
-			}
-		} else {
-			if(relativeURL.startsWith("/")) {
-				return BASE_URL + relativeURL;
-			} else {
-				return BASE_URL + '/' + relativeURL;
-			}
-		}
+		OKURLBuilder urlBuilder = new OKURLBuilder(BASE_URL);
+		urlBuilder.appendPathComponent(SERVER_API_VERSION);
+		urlBuilder.appendPathComponent(relativeURL);
+		return urlBuilder.build();
 	}
 
 }
