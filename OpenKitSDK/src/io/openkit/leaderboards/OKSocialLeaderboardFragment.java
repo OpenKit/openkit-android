@@ -547,7 +547,7 @@ public class OKSocialLeaderboardFragment extends ListFragment {
 
 	private void showPromptForFBIfNecessary()
 	{
-		if(!OKManager.INSTANCE.hasShownFBLoginPrompt() && (OKUser.getCurrentUser() == null || OKUser.getCurrentUser().getFBUserID() == 0)) {
+		if(!OKManager.INSTANCE.hasShownFBLoginPrompt() && (OKUser.getCurrentUser() == null || OKUser.getCurrentUser().getFBUserID() == null)) {
 			OKManager.INSTANCE.setHasShownFBLoginPrompt(true);
 			showPromptForFacebook();
 		}

@@ -91,7 +91,7 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		currentUser = OpenKit.getCurrentUser();
 		userNickTextView.setText(currentUser.getUserNick());
 		userNickEditText.setHint(currentUser.getUserNick());
-		profiePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
+		profiePictureView.setProfileId(currentUser.getFBUserID());
 
 		continueButton.setOnClickListener(onSubmitNewNick);
 

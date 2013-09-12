@@ -128,16 +128,16 @@ public class FacebookUtilities
 				@Override
 				public void onCompletion(GraphUser user) {
 					if(user != null) {
-						long fbID = Long.parseLong(user.getId());
+						String fbIDString = user.getId();
 
-						if(OKUser.getCurrentUser().getFBUserID() == 0) {
-							OKUser.getCurrentUser().setFBUserID(fbID);
+						if(OKUser.getCurrentUser().getFBUserID() == fbIDString) {
+							OKUser.getCurrentUser().setFBUserID(fbIDString);
 							OKUser.getCurrentUser().setUserNick(user.getName());
 							OKLog.v("Updating cached user with Facebook ID");
 							OKUserUtilities.updateOKUser(OKUser.getCurrentUser(), requestHandler);
 						} else {
 							// If the FB ID of the login is different from the cached FB id, create a new OKUser with the new FB ID
-							if(fbID != OKUser.getCurrentUser().getFBUserID()) {
+							if(!FacebookUtilities.isFBIDEqual(fbIDString,OKUser.getCurrentUser().getFBUserID())) {
 								OKLog.v("Cached user has different FB ID than logged in user, creating new OKUser with new FB ID");
 								OKUserUtilities.createOKUser(OKUserIDType.FacebookID, user.getId(), user.getName(), requestHandler);
 							} else {
@@ -152,6 +152,15 @@ public class FacebookUtilities
 			});
 		} else {
 			CreateOKUserFromFacebook(requestHandler);
+		}
+	}
+
+	private static boolean isFBIDEqual(String fbID1, String fbID2)
+	{
+		if(fbID1 == null || fbID2 == null) {
+			return false;
+		} else {
+			return fbID1.equalsIgnoreCase(fbID2);
 		}
 	}
 

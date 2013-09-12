@@ -189,11 +189,11 @@ public enum OKManager {
 	 */
 
 	private static final String OK_PREFS_NAME = "openkit_pref";
-	private static final String KEY_fbUserId = "FBUserID";
-	private static final String KEY_userNick = "userNick";
-	private static final String KEY_okUserID = "OKuserID";
-	private static final String KEY_googleUserID = "googleUserID";
-	private static final String KEY_customID = "customUserID";
+	private static final String KEY_FB_ID = "FBUserID";
+	private static final String KEY_USER_NICK = "userNick";
+	private static final String KEY_OKUSER_ID = "OKuserID";
+	private static final String KEY_GOOGLE_ID = "googleUserID";
+	private static final String KEY_CUSTOM_ID = "customUserID";
 
 
 	private void saveOKUserInSharedPrefs(Context ctx, OKUser user)
@@ -201,11 +201,11 @@ public enum OKManager {
 		SharedPreferences settings = ctx.getSharedPreferences(OK_PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 
-		editor.putString(KEY_userNick, user.getUserNick());
-		editor.putInt(KEY_okUserID, user.getOKUserID());
-		editor.putLong(KEY_fbUserId, user.getFBUserID());
-		editor.putString(KEY_googleUserID, user.getGoogleID());
-		editor.putLong(KEY_customID, user.getCustomID());
+		editor.putString(KEY_USER_NICK, user.getUserNick());
+		editor.putInt(KEY_OKUSER_ID, user.getOKUserID());
+		editor.putString(KEY_FB_ID, user.getFBUserID());
+		editor.putString(KEY_GOOGLE_ID, user.getGoogleID());
+		editor.putString(KEY_CUSTOM_ID, user.getCustomID());
 
 		editor.commit();
 		OKLog.v("Saved OKUser: " + user);
@@ -216,11 +216,11 @@ public enum OKManager {
 		SharedPreferences settings = ctx.getSharedPreferences(OK_PREFS_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 
-		editor.remove(KEY_userNick);
-		editor.remove(KEY_okUserID);
-		editor.remove(KEY_fbUserId);
-		editor.remove(KEY_googleUserID);
-		editor.remove(KEY_customID);
+		editor.remove(KEY_USER_NICK);
+		editor.remove(KEY_OKUSER_ID);
+		editor.remove(KEY_FB_ID);
+		editor.remove(KEY_GOOGLE_ID);
+		editor.remove(KEY_CUSTOM_ID);
 
 		editor.commit();
 		OKLog.v("Removed cached user");
@@ -231,20 +231,45 @@ public enum OKManager {
 		SharedPreferences settings = ctx.getSharedPreferences(OK_PREFS_NAME, Context.MODE_PRIVATE);
 		OKUser user = new OKUser();
 
-		user.setFBUserID(settings.getLong(KEY_fbUserId, 0));
-		user.setOKUserID(settings.getInt(KEY_okUserID, 0));
-		user.setUserNick(settings.getString(KEY_userNick, null));
-		user.setGoogleID(settings.getString(KEY_googleUserID, null));
-		user.setCustomID(settings.getLong(KEY_customID, 0));
+		// Get the FBID, which used to be stored as a long (now string) so check for ClassCastException
+		String fbID = safeGetStringForSharedPrefKey(settings, KEY_FB_ID);
+		String googleID = safeGetStringForSharedPrefKey(settings, KEY_GOOGLE_ID);
+		String customID = safeGetStringForSharedPrefKey(settings, KEY_CUSTOM_ID);
+
+		user.setFBUserID(fbID);
+		user.setGoogleID(googleID);
+		user.setCustomID(customID);
+
+		user.setOKUserID(settings.getInt(KEY_OKUSER_ID, 0));
+		user.setUserNick(settings.getString(KEY_USER_NICK, null));
+
 
 		if(user.getOKUserID() == 0)
 			return null;
 		else
 		{
-			OKLog.d("Found cached user: " + user);
+			OKLog.d("Found cached user: "+ user);
 			this.currentUser = user;
 			return user;
 		}
+	}
+
+	private String safeGetStringForSharedPrefKey(SharedPreferences settings, String key)
+	{
+		String retVal = null;
+		try {
+			retVal = settings.getString(key, null);
+		} catch(ClassCastException ex) {
+			long retValLong = settings.getLong(key, 0);
+
+			if(retValLong != 0) {
+				retVal = Long.toString(retValLong);
+			} else {
+				retVal = null;
+			}
+		}
+
+		return retVal;
 	}
 
 

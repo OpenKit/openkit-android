@@ -187,21 +187,14 @@ public class UnityPlugin {
 			return null;
 	}
 
-	public static long getCurrentUserFBID()
+	public static String getCurrentUserFBID()
 	{
 		if(OpenKit.getCurrentUser() != null)
 			return OpenKit.getCurrentUser().getFBUserID();
 		else
-			return 0;
+			return null;
 	}
 
-	public static long getCurrentUserTwitterID()
-	{
-		if(OpenKit.getCurrentUser() != null)
-			return OpenKit.getCurrentUser().getTwitterUserID();
-		else
-			return 0;
-	}
 
 	public static void getFacebookFriendsList(final String gameObjectName)
 	{

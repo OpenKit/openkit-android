@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
 			logoutButton.setVisibility(View.VISIBLE);
 
 			//Show the user's profile pic and nickname
-			profilePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
+			profilePictureView.setProfileId(currentUser.getFBUserID());
 			userNameTextView.setText(currentUser.getUserNick());
 
 			// Note: we currently use ProfilePicView from the Facebook SDK to show user profile images
