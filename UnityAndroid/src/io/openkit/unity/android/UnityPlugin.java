@@ -195,6 +195,22 @@ public class UnityPlugin {
 			return null;
 	}
 
+	public static String getCurrentUserGoogleID()
+	{
+		if(OpenKit.getCurrentUser() != null)
+			return OpenKit.getCurrentUser().getGoogleID();
+		else
+			return null;
+	}
+
+	public static String getCurrentUserCustomID()
+	{
+		if(OpenKit.getCurrentUser() != null)
+			return OpenKit.getCurrentUser().getCustomID();
+		else
+			return null;
+	}
+
 
 	public static void getFacebookFriendsList(final String gameObjectName)
 	{
