@@ -74,6 +74,8 @@ public enum OKManager {
 			OKHTTPClient.setEndpoint(OKHTTPClient.DEFAULT_ENDPOINT);
 		}
 
+		getOKUserInSharedPrefs(context.getApplicationContext());
+
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
 	}
@@ -237,6 +239,7 @@ public enum OKManager {
 			return null;
 		else
 		{
+			OKLog.d("Found cached user: " + user);
 			this.currentUser = user;
 			return user;
 		}
