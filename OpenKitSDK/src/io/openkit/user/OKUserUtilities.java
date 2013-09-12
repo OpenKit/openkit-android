@@ -175,14 +175,11 @@ public class OKUserUtilities
 		try {
 			object.putOpt("nick", user.getUserNick());
 			object.putOpt("id", user.getOKUserID());
-			if(user.getFBUserID() != 0) {
+			if(user.getFBUserID() != null) {
 				object.putOpt("fb_id", user.getFBUserID());
 			}
-			if(user.getTwitterUserID() != 0) {
-				object.putOpt("twitter_id", user.getTwitterUserID());
-			}
 			object.putOpt("google_id", user.getGoogleID());
-			if(user.getCustomID() != 0) {
+			if(user.getCustomID() != null) {
 				object.putOpt("custom_id", user.getCustomID());
 			}
 		}

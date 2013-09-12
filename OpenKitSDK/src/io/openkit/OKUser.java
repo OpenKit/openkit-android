@@ -25,11 +25,10 @@ import android.util.Log;
 public class OKUser {
 
 	private int OKUserID;
-	private long FBUserID;
-	private long twitterUserID;
 	private String userNick;
+	private String FBUserID;
 	private String googleID;
-	private long customID;
+	private String customID;
 
 
 	/**
@@ -76,15 +75,13 @@ public class OKUser {
 			this.userNick = userJSON.getString("nick");
 
 			//We use optLong for fbID and Twitter ID becuase an OKUser will typically not have both, only 1 or the other
-			this.FBUserID = userJSON.optLong("fb_id");
-			this.twitterUserID = userJSON.optLong("twitter_id");
+			this.FBUserID = userJSON.optString("fb_id");
 			this.googleID = userJSON.optString("google_id");
-			this.customID = userJSON.optLong("custom_id");
+			this.customID = userJSON.optString("custom_id");
 
 		} catch (JSONException e) {
 			Log.e("OpenKit", "Error parsing user JSON: " + e.toString());
 		}
-
 	}
 
 	public int getOKUserID()
@@ -97,24 +94,14 @@ public class OKUser {
 		this.OKUserID = aID;
 	}
 
-	public long getFBUserID()
+	public String getFBUserID()
 	{
 		return FBUserID;
 	}
 
-	public void setFBUserID(long aFBID)
+	public void setFBUserID(String aFBID)
 	{
 		this.FBUserID = aFBID;
-	}
-
-	public long getTwitterUserID()
-	{
-		return twitterUserID;
-	}
-
-	public void setTwitterUserID(long aTwitterID)
-	{
-		this.twitterUserID = aTwitterID;
 	}
 
 	public String getUserNick()
@@ -135,11 +122,11 @@ public class OKUser {
 		this.googleID = googleID;
 	}
 
-	public long getCustomID() {
+	public String getCustomID() {
 		return customID;
 	}
 
-	public void setCustomID(long customID) {
+	public void setCustomID(String customID) {
 		this.customID = customID;
 	}
 

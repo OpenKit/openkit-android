@@ -73,7 +73,7 @@ public class OKUserProfileFragment extends Fragment
 	{
 		OKUser currentUser = OKUser.getCurrentUser();
 		userNickTextView.setText(currentUser.getUserNick());
-		profiePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
+		profiePictureView.setProfileId(currentUser.getFBUserID());
 	}
 
 	private OnClickListener logoutButtonClicked = new OnClickListener()

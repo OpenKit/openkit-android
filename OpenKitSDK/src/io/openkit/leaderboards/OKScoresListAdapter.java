@@ -102,7 +102,7 @@ public class OKScoresListAdapter extends ArrayAdapter<OKScore>
 		if(currentScore.getOKUser() != null)
 		{
 			label1.setText(currentScore.getOKUser().getUserNick());
-			pictureView.setProfileId(Long.toString(currentScore.getOKUser().getFBUserID()));
+			pictureView.setProfileId(currentScore.getOKUser().getFBUserID());
 		}
 
 		row.setTag(position);
