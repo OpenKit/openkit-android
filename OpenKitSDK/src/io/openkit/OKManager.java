@@ -44,6 +44,8 @@ public enum OKManager {
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
+	public static final String OPENKIT_SDK_VERSION = "0.9.8.9";
+
 	/**
 	 * Initialize the OpenKit SDK with your credentials
 	 * @param context Context needed, pass in your activity or app context

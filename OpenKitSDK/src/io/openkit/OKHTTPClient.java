@@ -40,8 +40,12 @@ import org.json.JSONObject;
 public class OKHTTPClient {
 
 	/* Client SDK default parameters */
+	// DEVELOPMENT BRANCH SETTING!
 	public static final String DEFAULT_ENDPOINT = "http://development.openkit.io/";
 	public static final String SERVER_API_VERSION = "v1";
+
+	/* Networking error codes */
+	public static final int UNSUBSCRIBED_USER_ERROR_CODE = 409;
 
 	private static AsyncHttpClient initializeClient()
 	{
@@ -53,9 +57,9 @@ public class OKHTTPClient {
 	}
 
 	private static String BASE_URL = DEFAULT_ENDPOINT;
-
 	private static AsyncHttpClient client = initializeClient();
 	private static CommonsHttpOAuthConsumer oauthConsumer = null;
+
 
 	public String getAppKey()
 	{
