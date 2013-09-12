@@ -53,4 +53,20 @@ public class OKJSONParser {
 		}
 	}
 
+	public static boolean isZeroStringLiteral(String s)
+	{
+		if (s == null) {
+			return false;
+		} else if (s.equalsIgnoreCase("0")) {
+			return true;
+		} else {
+			try {
+				long retValLong = Long.parseLong(s);
+				return (retValLong == 0);
+			} catch (Exception ex) {
+				return false;
+			}
+		}
+	}
+
 }
