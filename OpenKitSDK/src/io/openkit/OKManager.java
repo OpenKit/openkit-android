@@ -259,6 +259,10 @@ public enum OKManager {
 		String retVal = null;
 		try {
 			retVal = settings.getString(key, null);
+			//We don't want userID strings of "0"
+			if(Integer.parseInt(retVal) == 0) {
+				retVal = null;
+			}
 		} catch(ClassCastException ex) {
 			long retValLong = settings.getLong(key, 0);
 
