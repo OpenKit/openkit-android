@@ -20,7 +20,10 @@ import android.content.Context;
 
 public class OpenKit {
 
-	public static final String OPENKIT_SDK_VERSION = "0.9.8.7";
+	public static void configure(Context context, String appKey, String secretKey)
+	{
+		OKManager.INSTANCE.configure(context, appKey, secretKey);
+	}
 
 	/**
 	 * Initialize the OpenKit SDK. Should be called from your onCreate methods
@@ -31,7 +34,7 @@ public class OpenKit {
 	 */
 	public static void configure(Context context, String appKey, String secretKey, String endpoint)
 	{
-		OKManager.INSTANCE.configure(context, appKey, secretKey);
+		OKManager.INSTANCE.configure(context, appKey, secretKey, endpoint);
 	}
 
 
