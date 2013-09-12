@@ -231,7 +231,6 @@ public enum OKManager {
 		SharedPreferences settings = ctx.getSharedPreferences(OK_PREFS_NAME, Context.MODE_PRIVATE);
 		OKUser user = new OKUser();
 
-		// Get the FBID, which used to be stored as a long (now string) so check for ClassCastException
 		String fbID = safeGetStringForSharedPrefKey(settings, KEY_FB_ID);
 		String googleID = safeGetStringForSharedPrefKey(settings, KEY_GOOGLE_ID);
 		String customID = safeGetStringForSharedPrefKey(settings, KEY_CUSTOM_ID);
@@ -243,24 +242,24 @@ public enum OKManager {
 		user.setOKUserID(settings.getInt(KEY_OKUSER_ID, 0));
 		user.setUserNick(settings.getString(KEY_USER_NICK, null));
 
-
-		if(user.getOKUserID() == 0)
+		if(user.getOKUserID() == 0) {
 			return null;
-		else
-		{
+		} else {
 			OKLog.d("Found cached user: "+ user);
 			this.currentUser = user;
 			return user;
 		}
 	}
 
+	// Some OKUser properties used to be stored as long and are not stored as strings so
+	// use this method to check for the old version
 	private String safeGetStringForSharedPrefKey(SharedPreferences settings, String key)
 	{
 		String retVal = null;
 		try {
 			retVal = settings.getString(key, null);
 			//We don't want userID strings of "0"
-			if(Integer.parseInt(retVal) == 0) {
+			if(OKJSONParser.isZeroStringLiteral(retVal)) {
 				retVal = null;
 			}
 		} catch(ClassCastException ex) {
@@ -275,6 +274,4 @@ public enum OKManager {
 
 		return retVal;
 	}
-
-
 }

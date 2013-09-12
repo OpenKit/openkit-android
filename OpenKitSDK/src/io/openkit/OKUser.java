@@ -74,7 +74,6 @@ public class OKUser {
 			this.OKUserID = userJSON.getInt("id");
 			this.userNick = userJSON.getString("nick");
 
-			//We use optLong for fbID and Twitter ID becuase an OKUser will typically not have both, only 1 or the other
 			this.FBUserID = userJSON.optString("fb_id");
 			this.googleID = userJSON.optString("google_id");
 			this.customID = userJSON.optString("custom_id");
@@ -101,6 +100,9 @@ public class OKUser {
 
 	public void setFBUserID(String aFBID)
 	{
+		if(OKJSONParser.isZeroStringLiteral(aFBID)) {
+			aFBID = null;
+		}
 		this.FBUserID = aFBID;
 	}
 
@@ -119,6 +121,9 @@ public class OKUser {
 	}
 
 	public void setGoogleID(String googleID) {
+		if(OKJSONParser.isZeroStringLiteral(googleID)) {
+			googleID = null;
+		}
 		this.googleID = googleID;
 	}
 
@@ -127,6 +132,9 @@ public class OKUser {
 	}
 
 	public void setCustomID(String customID) {
+		if(OKJSONParser.isZeroStringLiteral(customID)) {
+			customID = null;
+		}
 		this.customID = customID;
 	}
 
