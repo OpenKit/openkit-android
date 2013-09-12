@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import io.openkit.facebook.Session;
+import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.leaderboards.OKScoreCache;
 
 /**
@@ -73,10 +74,16 @@ public enum OKManager {
 			OKHTTPClient.setEndpoint(OKHTTPClient.DEFAULT_ENDPOINT);
 		}
 
+		// Get cached OKUser
 		getOKUserInSharedPrefs(context.getApplicationContext());
 
+		// Submit any cached scores
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
+
+		// Open cached FB session
+		FBLoginRequest fbLoginRequest = new FBLoginRequest();
+		fbLoginRequest.openCachedFBSession(context.getApplicationContext());
 	}
 
 	/**
