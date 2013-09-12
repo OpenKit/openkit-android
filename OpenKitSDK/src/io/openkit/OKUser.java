@@ -143,4 +143,9 @@ public class OKUser {
 		this.customID = customID;
 	}
 
+	@Override
+	public String toString() {
+		return "OKUser id: " + getOKUserID() + " nick: " + getUserNick() +  " fb_id: " + getFBUserID() + " google_id: " + getGoogleID() + " custom_id: " + getCustomID() + "\n";
+	}
+
 }
