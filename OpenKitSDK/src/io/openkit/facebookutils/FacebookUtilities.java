@@ -130,7 +130,7 @@ public class FacebookUtilities
 					if(user != null) {
 						String fbIDString = user.getId();
 
-						if(OKUser.getCurrentUser().getFBUserID() == fbIDString) {
+						if(OKUser.getCurrentUser().getFBUserID() == null) {
 							OKUser.getCurrentUser().setFBUserID(fbIDString);
 							OKUser.getCurrentUser().setUserNick(user.getName());
 							OKLog.v("Updating cached user with Facebook ID");
