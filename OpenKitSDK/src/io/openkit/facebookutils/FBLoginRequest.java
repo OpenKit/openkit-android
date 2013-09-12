@@ -4,6 +4,7 @@ import io.openkit.OKLog;
 import io.openkit.facebook.Session;
 import io.openkit.facebook.SessionState;
 import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -22,6 +23,18 @@ public class FBLoginRequest {
 
 	public void setRequestHandler(FBLoginRequestHandler requestHandler) {
 		this.requestHandler = requestHandler;
+	}
+
+	public void openCachedFBSession(Context ctx)
+	{
+		Session cachedSession = Session.openActiveSessionFromCache(ctx);
+
+		if(cachedSession != null) {
+			Session.setActiveSession(cachedSession);
+			OKLog.v("Opened cached FB Session");
+		} else {
+			OKLog.v("Did not find cached FB session");
+		}
 	}
 
 	public void onCreateView(Bundle savedInstanceState, Fragment fragment)
