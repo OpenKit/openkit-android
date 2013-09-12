@@ -208,6 +208,7 @@ public enum OKManager {
 		editor.putLong(KEY_customID, user.getCustomID());
 
 		editor.commit();
+		OKLog.v("Saved OKUser: " + user);
 	}
 
 	private void deleteUserInSharedPrefs(Context ctx)
@@ -222,6 +223,7 @@ public enum OKManager {
 		editor.remove(KEY_customID);
 
 		editor.commit();
+		OKLog.v("Removed cached user");
 	}
 
 	private OKUser getOKUserInSharedPrefs(Context ctx)
