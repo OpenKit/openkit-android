@@ -57,12 +57,12 @@ public class OKUserUtilities
 			public void onSuccess(JSONObject object) {
 				OKUser responseUser = new OKUser(object);
 
-				if(responseUser.getOKUserID() == user.getOKUserID()){
+				if(responseUser.getOKUserID() != 0){
 					requestHandler.onSuccess(responseUser);
 					OKLog.v("Succesfully updated OKUser");
 				}
 				else {
-					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user nick"));
+					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user. No userID returned"));
 				}
 			}
 
