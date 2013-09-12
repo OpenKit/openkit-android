@@ -19,6 +19,9 @@ package io.openkit;
 import android.content.Context;
 
 public class OpenKit {
+
+	public static final String OPENKIT_SDK_VERSION = "0.9.8.7";
+
 	/**
 	 * Initialize the OpenKit SDK. Should be called from your onCreate methods
 	 * @param context A context (usually the activity)
