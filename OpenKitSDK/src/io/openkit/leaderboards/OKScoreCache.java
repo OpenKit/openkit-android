@@ -194,6 +194,7 @@ public class OKScoreCache extends SQLiteOpenHelper{
 				public void onFailure(Throwable error) {
 					// If the server responds with an error code in the 400s, delete the score from the cache
 					if(OKHTTPClient.isErrorCodeInFourHundreds(error)) {
+						OKLog.v("Deleting score from cache because server responded with error code in 400s");
 						deleteScore(score);
 					}
 				}
