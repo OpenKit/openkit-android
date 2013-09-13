@@ -17,6 +17,7 @@
 package io.openkit;
 
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
+import io.openkit.user.OKUserUtilities;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -215,19 +216,22 @@ public class OKScore {
 				@Override
 				public void onFailure(Throwable error, String content) {
 					OKScore.this.setSubmitted(false);
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(error);
 					responseHandler.onFailure(error);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONArray errorResponse) {
 					OKScore.this.setSubmitted(false);
-					responseHandler.onFailure(new Throwable(errorResponse.toString()));
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(e);
+					responseHandler.onFailure(e);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONObject errorResponse) {
 					OKScore.this.setSubmitted(false);
-					responseHandler.onFailure(new Throwable(errorResponse.toString()));
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(e);
+					responseHandler.onFailure(e);
 				}
 			});
 
