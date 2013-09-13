@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.openkit.OKHTTPClient;
 import io.openkit.OKLog;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
@@ -191,7 +192,10 @@ public class OKScoreCache extends SQLiteOpenHelper{
 
 				@Override
 				public void onFailure(Throwable error) {
-					OKLog.v("Failed to submit cached score");
+					// If the server responds with an error code in the 400s, delete the score from the cache
+					if(OKHTTPClient.isErrorCodeInFourHundreds(error)) {
+						deleteScore(score);
+					}
 				}
 			});
 		} else {
