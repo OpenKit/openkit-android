@@ -33,7 +33,7 @@ public class UnityPlugin {
 	 */
 	public static void configure(String appKey, String secretKey, String endpoint)
 	{
-		OKBridgeLog("Initializing OpenKit from Android native");
+		OKBridgeLog("Initializing OpenKit from Android native with endpoint: " + endpoint);
 		OpenKit.configure(UnityPlayer.currentActivity, appKey, secretKey, endpoint);
 	}
 
