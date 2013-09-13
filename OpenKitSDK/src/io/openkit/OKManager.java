@@ -152,6 +152,7 @@ public enum OKManager {
 	 */
 	public void handlerUserLoggedIn(OKUser aUser, Context context)
 	{
+		logoutUserFromSharedPrefsOnNextTry = false;
 		this.currentUser = aUser;
 		saveOKUserInSharedPrefs(context.getApplicationContext(), currentUser);
 		getSharedCache().submitAllCachedScores();
@@ -172,6 +173,14 @@ public enum OKManager {
 
 		getSharedCache().clearCachedSubmittedScores();
 	}
+
+	public void logoutCurrentUserWithoutClearingFB()
+	{
+		this.currentUser = null;
+		getSharedCache().clearCachedSubmittedScores();
+		logoutUserFromSharedPrefsOnNextTry = true;
+	}
+
 
 	/**
 	 * Get current user from shared preferences if stored
@@ -203,6 +212,7 @@ public enum OKManager {
 	private static final String KEY_GOOGLE_ID = "googleUserID";
 	private static final String KEY_CUSTOM_ID = "customUserID";
 
+	private boolean logoutUserFromSharedPrefsOnNextTry = false;
 
 	private void saveOKUserInSharedPrefs(Context ctx, OKUser user)
 	{
@@ -236,6 +246,13 @@ public enum OKManager {
 
 	private OKUser getOKUserInSharedPrefs(Context ctx)
 	{
+		if(logoutUserFromSharedPrefsOnNextTry) {
+			deleteUserInSharedPrefs(ctx);
+			OKLog.v("Deleting user from prefs bc logoutUserFromSharedPrefsOnNextTry set to true");
+			logoutUserFromSharedPrefsOnNextTry = false;
+			return null;
+		}
+
 		SharedPreferences settings = ctx.getSharedPreferences(OK_PREFS_NAME, Context.MODE_PRIVATE);
 		OKUser user = new OKUser();
 

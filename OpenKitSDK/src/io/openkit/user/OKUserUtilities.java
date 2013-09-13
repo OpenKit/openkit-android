@@ -18,9 +18,12 @@ package io.openkit.user;
 
 import io.openkit.OKHTTPClient;
 import io.openkit.OKLog;
+import io.openkit.OKManager;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
+
+import org.apache.http.client.HttpResponseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,20 +77,38 @@ public class OKUserUtilities
 			@Override
 			public void onFailure(Throwable error, String content) {
 				requestHandler.onFail(error);
+				checkIfErrorIsUnsubscribedUserError(error);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
 				requestHandler.onFail(e);
+				checkIfErrorIsUnsubscribedUserError(e);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				requestHandler.onFail(e);
+				checkIfErrorIsUnsubscribedUserError(e);
 			}
 		});
 	}
 
+	public static void checkIfErrorIsUnsubscribedUserError(Throwable e)
+	{
+		if(e == null) {
+			return;
+		}
+
+		if(e instanceof HttpResponseException) {
+			HttpResponseException responseException = (HttpResponseException)e;
+			if(responseException.getStatusCode() == OKHTTPClient.UNSUBSCRIBED_USER_ERROR_CODE) {
+				// Logout current user if we get an unsubscribed user error
+				OKLog.v("Unsubscribed user, log out the user, error is: " + e);
+				OKManager.INSTANCE.logoutCurrentUserWithoutClearingFB();
+			}
+		}
+	}
 
 
 	public static void updateUserNick(final OKUser user, String newNick, final CreateOrUpdateOKUserRequestHandler requestHandler)

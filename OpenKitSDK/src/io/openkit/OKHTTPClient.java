@@ -28,6 +28,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -45,7 +46,7 @@ public class OKHTTPClient {
 	public static final String SERVER_API_VERSION = "v1";
 
 	/* Networking error codes */
-	public static final int UNSUBSCRIBED_USER_ERROR_CODE = 409;
+	public static final int UNSUBSCRIBED_USER_ERROR_CODE = 410;
 
 	private static AsyncHttpClient initializeClient()
 	{
@@ -110,6 +111,18 @@ public class OKHTTPClient {
 			request.setEntity(sEntity);
 			sign(request);
 			client.put(request, "application/json", responseHandler);
+		}
+	}
+
+	public static boolean isErrorCodeInFourHundreds(Throwable e)
+	{
+		if(e instanceof HttpResponseException) {
+			HttpResponseException responseException = (HttpResponseException)e;
+			int statusCode = responseException.getStatusCode();
+
+			return (statusCode >= 400 && statusCode < 500);
+		} else {
+			return false;
 		}
 	}
 
