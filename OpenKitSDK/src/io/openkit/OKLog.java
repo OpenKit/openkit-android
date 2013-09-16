@@ -22,9 +22,22 @@ import android.util.Log;
 
 public class OKLog {
 	static final boolean VERBOSE = true;
-	
+
 	public static void d(String format, Object... args) {
 		Log.d("OpenKit", String.format(Locale.getDefault(), format, args));
+	}
+
+	/* Have to add versions without multiple args because there are lots of log statements that use
+	 * string casting and sometimes the String.Format throws an exception.
+	 */
+	public static void d(String message) {
+		Log.d("OpenKit", message);
+	}
+
+	public static void v(String message) {
+		if (VERBOSE) {
+			Log.v("OpenKit",message);
+		}
 	}
 
 	public static void v(String format, Object... args) {

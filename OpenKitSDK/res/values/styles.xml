@@ -42,7 +42,19 @@
         <item name="android:shadowRadius">0.1</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
-    </style>    
+    </style>  
+    
+    <style name="OKLoginButtonSmall">
+    	<item name="android:paddingBottom">0dip</item>
+        <item name="android:paddingTop">0dip</item>
+        <item name="android:paddingLeft">8dip</item>
+        <item name="android:paddingRight">8dip</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">0.1</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>   
         
     <style name="OKHeadingText" parent="@style/OKLoginText">
         <item name="android:textSize">20sp</item>

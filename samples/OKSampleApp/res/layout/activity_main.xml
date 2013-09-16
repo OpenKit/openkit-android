@@ -19,28 +19,24 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical|center_horizontal"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".MainActivity" >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal" >
 
         <io.openkit.facebook.widget.ProfilePictureView
             android:id="@+id/fbProfilePicView"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="10dp"
             android:layout_gravity="center"
             android:gravity="center_horizontal" />
 
@@ -64,44 +60,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="3dp"
+                android:textSize="16sp"
                 android:textIsSelectable="true" />
         </LinearLayout>
     </LinearLayout>
 
     <Button
-        android:id="@+id/cloudDataButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cloudData" />
-
-    <Button
         android:id="@+id/LeaderboardsButton"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/showLeaderboardsButton" />
 
     <Button
         android:id="@+id/submitScoreButton"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/submitScore" />
     
     <Button
+        android:id="@+id/showAchievementsButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/showAchievementsButton" /> 
+    
+    <Button
         android:id="@+id/submitAchievementButton"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/submitAchievement" />
     
 
     <Button
         android:id="@+id/OKLoginButton"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/loginButtonString" />
 
     <Button
         android:id="@+id/OKLogoutButton"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/logoutButtonString" />
 

@@ -26,16 +26,18 @@ import android.view.MenuItem;
 import android.support.v4.app.FragmentActivity;
 
 public class OKLeaderboardsActivity extends FragmentActivity {
-	
+
 	private OKLeaderboardsFragment leaderboardsFragment;
 	private OKAchievementsFragment achievementsFragment;
-	
+
 	private int leaderboardTitleID;
 	private int achievementsTitleID;
-	
+
 	private static String LEADERBOARD_FRAGMENT_TAG = "LeaderboardsFragment";
 	private static String ACHIEVEMENT_FRAGMENT_TAG = "AchievementsFragment";
-	
+
+	private boolean showAchievements;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
@@ -44,41 +46,24 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 
 		leaderboardTitleID = getResources().getIdentifier("io_openkit_title_leaderboards", "string", getPackageName());
 		achievementsTitleID = getResources().getIdentifier("io_openkit_title_achievements", "string", getPackageName());
-		
-		if(savedInstanceState == null) {
-			/*
-			leaderboardsFragment = new OKLeaderboardsFragment();
-			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.add(android.R.id.content, leaderboardsFragment, LEADERBOARD_FRAGMENT_TAG);
-			ft.commit();
-			*/
-			showLeaderboardsList();
-		}
-		
-		updateActivityTitle();
-	}
-	
-	private void updateActivityTitle()
-	{
-		if(isShowingLeaderbards()) {
-			this.setTitle(leaderboardTitleID);
-		}
-		else {
-			this.setTitle(achievementsTitleID);
-		}
-	}
-	
-	private boolean isShowingLeaderbards()
-	{
-		if(leaderboardsFragment != null && leaderboardsFragment.isVisible()) {
-			return true;
-		} else if(achievementsFragment != null && achievementsFragment.isVisible()) {
-			return false;
+
+		// Check to see if default display is Achievements instead of Leaderboards
+		Bundle extrasBundle = getIntent().getExtras();
+		if(extrasBundle != null) {
+			showAchievements = extrasBundle.getBoolean(OKAchievement.OK_ACHIEVEMENT_KEY,false);
 		} else {
-			return true;
+			showAchievements = false;
+		}
+
+		if(savedInstanceState == null) {
+			if(showAchievements) {
+				showAchievementsList();
+			} else {
+				showLeaderboardsList();
+			}
 		}
 	}
-	
+
 	private void showProfileActivity()
 	{
 		//If the user is logged in, show the profile view, else show the login view
@@ -91,52 +76,52 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 			startActivity(loginIntent);
 		}
 	}
-	
+
 	private void showLeaderboardsList()
 	{
 		OKLog.d("Show leaderboards list");
-		
+
 		if(leaderboardsFragment == null) {
 			leaderboardsFragment = new OKLeaderboardsFragment();
 		}
-		
+
 		if(!leaderboardsFragment.isVisible()){
-			
+
 			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.replace(android.R.id.content, leaderboardsFragment, LEADERBOARD_FRAGMENT_TAG);
 			ft.commit();
 		}
-		
+
 		this.setTitle(leaderboardTitleID);
 	}
-	
+
 	private void showAchievementsList()
 	{
 		OKLog.d("Show achievements list");
-		
+
 		if(achievementsFragment == null) {
 			achievementsFragment = new OKAchievementsFragment();
 		}
-		
+
 		if(!achievementsFragment.isVisible()) {
 			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.replace(android.R.id.content, achievementsFragment, ACHIEVEMENT_FRAGMENT_TAG);
 			ft.commit();
 		}
-		
+
 		this.setTitle(achievementsTitleID);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
-	{	
+	{
 		///Note: since this is a library project, this has to be an IF/ELSE
 		// statement instead of a switch because Library projects can't use the R.id.NAME
 		// in a switch statement
 		int profileButtonId = getResources().getIdentifier("io_openkit_menu_profileButton", "id", getPackageName());
 		int leaderboardButtonID = getResources().getIdentifier("io_openkit_menu_leaderboardsButton", "id", getPackageName());
 		int achievementsButtonID =  getResources().getIdentifier("io_openkit_menu_achievementsButton", "id", getPackageName());
-		
+
 		if (item.getItemId() == android.R.id.home) {
 			this.finish();
 			return true;
@@ -155,12 +140,18 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
+	public boolean onCreateOptionsMenu(Menu menu)
 	{
 	    MenuInflater inflater = getMenuInflater();
-	    int menuID = getResources().getIdentifier("io_openkit_leaderboards", "menu", getPackageName());
+	    int menuID;
+
+	    if(OKManager.INSTANCE.isAchievementsEnabled()) {
+	    	menuID = getResources().getIdentifier("io_openkit_leaderboards", "menu", getPackageName());
+	    } else {
+	    	menuID = getResources().getIdentifier("io_openkit_menu_leaderboards_no_achievements", "menu", getPackageName());
+		}
 	    inflater.inflate(menuID, menu);
 	    //inflater.inflate(R.menu.io_openkit_leaderboards, menu);
 	    return true;

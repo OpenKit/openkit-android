@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dip"
+    android:orientation="vertical" >
+    
+     <TextView
+            android:id="@+id/io_openkit_fbloginTitleTextView"
+           	android:layout_alignParentLeft="true"
+           	android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/io_openkit_login_text_include" />
+
+    <Button
+        android:id="@+id/io_openkit_fbSignInButton"
+        style="@style/OKLoginButtonSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+   		android:layout_alignParentRight="true"
+   		android:layout_centerVertical="true"
+        android:background="@drawable/io_openkit_facebook_button"
+        android:shadowColor="@color/io_openkit_facebook_shadow"
+        android:text="@string/io_openkit_fb"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>

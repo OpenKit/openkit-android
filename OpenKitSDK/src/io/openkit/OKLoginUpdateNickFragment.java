@@ -31,21 +31,21 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class OKLoginUpdateNickFragment extends DialogFragment 
+public class OKLoginUpdateNickFragment extends DialogFragment
 {
-	
-	
+
+
 	private TextView userNickTextView;
 	private EditText userNickEditText;
 	private Button continueButton;
 	private ProgressBar spinner;
 	private ProfilePictureView profiePictureView;
-	
+
 	private OKUser currentUser;
-	
-	
+
+
 	private OKLoginUpdateNickFragmentHandler dialogHandler;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -54,7 +54,7 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 		setCancelable(false);
 	}
-	
+
 	@Override
 	public void onDestroyView() {
 		if (getDialog() != null && getRetainInstance())
@@ -62,56 +62,56 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 		super.onDestroyView();
 	}
 
-	
+
 	public void setDialogHandler(OKLoginUpdateNickFragmentHandler handler)
 	{
 		dialogHandler = handler;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		int viewID, userNickTextViewId, userNickEditTextId, continueButtonId, spinnerId, profilePictureId;
-		
+
 		viewID = getResources().getIdentifier("io_openkit_fragment_updatenick", "layout", getActivity().getPackageName());
 		userNickTextViewId = getResources().getIdentifier("io_openkit_userNickTextView", "id", getActivity().getPackageName());
 		userNickEditTextId = getResources().getIdentifier("io_openkit_userNickEditText", "id", getActivity().getPackageName());
 		continueButtonId = getResources().getIdentifier("io_openkit_continueButton", "id", getActivity().getPackageName());
 		spinnerId = getResources().getIdentifier("io_openkit_spinner", "id", getActivity().getPackageName());
 		profilePictureId = getResources().getIdentifier("io_openkit_fbProfilePicView", "id", getActivity().getPackageName());
-		
+
 		View view = inflater.inflate(viewID, container, false);
 		userNickTextView = (TextView)view.findViewById(userNickTextViewId);
 		userNickEditText = (EditText)view.findViewById(userNickEditTextId);
 		continueButton = (Button)view.findViewById(continueButtonId);
 		spinner = (ProgressBar)view.findViewById(spinnerId);
 		profiePictureView = (ProfilePictureView)view.findViewById(profilePictureId);
-		
-		
+
+
 		currentUser = OpenKit.getCurrentUser();
 		userNickTextView.setText(currentUser.getUserNick());
-		userNickEditText.setHint(currentUser.getUserNick());	
-		profiePictureView.setProfileId(Long.toString(currentUser.getFBUserID()));
-	
+		userNickEditText.setHint(currentUser.getUserNick());
+		profiePictureView.setProfileId(currentUser.getFBUserID());
+
 		continueButton.setOnClickListener(onSubmitNewNick);
-		
+
 		return view;
 	}
-	
+
 	//Show Spinner
 	private void showSpinner()
 	{
 		spinner.setVisibility(View.VISIBLE);
 		continueButton.setVisibility(View.INVISIBLE);
 	}
-	
+
 	private void hideSpinner()
 	{
 		spinner.setVisibility(View.INVISIBLE);
 		continueButton.setVisibility(View.VISIBLE);
 	}
-	
-	
+
+
 	@Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
@@ -119,13 +119,13 @@ public class OKLoginUpdateNickFragment extends DialogFragment
         	dialogHandler.onDismiss();
         }
     }
-	
+
 	private View.OnClickListener onSubmitNewNick = new OnClickListener() {
-		
+
 		@Override
 		public void onClick(View v) {
 			String newUserNick = userNickEditText.getText().toString();
-			
+
 			if(newUserNick.equals("") || newUserNick.equals(currentUser.getUserNick()))
 			{
 				OKLoginUpdateNickFragment.this.dismiss();
@@ -135,20 +135,20 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 			}
 		}
 	};
-	
+
 	private void updateUserNick(String newNick)
 	{
 		showSpinner();
-		
-		OKUserUtilities.updateUserNick(currentUser, newNick, new UpdateUserRequestHandler() {
-			
+
+		OKUserUtilities.updateUserNick(currentUser, newNick, new CreateOrUpdateOKUserRequestHandler() {
+
 			@Override
 			public void onSuccess(OKUser user) {
 				hideSpinner();
-				OpenKitSingleton.INSTANCE.handlerUserLoggedIn(user, OKLoginUpdateNickFragment.this.getActivity());
+				OKManager.INSTANCE.handlerUserLoggedIn(user, OKLoginUpdateNickFragment.this.getActivity());
 				OKLoginUpdateNickFragment.this.dismiss();
 			}
-			
+
 			@Override
 			public void onFail(Throwable error) {
 				hideSpinner();
@@ -156,5 +156,5 @@ public class OKLoginUpdateNickFragment extends DialogFragment
 			}
 		});
 	}
-	
+
 }

@@ -19,33 +19,43 @@ package io.openkit;
 import android.content.Context;
 
 public class OpenKit {
+
+	public static void configure(Context context, String appKey, String secretKey)
+	{
+		OKManager.INSTANCE.configure(context, appKey, secretKey);
+	}
+
 	/**
 	 * Initialize the OpenKit SDK. Should be called from your onCreate methods
 	 * @param context A context (usually the activity)
-	 * @param OKAppID Your OpenKit application ID, taken from the developer dashboard
+	 * @param appKey Your OpenKit app key, taken from the developer dashboard
+	 * @param secretKey Your OpenKit secret key, taken from the developer dashboard
+	 * @param endpoint OpenKit server endpoint you want to use. If none is specified, the default endpoint is used
 	 */
-	public static void initialize(Context context, String OKAppID)
+	public static void configure(Context context, String appKey, String secretKey, String endpoint)
 	{
-		OpenKitSingleton.INSTANCE.initialize(context, OKAppID);
+		OKManager.INSTANCE.configure(context, appKey, secretKey, endpoint);
 	}
-	
+
+
 	/**
 	 * Get current OKUser
 	 * @return Returns OKUser, or null if not logged in
 	 */
 	public static OKUser getCurrentUser()
 	{
-		return OpenKitSingleton.INSTANCE.getCurrentUser();
+		return OKManager.INSTANCE.getCurrentUser();
 	}
-	
+
 	/**
 	 * @return Returns the OpenKit application ID.
 	 */
-	public static String getOKAppID()
+	public static String getAppKey()
 	{
-		return OpenKitSingleton.INSTANCE.getOKAppID();
+		return OKManager.INSTANCE.getAppKey();
 	}
-	
+
+
 	/**
 	 * Sets the base URL that the OpenKit SDK will use
 	 * @param endpoint
@@ -55,5 +65,5 @@ public class OpenKit {
 		OKLog.d("OpenKit endpoint set to: " + endpoint);
 		OKHTTPClient.setEndpoint(endpoint);
 	}
-	
+
 }

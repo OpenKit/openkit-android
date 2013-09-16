@@ -2,10 +2,11 @@ package io.openkit.user;
 
 
 import io.openkit.OKLog;
+import io.openkit.OKUser;
 import io.openkit.asynchttp.AsyncHttpClient;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
 import io.openkit.asynchttp.RequestParams;
-import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
+import io.openkit.user.OKUserUtilities;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +26,7 @@ public class GoogleUtils {
 	public static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
 
 
-	public static String[] getGoogleAccountNames(Context ctx) 
+	public static String[] getGoogleAccountNames(Context ctx)
 	{
 		Account[] accounts = getGoogleAccounts(ctx);
 		String[] names = new String[accounts.length];
@@ -53,7 +54,7 @@ public class GoogleUtils {
 			}
 		});
 	}
-	
+
 	public static abstract class GetGoogleUserInfoRequestHandler {
 		public abstract void onSuccess(JSONObject userinfo);
 		public abstract void onFailure();
@@ -64,10 +65,10 @@ public class GoogleUtils {
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-Type", "application/json");
 		client.addHeader("Accept", "application/json");
-		
+
 		RequestParams params =  new RequestParams();
 		params.put("access_token", authToken);
-		
+
 
 
 		client.get("https://www.googleapis.com/oauth2/v1/userinfo", params, new OKJsonHttpResponseHandler() {
@@ -82,36 +83,37 @@ public class GoogleUtils {
 			public void onSuccess(JSONArray array) {
 				// Not expecting an Array object
 				OKLog.v("Got a JSON Array when expecting a JSON object while getting Google user info");
-				googleRequestHandler.onFailure();		
+				googleRequestHandler.onFailure();
 			}
 
 			@Override
 			public void onFailure(Throwable error, String content) {
-				googleRequestHandler.onFailure();	
+				googleRequestHandler.onFailure();
 				OKLog.v( "Error getting Google user info: " + error + "content: " + content);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
-				googleRequestHandler.onFailure();	
+				googleRequestHandler.onFailure();
 				OKLog.v( "Error getting Google user info: " + e);
 			}
 
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
-				googleRequestHandler.onFailure();	
+				googleRequestHandler.onFailure();
 				OKLog.v( "Error getting Google user info: " + e);
 			}
 		});
 	}
-	
-	public static void createOKUserFromGoogle(final Context ctx, final String googleAuthToken, final CreateOKUserRequestHandler requestHandler)
+
+
+	public static void createOrUpdateOKUserFromGoogle(final Context ctx, final String googleAuthToken, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		getGoogleUserInfo(googleAuthToken, new GetGoogleUserInfoRequestHandler() {
-			
+
 			@Override
 			public void onSuccess(JSONObject userinfo) {
-				
+
 				String googleID, userNick;
 				// Parse the user info and then create the OKUser
 				try {
@@ -121,17 +123,30 @@ public class GoogleUtils {
 					requestHandler.onFail(new Error("Google user info request did not return a user ID"));
 					return;
 				}
-				
+
 				try {
 					userNick = userinfo.getString("name");
 				} catch (JSONException e) {
 					//If the google account doesn't return a name we just give them a nickname
-					userNick = "Enter a name";
+					userNick = "Me";
 				}
-				
-				OKUserUtilities.createOKUser(OKUserIDType.GoogleID, googleID, userNick, requestHandler);
+
+
+				OKUser currentUser = OKUser.getCurrentUser();
+
+				if(currentUser != null) {
+					if(currentUser.getGoogleID() != null && currentUser.getGoogleID().equalsIgnoreCase(googleID)) {
+						requestHandler.onSuccess(currentUser);
+					} else {
+						currentUser.setGoogleID(googleID);
+						OKUserUtilities.updateOKUser(currentUser, requestHandler);
+					}
+
+				} else {
+					OKUserUtilities.createOKUser(OKUserIDType.GoogleID, googleID, userNick, requestHandler);
+				}
 			}
-			
+
 			@Override
 			public void onFailure() {
 				//If the user info requests fails, let's invalidate the Google auth token

@@ -18,101 +18,122 @@ package io.openkit.user;
 
 import io.openkit.OKHTTPClient;
 import io.openkit.OKLog;
-import io.openkit.OKLoginUpdateNickFragment;
+import io.openkit.OKManager;
 import io.openkit.OKUser;
 import io.openkit.OpenKit;
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
-import io.openkit.facebookutils.FacebookUtilities.CreateOKUserRequestHandler;
 
+import org.apache.http.client.HttpResponseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-public class OKUserUtilities 
+public class OKUserUtilities
 {
-	
-	public static void showUpdateNickDialog(FragmentManager fm)
+	public static OKUser getGuestUser()
 	{
-		OKLoginUpdateNickFragment nickDialog = new OKLoginUpdateNickFragment();
-		nickDialog.show(fm, "OKLoginUpdateNickFragment");
+		OKUser guestUser = new OKUser();
+		guestUser.setUserNick("Me");
+		return guestUser;
 	}
-		
-	
-	public static void updateUserNick(final OKUser user, String newNick, final UpdateUserRequestHandler requestHandler)
+
+	public static void updateOKUser(final OKUser user, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		//Setup the request parameters
 		JSONObject requestParams = new JSONObject();
 		try {
-			JSONObject userDict = new JSONObject();
-			userDict.put("nick", newNick);
-			
-			requestParams.put("app_key", OpenKit.getOKAppID());
+			JSONObject userDict = getJSONRepresentationOfUser(user);
+			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("user", userDict);
-			
+
 		} catch (JSONException e) {
 			Log.e("OpenKit", "Error creating JSON request for updating user nick: " + e);
 			requestHandler.onFail(e);
 		}
-		
+
 		String requestPath = "/users/" + Integer.toString(user.getOKUserID());
-		
+
 		OKHTTPClient.putJSON(requestPath, requestParams, new OKJsonHttpResponseHandler() {
-			
+
 			@Override
 			public void onSuccess(JSONObject object) {
 				OKUser responseUser = new OKUser(object);
-				
-				if(responseUser.getOKUserID() == user.getOKUserID()){
+
+				if(responseUser.getOKUserID() != 0){
 					requestHandler.onSuccess(responseUser);
-					OKLog.v("Succesfully updated user nickname");
+					OKLog.v("Succesfully updated OKUser");
 				}
 				else {
-					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user nick"));
+					requestHandler.onFail(new Throwable("Unknown error from OpenKit when trying to update user. No userID returned"));
 				}
 			}
-			
+
 			@Override
 			public void onSuccess(JSONArray array) {
 				requestHandler.onFail(new Throwable("Received a JSON array when expecting a JSON object"));
 			}
-			
+
 			@Override
 			public void onFailure(Throwable error, String content) {
 				requestHandler.onFail(error);
+				checkIfErrorIsUnsubscribedUserError(error);
 			}
-			
+
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
 				requestHandler.onFail(e);
+				checkIfErrorIsUnsubscribedUserError(e);
 			}
-			
+
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				requestHandler.onFail(e);
+				checkIfErrorIsUnsubscribedUserError(e);
 			}
 		});
 	}
-	
-	
+
+	public static void checkIfErrorIsUnsubscribedUserError(Throwable e)
+	{
+		if(e == null) {
+			return;
+		}
+
+		if(e instanceof HttpResponseException) {
+			HttpResponseException responseException = (HttpResponseException)e;
+			if(responseException.getStatusCode() == OKHTTPClient.UNSUBSCRIBED_USER_ERROR_CODE) {
+				// Logout current user if we get an unsubscribed user error
+				OKLog.v("Unsubscribed user, log out the user, error is: " + e);
+				OKManager.INSTANCE.logoutCurrentUserWithoutClearingFB();
+			}
+		}
+	}
+
+
+	public static void updateUserNick(final OKUser user, String newNick, final CreateOrUpdateOKUserRequestHandler requestHandler)
+	{
+		user.setUserNick(newNick);
+		updateOKUser(user, requestHandler);
+	}
+
+
 	/**
-	 * Gets or creates an OKUser with a corresponding userID, userNickname, 
+	 * Gets or creates an OKUser with a corresponding userID, userNickname,
 	 * @param idType Type of ID passed in (e.g. Facebook or Google)
 	 * @param userID UserID from third party service to uniquely identify user
 	 * @param userNick Nickname
 	 * @param requestHandler Anonymous callback
 	 */
-	public static void createOKUser(OKUserIDType idType, String userID, String userNick, final CreateOKUserRequestHandler requestHandler)
+	public static void createOKUser(OKUserIDType idType, String userID, String userNick, final CreateOrUpdateOKUserRequestHandler requestHandler)
 	{
 		JSONObject jsonParams = new JSONObject();
-		
-		try 
-		{	
+
+		try
+		{
 			jsonParams.put("nick", userNick);
-			jsonParams.put("app_key", OpenKit.getOKAppID());
-			
+			jsonParams.put("app_key", OpenKit.getAppKey());
+
 			switch (idType) {
 			case FacebookID:
 				jsonParams.put("fb_id", userID);
@@ -130,44 +151,44 @@ public class OKUserUtilities
 				jsonParams.put("custom_id", userID);
 				break;
 			}
-			
+
 		} catch (JSONException e1) {
 			requestHandler.onFail(new Error("Error creating JSON params for request: " + e1));
-		} 
-		
+		}
+
 		OKLog.d("Creating user with id of type: " + idType);
-		
+
 		OKHTTPClient.postJSON("users", jsonParams, new OKJsonHttpResponseHandler() {
-			
+
 			@Override
 			public void onSuccess(JSONObject object) {
 				OKUser currentUser = new OKUser(object);
 				requestHandler.onSuccess(currentUser);
 			}
-			
+
 			@Override
 			public void onSuccess(JSONArray array) {
 				requestHandler.onFail(new Error("Error creating OKUser. Request cameback as an array when expecting a object: " + array));
 			}
-			
+
 			@Override
 			public void onFailure(Throwable error, String content) {
 				requestHandler.onFail(new Error("Error creating OKUser: " + error + " content: " + content));
 			}
-			
+
 			@Override
 			public void onFailure(Throwable e, JSONArray errorResponse) {
 				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
 			}
-			
+
 			@Override
 			public void onFailure(Throwable e, JSONObject errorResponse) {
 				requestHandler.onFail(new Error("Error creating OKUser: " + e + " JSON response: " + errorResponse));
 			}
 		});
 	}
-	
-	
+
+
 	public static JSONObject getJSONRepresentationOfUser(OKUser user)
 	{
 		JSONObject object = new JSONObject();
@@ -175,17 +196,18 @@ public class OKUserUtilities
 		try {
 			object.putOpt("nick", user.getUserNick());
 			object.putOpt("id", user.getOKUserID());
-			object.putOpt("fb_id", user.getFBUserID());
-			object.putOpt("twitter_id", user.getTwitterUserID());
-			//TODO add custom ID
-			//TODO add Google ID
+			if(user.getFBUserID() != null) {
+				object.putOpt("fb_id", user.getFBUserID());
+			}
+			object.putOpt("google_id", user.getGoogleID());
+			if(user.getCustomID() != null) {
+				object.putOpt("custom_id", user.getCustomID());
+			}
 		}
 		catch (JSONException e) {
 			Log.e("Tag","Exception thrown when converting user to JSON object: " + e);
 		}
 		return object;
 	}
-	
-	
 
 }

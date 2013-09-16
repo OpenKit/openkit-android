@@ -17,17 +17,17 @@
 package io.openkit;
 
 import io.openkit.asynchttp.OKJsonHttpResponseHandler;
-
+import io.openkit.user.OKUserUtilities;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class OKAchievementScore {
-	
+
 	private int progress;
 	private int OKAchievementId;
-	
+
 	public OKAchievementScore()
 	{
 		super();
@@ -37,29 +37,29 @@ public class OKAchievementScore {
 	{
 		return progress;
 	}
-	
+
 	public void setProgress(int n)
 	{
 		this.progress = n;
 	}
-	
+
 	public int getOKAchievementId()
 	{
 		return OKAchievementId;
 	}
-	
+
 	public void setOKAchievementId(int aID)
 	{
 		this.OKAchievementId = aID;
 	}
-	
-	
+
+
 	public interface AchievementScoreRequestResponseHandler
 	{
 		void onSuccess();
 		void onFailure(Throwable error);
 	}
-	
+
 	public void submitAchievementScore(final AchievementScoreRequestResponseHandler responseHandler)
 	{
 		OKUser currentUser = OKUser.getCurrentUser();
@@ -70,9 +70,9 @@ public class OKAchievementScore {
 
 		try {
 			JSONObject achievementScoreJSON = getAchievementScoreAsJSON();
-			
+
 			JSONObject requestParams = new JSONObject();
-			requestParams.put("app_key", OpenKit.getOKAppID());
+			requestParams.put("app_key", OpenKit.getAppKey());
 			requestParams.put("achievement_score", achievementScoreJSON);
 
 			OKHTTPClient.postJSON("/achievement_scores", requestParams, new OKJsonHttpResponseHandler() {
@@ -91,16 +91,19 @@ public class OKAchievementScore {
 
 				@Override
 				public void onFailure(Throwable error, String content) {
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(error);
 					responseHandler.onFailure(error);
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONArray errorResponse) {
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(e);
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 
 				@Override
 				public void onFailure(Throwable e, JSONObject errorResponse) {
+					OKUserUtilities.checkIfErrorIsUnsubscribedUserError(e);
 					responseHandler.onFailure(new Throwable(errorResponse.toString()));
 				}
 			});
@@ -110,7 +113,7 @@ public class OKAchievementScore {
 		}
 
 	}
-	
+
 	private JSONObject getAchievementScoreAsJSON() throws JSONException
 	{
 		JSONObject achievementScoreJSON = new JSONObject();
@@ -119,5 +122,5 @@ public class OKAchievementScore {
 		achievementScoreJSON.put("user_id", OKUser.getCurrentUser().getOKUserID());
 		return achievementScoreJSON;
 	}
-	
+
 }

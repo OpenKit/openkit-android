@@ -31,7 +31,7 @@
         android:layout_height="60dp"
         android:layout_gravity="left"
         android:paddingTop="5dip"
-        android:paddingRight="5dip"
+        android:paddingRight="0dip"
         android:paddingBottom="5dip"
         android:paddingLeft="5dip" />
 
@@ -39,7 +39,8 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:layout_marginLeft="10dp" >
 
 	    <TextView
 	        android:id="@+id/text1"
