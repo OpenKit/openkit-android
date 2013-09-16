@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -236,10 +237,12 @@ public class MainActivity extends Activity {
 				@Override
 				public void onSuccess() {
 					OKLog.d("Submitted an achievement score!");
+					Toast.makeText(MainActivity.this.getApplicationContext(), "Unlocked achievement!", Toast.LENGTH_LONG).show();
 				}
 
 				@Override
 				public void onFailure(Throwable error) {
+					Toast.makeText(MainActivity.this.getApplicationContext(), "Failed to unlock achievement with error" + error, Toast.LENGTH_LONG).show();
 					OKLog.d("Failed to submit achievement score.");
 				}
 			});
