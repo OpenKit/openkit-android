@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	private Button loginToOpenKitButton;
 	private Button showLeaderboardsButton;
 	private Button submitScoresButton;
-	private Button cloudDataButton;
+	private Button showAchievementsButton;
 	private Button logoutButton;
 	private Button submitAchievementButton;
 
@@ -73,18 +73,18 @@ public class MainActivity extends Activity {
 		showLeaderboardsButton = (Button)findViewById(R.id.LeaderboardsButton);
 		loginToOpenKitButton = (Button)findViewById(R.id.OKLoginButton);
 		submitScoresButton = (Button)findViewById(R.id.submitScoreButton);
-		cloudDataButton = (Button)findViewById(R.id.cloudDataButton);
 		logoutButton = (Button)findViewById(R.id.OKLogoutButton);
 		profilePictureView = (ProfilePictureView)findViewById(R.id.fbProfilePicView);
 		userNameTextView = (TextView)findViewById(R.id.userNameTextView);
 
+		showAchievementsButton = (Button)findViewById(R.id.showAchievementsButton);
 		submitAchievementButton = (Button)findViewById(R.id.submitAchievementButton);
 
 		loginToOpenKitButton.setOnClickListener(loginToOpenKitClickedClickListener);
 		showLeaderboardsButton.setOnClickListener(showOKLeaderboards);
 		submitScoresButton.setOnClickListener(submitScore);
-		cloudDataButton.setOnClickListener(cloudDataDemoClickListener);
 		logoutButton.setOnClickListener(logoutOfOpenKit);
+		showAchievementsButton.setOnClickListener(showAchievements);
 
 		submitAchievementButton.setOnClickListener(submitAchievementProgress);
 
@@ -210,6 +210,15 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	private View.OnClickListener showAchievements = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			Intent launchAchievementsIntent = OKAchievement.getAchievementsIntent(MainActivity.this);
+			startActivity(launchAchievementsIntent);
+		}
+	};
+
 
 	/**
 	 * Submit achievement progress to achievement
@@ -236,18 +245,6 @@ public class MainActivity extends Activity {
 	};
 
 
-
-	/**
-	 * Launch the cloud storage demo activity
-	 */
-	private View.OnClickListener cloudDataDemoClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			Intent launchCloudDemo = new Intent(MainActivity.this, OKCloudSampleActivity.class);
-			startActivity(launchCloudDemo);
-		}
-	};
 
 	/**
 	 * Launch the view to submit scores

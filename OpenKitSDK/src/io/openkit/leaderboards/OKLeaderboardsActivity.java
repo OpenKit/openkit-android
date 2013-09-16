@@ -36,6 +36,8 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 	private static String LEADERBOARD_FRAGMENT_TAG = "LeaderboardsFragment";
 	private static String ACHIEVEMENT_FRAGMENT_TAG = "AchievementsFragment";
 
+	private boolean showAchievements;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		int themeID = getResources().getIdentifier("OKActivityTheme", "style", getPackageName());
@@ -45,37 +47,20 @@ public class OKLeaderboardsActivity extends FragmentActivity {
 		leaderboardTitleID = getResources().getIdentifier("io_openkit_title_leaderboards", "string", getPackageName());
 		achievementsTitleID = getResources().getIdentifier("io_openkit_title_achievements", "string", getPackageName());
 
-		if(savedInstanceState == null) {
-			/*
-			leaderboardsFragment = new OKLeaderboardsFragment();
-			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			ft.add(android.R.id.content, leaderboardsFragment, LEADERBOARD_FRAGMENT_TAG);
-			ft.commit();
-			*/
-			showLeaderboardsList();
-		}
-
-		updateActivityTitle();
-	}
-
-	private void updateActivityTitle()
-	{
-		if(isShowingLeaderbards()) {
-			this.setTitle(leaderboardTitleID);
-		}
-		else {
-			this.setTitle(achievementsTitleID);
-		}
-	}
-
-	private boolean isShowingLeaderbards()
-	{
-		if(leaderboardsFragment != null && leaderboardsFragment.isVisible()) {
-			return true;
-		} else if(achievementsFragment != null && achievementsFragment.isVisible()) {
-			return false;
+		// Check to see if default display is Achievements instead of Leaderboards
+		Bundle extrasBundle = getIntent().getExtras();
+		if(extrasBundle != null) {
+			showAchievements = extrasBundle.getBoolean(OKAchievement.OK_ACHIEVEMENT_KEY,false);
 		} else {
-			return true;
+			showAchievements = false;
+		}
+
+		if(savedInstanceState == null) {
+			if(showAchievements) {
+				showAchievementsList();
+			} else {
+				showLeaderboardsList();
+			}
 		}
 	}
 
