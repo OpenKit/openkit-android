@@ -27,19 +27,23 @@ public class SubmitScoreActivity extends Activity {
 		return true;
 	}
 
+	private static final int level1LeaderboardID = 385;
+	private static final int level2LeaderboardID = 386;
+	private static final int level3LeaderboardID = 387;
+
 	public void submitScoreLevel1(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(25);
+	    promptForScoreAndSubmit(level1LeaderboardID);
 	}
 
 	public void submitScoreLevel2(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(26);
+	    promptForScoreAndSubmit(level2LeaderboardID);
 	}
 
 	public void submitScoreLevel3(View v) {
 		// The leaderboard ID for this leaderboard is from the OpenKit dashboard
-	    promptForScoreAndSubmit(27);
+	    promptForScoreAndSubmit(level3LeaderboardID);
 	}
 
 	public void submitScore(final OKScore scoreToSubmit)

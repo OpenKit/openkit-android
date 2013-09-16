@@ -48,9 +48,9 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// Grab your app key and secret key from the OpenKit dashboard at http://http://developer.openkit.io/
-		String myAppKey = "zRn4FrBcWi6ntUmWnEwm";
-		String mySecretKey = "rjqQmuDZaO6JtLuW25XPB2D6P0jplBfmuuANCKuu";
+		// Grab your app key and secret key from the OpenKit dashboard at http://developer.openkit.io/
+		String myAppKey = "BspfxiqMuYxNEotLeGLm";
+		String mySecretKey = "2sHQOuqgwzocUdiTsTWzyQlOy1paswYLGjrdRWWf";
 
 
 		// Initialize OpenKit. You must call this when your app starts (so we call it in onCreate in our MainActivity)
@@ -220,6 +220,8 @@ public class MainActivity extends Activity {
 	};
 
 
+	private static final int sampleAchievemetID = 188;
+
 	/**
 	 * Submit achievement progress to achievement
 	 */
@@ -229,7 +231,7 @@ public class MainActivity extends Activity {
 		public void onClick(View arg0) {
 			OKAchievementScore achievementScore = new OKAchievementScore();
 			achievementScore.setProgress(10);
-			achievementScore.setOKAchievementId(3);
+			achievementScore.setOKAchievementId(sampleAchievemetID);
 			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
 				@Override
 				public void onSuccess() {
