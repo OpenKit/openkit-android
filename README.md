@@ -1,7 +1,7 @@
 openkit-android-sdk
 ===================
 
-Android SDK for OpenKit Leaderboards and Cloud Storage
+Android SDK for OpenKit Social Leaderboard and achievements.
 
 This open-source library allows you to integrate OpenKit leaderboards, cloud
 data storage, and user account management into your Android app.  OpenKit
@@ -37,7 +37,12 @@ Specify your application key in onCreate. You can get your application key from 
 protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	...
-	OpenKit.initialize(this,"SD3fSD3SDlJu");
+	// Grab your app key and secret key from the OpenKit dashboard at http://developer.openkit.io/
+	String myAppKey = "BspfxiqMuYxNEotLeGLm";
+	String mySecretKey = "2sHQOuqgwzocUdiTsTWzyQlOy1paswYLGjrdRWWf";
+
+	// Initialize OpenKit. You must call this when your app starts (so we call it in onCreate in our MainActivity)
+	OpenKit.configure(this, myAppKey, mySecretKey);
 	...
 }
 ```
@@ -45,26 +50,42 @@ protected void onCreate(Bundle savedInstanceState) {
 Update AndroidManifest.xml
 --------------------------
 
-Make sure your application has declared the appropriate permissions: "INTERNET" and "ACCESS_NETWORK_STATE". In your AndroidManifest.xml file, add the following lines right after the <Applcation> tag.
+Make sure your application has declared the appropriate permissions: "INTERNET" and "ACCESS_NETWORK_STATE". In your AndroidManifest.xml file, add the following lines right after the "application" tag.
 
 ```xml
+<!-- Must add the INTERNET permission for OpenKit and the Facebook SDK to Work -->
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<!-- Must add the GET_ACCOUNTS and USE_CREDENTIALS perimissions to support Google auth -->
+<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+<uses-permission android:name="android.permission.USE_CREDENTIALS" />
 ```
 
-Declare the necessary OpenKit activities in your AndroidManifest.xml file. The OpenKit SDK includes several Activities that are used to show leaderboards and provide user log in. The OpenKit SDK also relies on the Facebook Android SDK, so you need to declare the following activities in your manifest file. Then should go inside the <application> tag.
+Declare the necessary OpenKit activities in your AndroidManifest.xml file. The OpenKit SDK includes several Activities that are used to show leaderboards and provide user log in. The OpenKit SDK also relies on the Facebook Android SDK, so you need to declare the following activities in your manifest file. Then should go inside the "application" tag.
 
 ```xml
 <application>
 	...
 	<!-- Declare the OpenKit activities as follows, these are required for OpenKit login and to show leaderboards -->
 	<!-- You can copy the below exactly -->
-	<activity android:name="io.openkit.OKLoginActivity" android:theme="@style/Theme.Transparent" />
+	<activity
+	            android:name="io.openkit.OKLoginActivity"
+	            android:theme="@style/Theme.Transparent" />
 	<activity android:name="io.openkit.leaderboards.OKLeaderboardsActivity" />
 	<activity android:name="io.openkit.leaderboards.OKScoresActivity" />
 	<activity android:name="io.openkit.user.OKUserProfileActivity" />
-	<!-- Facebook login activity declaration required by Facebook SDK. Also required by OpenKit SDK. Copy this exactly. -->
-    <activity android:name="com.facebook.LoginActivity" />
+	<activity android:name="io.openkit.facebook.LoginActivity" />
+	...
+</application>
+```
+
+Declare your Facebook application ID in AndroidManifest.xml . This also goes inside the "application" tag.
+```xml 
+<application>
+	...
+	<!-- Metadata tag required by facebook SDK. References the FB app id stored in strings -->
+    <meta-data
+         android:name="com.facebook.sdk.ApplicationId"
+         android:value="@string/fb_app_id" />
 	...
 </application>
 ```
@@ -72,11 +93,9 @@ Declare the necessary OpenKit activities in your AndroidManifest.xml file. The O
 
 User accounts
 ==============
-Because OpenKit uses Facebook and Twitter(coming soon!) as authentication providers, you don't need to worry about user account management.
+Because OpenKit uses Facebook and Google as authentication providers, you don't need to worry about user account management.
 
 OpenKit provides a user class, OKUser, that manages most of the functionality you'll need for account management. 
-
-Users are unique to each developer, but can be shared across multiple OpenKit applications from the same developer account. 
 
 To get the current OpenKit user, simply call:
 
@@ -103,16 +122,10 @@ startActivity(launchOKLogin);
 // and then check for the current user
 ```
 
-If you're using cloud storage, the cloud storage calls require an authenticated user.
 
-
-
-
-Leaderboards
-=============
-The OpenKit SDK provides a drop in solution for cross-platform leaderboards that work on both iOS and Android.
-
-You define your leaderboards and their attributes in the OpenKit dashboard, and the client 
+Social Leaderboards
+===================
+The OpenKit SDK provides a drop in solution for cross-platform, social leaderboards that work on both iOS and Android. You define your leaderboards and their attributes in the OpenKit dashboard.
 
 Show Leaderboards
 ------------------
@@ -130,11 +143,19 @@ startActivity(launchOKLeaderboards);
 
 This will show a list of all the leaderboards defined for your app.
 
+Show a Single Leaderboard
+-------------------------
+
+To show  a single leaderboard, use this convenience method from OKLeaderboard to get an intent. MainActivity is a context (usually the calling activity).
+
+```java
+Intent leaderboardIntent = OKLeaderboard.getLeaderboardIntent(MainActivity.this,leaderboardID);
+startActivity(leaderboardIntent);
+```
+
 Submit a Score
 --------------
-To submit a score, you simply create an OKScore object, set it's value, and then call submit. 
-
-Submitting a score requires the user to be authenticated.
+To submit a score, you simply create an OKScore object, set it's value, and then call submit. The OpenKit SDK has built in local caching for offline score submission, as well as caching scores when the player is not logged into OpenKit, so you can always submit scores. 
 
 You can use anonymous callbacks to detect the success and failure cases, and handle them appropriately. 
 
@@ -157,120 +178,37 @@ score.submitScore(new OKScore.ScoreRequestResponseHandler() {
 ```
 
 
+Achievements
+============
+The OpenKit SDK provides a single activity that shows both leaderboards and achievements. By default, this activity shows leaderboards first.
 
-
-
-Cloud Storage
-=============
-OpenKit allows you to seamlessly store data user data in the cloud. Saving user progress, game state, and other user information is as easy as using get and set methods. This data can then be accessed on both iOS and Android.
-
-The OKCloud class provides a single set/get API pair, which automatically scopes the stored data by user. 
-
-OKCloud requires that the user be authenticated before making get/set requests. 
-
-Simple Example
---------------
-Let's take a simple example, first storing the string "Hello world" for the key "myKey":
-
-First, import the necessary package:
-```java
-import io.openkit.okcloud*;
-```
-Now, call OKCloud.set. This will be stored for the current authenticated OKUser.
-```java
-OKCloud.set("Hello world", "myKey", new OKCloudHandler() {
-   @Override
-   public void complete(Object obj, OKCloudException e) {
-     if (e == null) {
-       OKLog.d("Successfully stored string.");
-     } else {
-       OKLog.d("Error storing string: %s", e.getMessage());
-     }
-   }
- });
-```
-Sometime later, you can get the "Hello World" back with: 
-```java
-OKCloud.get("myKey", new OKCloudHandler(){
-  @Override
-  public void complete(Object obj, OKCloudException e) {
-    if (e == null) {
-      OKLog.d("Got the string: %s", obj);		// "Got the string: Hello world"
-    } else {
-      OKLog.d("Error getting string: %s", e.getMessage());
-    }
-  }
-});
-```
-Data Types 
-------------
-Along with Strings, the following data types can be stored successfully: 
-
-* HashMap
-* Array
-* Integer
-* Boolean
-* Double
-* Strings
-
-Each of the above will be serialized and deserialized automatically for you.  For example, if we initialize a HashMap like this: 
+Show Achievements
+------------------
+If you want to show achievements directly, use this convenience method. MainActivity is a context (usually the calling activity).
 
 ```java
-final Object[] arr = { "one", "two", 1 };
-HashMap<Object, Object> obj = new HashMap<Object, Object>();
-obj.put("property1", "foo");
-obj.put("property2", -99);
-obj.put("property3", arr);s
+Intent launchAchievementsIntent = OKAchievement.getAchievementsIntent(MainActivity.this);
+startActivity(launchAchievementsIntent);
 ```
 
-We can then store the full object like this: 
+Submit Achievement Progress
+----------------------------
+The API to submit achievement progress is very similar to submitting scores. You can use anonymous callbacks to detect the success and failure cases of submission.
+
 
 ```java
-OKCloud.set(obj, "myKey2", new OKCloudHandler() {
-	@Override
-	public void complete(Object obj, OKCloudException e) {
-		if (e == null) {
-			OKLog.d("Successfully stored HashMap.");
-		} else {
-			OKLog.d("Error storing HashMap: %@", e.getMessage());
-		}
-	}
-});
+OKAchievementScore achievementScore = new OKAchievementScore();
+			achievementScore.setProgress(10);
+			achievementScore.setOKAchievementId(sampleAchievemetID);
+			achievementScore.submitAchievementScore(new OKAchievementScore.AchievementScoreRequestResponseHandler() {
+				@Override
+				public void onSuccess() {
+					Log.i("OpenKit","Submitted an achievement score!");
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+					Log.i("OpenKit","Failed to submit achievement score.");
+				}
+			});
 ```
-
-And then we can retrieve it (and print the deserialized data types) with:  
-
-```java
-  OKCloud.get("myKey2", new OKCloudHandler() {
-    @Override
-    public void complete(Object obj, OKCloudException e) {
-      if (e == null) {
-        LinkedHashMap<?, ?> hm = (LinkedHashMap<?, ?>)obj;
-        Object val1 = hm.get("property1");
-        Object val2 = hm.get("property2");
-        Object val3 = hm.get("property3");
-        OKLog.d("Property 1:\n  value: %s\n  class: %s", val1, val1.getClass().getName());
-        OKLog.d("Property 2:\n  value: %d\n  class: %s", val2, val2.getClass().getName());
-        OKLog.d("Property 3:\n  value: %s\n  class: %s", val3.toString(), val3.getClass().getName());
-      } else {
-        OKLog.d("Error getting string: %s", e.getMessage());
-      }
-    }
-  });
-```
-
-This will output: 
-
-```
-Property 1: 
-  value: foo
-  class: String
-Property 2:
-  value: -99 
-  class: Integer
-Property 3: 
-  value: ["one", "two", 1]
-  class: ArrayList
-```
-
-
