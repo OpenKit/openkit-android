@@ -51,14 +51,13 @@ public class OKLoginFragment extends DialogFragment
 	private static boolean googleLoginEnabled = true;
 	private static boolean twitterLoginEnabled = false;
 	private static boolean guestLoginEnabled = false;
-
 	private boolean isShowingSpinner = false;
 
 	private FBLoginRequest fbLoginRequest;
+	private GoogleAuthRequest mGoogAuthRequest;
 
 	private OKLoginFragmentDelegate dialogDelegate;
-
-	private GoogleAuthRequest mGoogAuthRequest;
+	private OKLoginActivityHandler activityHandler;
 
 	public static void setFbLoginEnabled(boolean enabled) {
 		fbLoginEnabled = enabled;
@@ -451,5 +450,13 @@ public class OKLoginFragment extends DialogFragment
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		fbLoginRequest.onSaveInstanceState(outState);
+	}
+
+	public OKLoginActivityHandler getActivityHandler() {
+		return activityHandler;
+	}
+
+	public void setActivityHandler(OKLoginActivityHandler activityHandler) {
+		this.activityHandler = activityHandler;
 	}
 }

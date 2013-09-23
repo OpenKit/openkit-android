@@ -142,9 +142,16 @@ public class MainActivity extends Activity {
 	private View.OnClickListener loginToOpenKitClickedClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
+
+			OKLoginActivity.setActivityHandler(new OKLoginActivityHandler() {
+				@Override
+				public void onLoginDialogComplete() {
+					OKLog.v("Finished showing the OpenKit login dialog");
+				}
+			});
+
 			Intent launchOKLogin = new Intent(MainActivity.this, OKLoginActivity.class);
-			startActivityForResult(launchOKLogin, LOGIN_ACTIVITY_RESULT_CODE);
-			//You can also use startActivit(launchOKLogin);
+			startActivity(launchOKLogin);
 		}
 	};
 
