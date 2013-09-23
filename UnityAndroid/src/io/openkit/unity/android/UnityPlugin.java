@@ -6,6 +6,7 @@ import java.util.Locale;
 import io.openkit.OKAchievementScore;
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLoginActivity;
+import io.openkit.OKLoginActivityHandler;
 import io.openkit.OKManager;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
@@ -104,6 +105,28 @@ public class UnityPlugin {
 		});
 	}
 
+	public static void showLoginUIWithCallback(final String gameObjectName)
+	{
+		OKBridgeLog("Launching Login UI with callback");
+
+		OKLoginActivity.setActivityHandler(new OKLoginActivityHandler() {
+
+			@Override
+			public void onLoginDialogComplete() {
+				String returnString = "OpenKit login dialog finished";
+				UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_SUCCEEDED, returnString);
+			}
+		});
+
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Intent loginUI = new Intent(UnityPlayer.currentActivity, OKLoginActivity.class);
+				UnityPlayer.currentActivity.startActivity(loginUI);
+			}
+		});
+	}
+
 
 	/*-------------------------------------------------------------------------
 	 * Region: Submit scores methods
@@ -170,6 +193,11 @@ public class UnityPlugin {
 	/*-------------------------------------------------------------------------
 	 * Region: Get stuff from native to Unity
 	 */
+
+	public static boolean isCurrentUserAuthenticated()
+	{
+		return (OKUser.getCurrentUser() != null);
+	}
 
 	public static int getCurrentUserOKID()
 	{
