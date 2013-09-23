@@ -29,6 +29,15 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	//private static WeakReference<OKLoginActivity> wrActivity = null;
 
 	private static final String TAG_LOGINFRAGMENT = "OKLoginFragment";
+	private static OKLoginActivityHandler activityHandler;
+
+	public static OKLoginActivityHandler getActivityHandler() {
+		return activityHandler;
+	}
+
+	public static void setActivityHandler(OKLoginActivityHandler activityHandler) {
+		OKLoginActivity.activityHandler = activityHandler;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +47,10 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 
 		if(loginDialog != null) {
 			loginDialog.setDelegate(this);
+
+			if(activityHandler != null) {
+				loginDialog.setActivityHandler(activityHandler);
+			}
 		}
 
 		if(savedInstanceState == null)
@@ -51,6 +64,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	public void onLoginSucceeded()
 	{
 		loginDialog.dismiss();
+		callLoginActivityHandler();
 		OKLog.v("Successfully logged in, dismissing LoginActivity");
 		OKLoginActivity.this.finish();
 	}
@@ -58,6 +72,7 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	@Override
 	public void onLoginFailed() {
 		loginDialog.dismiss();
+		callLoginActivityHandler();
 		OKLog.v("Login failed, dismissing login activity");
 		OKLoginActivity.this.finish();
 	}
@@ -65,8 +80,18 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 	@Override
 	public void onLoginCancelled() {
 		loginDialog.dismiss();
+		callLoginActivityHandler();
 		OKLog.v("Login canceled by user, dismissing login activity");
 		OKLoginActivity.this.finish();
+	}
+
+	private void callLoginActivityHandler()
+	{
+		if(loginDialog.getActivityHandler() != null) {
+			loginDialog.getActivityHandler().onLoginDialogComplete();
+			loginDialog.setActivityHandler(null);
+			OKLoginActivity.setActivityHandler(null);
+		}
 	}
 
 	private void showLoginFragment()
@@ -74,28 +99,13 @@ public class OKLoginActivity extends FragmentActivity implements OKLoginFragment
 		FragmentManager fm = getSupportFragmentManager();
 		loginDialog = new OKLoginFragment();
 		loginDialog.setDelegate(this);
+
+		if(activityHandler != null) {
+			loginDialog.setActivityHandler(activityHandler);
+		}
+
 		loginDialog.show(fm, TAG_LOGINFRAGMENT);
 	}
-
-	/*
-	private void showUserNickUpdateFragment()
-	{
-		if((wrActivity.get() != null && (wrActivity.get().isFinishing() != true))) {
-
-			FragmentManager fm = wrActivity.get().getSupportFragmentManager();
-			updateNickDialog = new OKLoginUpdateNickFragment();
-			updateNickDialog.show(fm, "OKLoginUpdateNickFragment");
-
-			updateNickDialog.setDialogHandler(new OKLoginUpdateNickFragmentHandler() {
-				@Override
-				public void onDismiss() {
-					OKLoginActivity.this.finish();
-				}
-			});
-		}
-	}
-	*/
-
 
 
 }
