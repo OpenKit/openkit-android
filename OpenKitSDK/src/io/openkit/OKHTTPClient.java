@@ -148,7 +148,7 @@ public class OKHTTPClient {
 	{
 		StringEntity sEntity = null;
 		try {
-			sEntity = new StringEntity(jsonObject.toString());
+			sEntity = new StringEntity(jsonObject.toString(),HTTP.UTF_8);
 			sEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
 			return sEntity;
 		} catch (UnsupportedEncodingException e) {
