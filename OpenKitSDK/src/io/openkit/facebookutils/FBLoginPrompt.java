@@ -1,7 +1,10 @@
 package io.openkit.facebookutils;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,26 @@ public class FBLoginPrompt extends DialogFragment
 			getDialog().setDismissMessage(null);
 		super.onDestroyView();
 	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState)
+	{
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.setOnKeyListener(backButtonListener);
+		return dialog;
+	}
+
+	// If the back button is pressed, close the dialog
+	public DialogInterface.OnKeyListener backButtonListener = new DialogInterface.OnKeyListener() {
+
+		@Override
+		public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			if(keyCode == KeyEvent.KEYCODE_BACK) {
+				FBLoginPrompt.this.dismiss();
+			}
+			return false;
+		}
+	};
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

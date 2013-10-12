@@ -24,10 +24,12 @@ import io.openkit.user.*;
 import android.support.v4.app.DialogFragment;
 import android.accounts.Account;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,11 +92,36 @@ public class OKLoginFragment extends DialogFragment
 	}
 
 	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState)
+	{
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.setOnKeyListener(backButtonListener);
+		return dialog;
+	}
+
+	// If the back button is pressed, close the dialog
+	public DialogInterface.OnKeyListener backButtonListener = new DialogInterface.OnKeyListener() {
+
+		@Override
+		public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			if(keyCode == KeyEvent.KEYCODE_BACK) {
+				dialogDelegate.onLoginCancelled();
+			}
+			return false;
+		}
+	};
+
+	@Override
 	public void onDestroyView() {
-		if (getDialog() != null && getRetainInstance())
+		if (getDialog() != null && getRetainInstance()) {
 			getDialog().setDismissMessage(null);
+		}
 		super.onDestroyView();
 	}
+
+
+
+
 
 
 
