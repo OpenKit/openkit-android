@@ -147,11 +147,6 @@ public class UnityPlugin {
 		score.setMetadata(metadata);
 		score.setDisplayString(displayString);
 
-		if(OKUser.getCurrentUser() == null)
-		{
-			UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionFailed", "");
-		}
-
 		score.submitScore(new ScoreRequestResponseHandler() {
 
 			@Override
