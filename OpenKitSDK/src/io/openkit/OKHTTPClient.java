@@ -75,6 +75,11 @@ public class OKHTTPClient {
 		}
 	}
 
+	public static String getEndpoint()
+	{
+		return BASE_URL;
+	}
+
 	public static void get(String relativeUrl, RequestParams params, AsyncHttpResponseHandler responseHandler)
 	{
 		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(getAbsoluteUrl(relativeUrl), params));
