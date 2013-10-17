@@ -83,9 +83,12 @@ public enum OKManager {
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
 
+		OKLog.d("OpenKit configured with endpoint: " + OKHTTPClient.getEndpoint());
+
 		// Open cached FB session
 		FBLoginRequest fbLoginRequest = new FBLoginRequest();
 		fbLoginRequest.openCachedFBSession(context.getApplicationContext());
+
 	}
 
 	/**
