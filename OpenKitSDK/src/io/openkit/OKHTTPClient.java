@@ -82,7 +82,8 @@ public class OKHTTPClient {
 
 	public static void get(String relativeUrl, RequestParams params, AsyncHttpResponseHandler responseHandler)
 	{
-		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(getAbsoluteUrl(relativeUrl), params));
+		//URL encoding is disabled
+		HttpGet request = new HttpGet(AsyncHttpClient.getUrlWithQueryString(false, getAbsoluteUrl(relativeUrl), params));
 		sign(request);
 		client.get(request, responseHandler);
 	}
