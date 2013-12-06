@@ -147,11 +147,6 @@ public class UnityPlugin {
 		score.setMetadata(metadata);
 		score.setDisplayString(displayString);
 
-		if(OKUser.getCurrentUser() == null)
-		{
-			UnityPlayer.UnitySendMessage(gameObjectName, "scoreSubmissionFailed", "");
-		}
-
 		score.submitScore(new ScoreRequestResponseHandler() {
 
 			@Override
@@ -242,20 +237,31 @@ public class UnityPlugin {
 
 	public static void getFacebookFriendsList(final String gameObjectName)
 	{
-		FacebookUtilities.GetFBFriends(new FacebookUtilities.GetFBFriendsRequestHandler() {
-			@Override
-			public void onSuccess(ArrayList<Long> friendsArray) {
-				String friendsList = FacebookUtilities.getSerializedListOfFBFriends(friendsArray);
-				UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_SUCCEEDED, friendsList);
-			}
+		OKBridgeLog("getFBFriends");
 
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
 			@Override
-			public void onFail(FacebookRequestError error) {
-				if(error != null){
-					UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, error.getErrorMessage());
-				} else {
-					UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, "Unknown error when trying to get friends from Android native");
-				}
+			public void run() {
+
+				FacebookUtilities.GetFBFriends(new FacebookUtilities.GetFBFriendsRequestHandler() {
+					@Override
+					public void onSuccess(ArrayList<Long> friendsArray) {
+						OKBridgeLog("getFBFriends success");
+						String friendsList = FacebookUtilities.getSerializedListOfFBFriends(friendsArray);
+						UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_SUCCEEDED, friendsList);
+					}
+
+					@Override
+					public void onFail(FacebookRequestError error) {
+						OKBridgeLog("getFBFriends fail");
+						if(error != null){
+							UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, error.getErrorMessage());
+						} else {
+							UnityPlayer.UnitySendMessage(gameObjectName, ASYNC_CALL_FAILED, "Unknown error when trying to get friends from Android native");
+						}
+					}
+				});
+
 			}
 		});
 	}

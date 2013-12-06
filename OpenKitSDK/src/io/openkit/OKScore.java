@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class OKScore {
 
 	private int OKScoreID;
@@ -156,6 +158,10 @@ public class OKScore {
 		OKUser currentUser = OKUser.getCurrentUser();
 		setOKUser(currentUser);
 
+		if(OKManager.INSTANCE.getSharedCache() == null) {
+			Log.e("OpenKit", "Error: score cache came back as null");
+		}
+
 		boolean shouldSubmit = OKManager.INSTANCE.getSharedCache().storeScoreInCacheIfBetterThanLocalCachedScores(this);
 
 		if(currentUser != null && shouldSubmit) {
@@ -175,7 +181,7 @@ public class OKScore {
 		} else {
 			OKLog.v("Score was not submitted");
 			if(currentUser == null) {
-				responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit"));
+				responseHandler.onFailure(new Throwable("Current user is not logged in. To submit a score, the user must be logged into OpenKit. The score was cached and will be submitted to OpenKit when the user logs in."));
 			} else {
 				responseHandler.onFailure(new Throwable("The score was not submitted to the OpenKit server because it is not better than previous submitted score."));
 			}

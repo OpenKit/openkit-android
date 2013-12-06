@@ -44,7 +44,7 @@ public enum OKManager {
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
-	public static final String OPENKIT_SDK_VERSION = "1.0.2";
+	public static final String OPENKIT_SDK_VERSION = "1.0.4";
 
 	/**
 	 * Initialize the OpenKit SDK with your credentials
@@ -83,9 +83,12 @@ public enum OKManager {
 		scoreCache = new OKScoreCache(context.getApplicationContext());
 		scoreCache.submitAllCachedScores();
 
+		OKLog.d("OpenKit configured with endpoint: " + OKHTTPClient.getEndpoint());
+
 		// Open cached FB session
 		FBLoginRequest fbLoginRequest = new FBLoginRequest();
 		fbLoginRequest.openCachedFBSession(context.getApplicationContext());
+
 	}
 
 	/**

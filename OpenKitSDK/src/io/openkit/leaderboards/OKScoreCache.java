@@ -28,6 +28,8 @@ public class OKScoreCache extends SQLiteOpenHelper{
 	private static final String KEY_DISPLAYSTRING = "displayString";
 	private static final String KEY_SUBMITTED = "submitted";
 
+	private int numOpenedConnections = 0;
+
 	public OKScoreCache(Context ctx)
 	{
 		super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
@@ -55,10 +57,10 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		values.put(KEY_SCOREVALUE, score.getScoreValue());
 		values.put(KEY_SUBMITTED, score.isSubmitted());
 
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = getWritableDatabase();
 		long rowID = db.insert(TABLE_SCORES, null, values);
 		score.setOKScoreID((int)rowID);
-		db.close();
+		close();
 		OKLog.v("Inserted score into db: " + score);
 	}
 
@@ -69,10 +71,10 @@ public class OKScoreCache extends SQLiteOpenHelper{
 			return;
 		}
 
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = getWritableDatabase();
 	    db.delete(TABLE_SCORES , KEY_ID + " = ?",
 	            new String[] { String.valueOf(score.getOKScoreID()) });
-	    db.close();
+	    close();
 	}
 
 	public void updateCachedScoreSubmitted(OKScore score)
@@ -85,9 +87,9 @@ public class OKScoreCache extends SQLiteOpenHelper{
 	    ContentValues values = new ContentValues();
 	    values.put(KEY_SUBMITTED, score.isSubmitted());
 
-	    SQLiteDatabase db = this.getWritableDatabase();
+	    SQLiteDatabase db = getWritableDatabase();
 	    db.update(TABLE_SCORES , values, KEY_ID + " = ?", new String[] { String.valueOf(score.getOKScoreID()) });
-		db.close();
+		close();
 	}
 
 	public List<OKScore> getCachedScoresForLeaderboardID(int leaderboardID, boolean submittedScoresOnly)
@@ -121,7 +123,7 @@ public class OKScoreCache extends SQLiteOpenHelper{
 	{
 		List<OKScore> scoresList = new ArrayList<OKScore>();
 
-		SQLiteDatabase db = this.getReadableDatabase();
+		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(querySQL, null);
 
 		if(cursor.moveToFirst()) {
@@ -144,15 +146,17 @@ public class OKScoreCache extends SQLiteOpenHelper{
 				scoresList.add(score);
 			} while (cursor.moveToNext());
 		}
-		db.close();
+
+		close();
+
 		return scoresList;
 	}
 
 	public void clearCachedSubmittedScores()
 	{
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = getWritableDatabase();
 		db.execSQL("DELETE FROM " + TABLE_SCORES + " WHERE " + KEY_SUBMITTED + "=1");
-		db.close();
+		close();
 		//logScoreCache();
 	}
 
@@ -219,6 +223,30 @@ public class OKScoreCache extends SQLiteOpenHelper{
 			submitCachedScore(score);
 		}
 	}
+
+	@Override
+	public synchronized SQLiteDatabase getReadableDatabase()
+	{
+		numOpenedConnections++;
+		return super.getReadableDatabase();
+	}
+
+	@Override
+	public synchronized SQLiteDatabase getWritableDatabase()
+	{
+		numOpenedConnections++;
+		return super.getWritableDatabase();
+	}
+
+	@Override
+	public synchronized void close()
+	{
+		numOpenedConnections--;
+		if(numOpenedConnections == 0) {
+			super.close();
+		}
+	}
+
 
 	public boolean storeScoreInCacheIfBetterThanLocalCachedScores(OKScore score)
 	{
