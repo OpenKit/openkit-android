@@ -234,6 +234,11 @@ public class UnityPlugin {
 			return null;
 	}
 
+	public static boolean isFBSessionOpen()
+	{
+		return FacebookUtilities.isFBSessionOpen();
+	}
+
 
 	public static void getFacebookFriendsList(final String gameObjectName)
 	{
