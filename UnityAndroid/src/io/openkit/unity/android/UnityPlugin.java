@@ -1,8 +1,12 @@
 package io.openkit.unity.android;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONObject;
+
+import io.openkit.OKAchievement;
 import io.openkit.OKAchievementScore;
 import io.openkit.OKLeaderboard;
 import io.openkit.OKLoginActivity;
@@ -15,6 +19,7 @@ import io.openkit.OpenKit;
 import io.openkit.facebook.FacebookRequestError;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.leaderboards.OKLeaderboardsActivity;
+import io.openkit.leaderboards.OKLeaderboardsListResponseHandler;
 import android.content.Intent;
 import android.util.Log;
 
@@ -86,6 +91,18 @@ public class UnityPlugin {
 			public void run() {
 				Intent leaderboardIntent = OKLeaderboard.getLeaderboardIntent(UnityPlayer.currentActivity,leaderboardID);
 				UnityPlayer.currentActivity.startActivity(leaderboardIntent);
+			}
+		});
+	}
+
+	public static void showAchievements()
+	{
+		OKBridgeLog("Launching achievements UI");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Intent achievementsIntent = OKAchievement.getAchievementsIntent(UnityPlayer.currentActivity);
+				UnityPlayer.currentActivity.startActivity(achievementsIntent);
 			}
 		});
 	}
