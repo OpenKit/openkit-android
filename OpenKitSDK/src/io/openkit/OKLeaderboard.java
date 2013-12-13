@@ -109,6 +109,11 @@ public class OKLeaderboard implements Parcelable{
 		initFromJSON(leaderboardJSON);
 	}
 
+	public OKLeaderboard(int leaderboardID)
+	{
+		super();
+		this.OKLeaderboard_id = leaderboardID;
+	}
 
 	public String getName(){
 		return name;
