@@ -1,10 +1,10 @@
 package io.openkit.unity.android;
 
 import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Locale;
 
-import org.json.JSONObject;
+
 
 import io.openkit.OKAchievement;
 import io.openkit.OKAchievementScore;
@@ -19,7 +19,6 @@ import io.openkit.OpenKit;
 import io.openkit.facebook.FacebookRequestError;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.leaderboards.OKLeaderboardsActivity;
-import io.openkit.leaderboards.OKLeaderboardsListResponseHandler;
 import android.content.Intent;
 import android.util.Log;
 
