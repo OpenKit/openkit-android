@@ -172,7 +172,7 @@ public class FacebookUtilities
 
 		if(isFBSessionOpen())
 		{
-			Request.executeMeRequestAsync(session, new GraphUserCallback() {
+			Request meRequest = Request.newMeRequest(session, new GraphUserCallback() {
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
 					if(user != null) {
@@ -182,6 +182,8 @@ public class FacebookUtilities
 					}
 				}
 			});
+
+			meRequest.executeAsync();
 		} else {
 			OKLog.v("Tried to get FB user ID without being logged into FB");
 			requestHandler.onCompletion(null);
