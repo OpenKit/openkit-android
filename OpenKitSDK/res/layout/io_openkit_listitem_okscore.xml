@@ -31,7 +31,7 @@
         android:textStyle="bold" 
         android:textIsSelectable="false" />
 
-    <io.openkit.facebook.widget.ProfilePictureView
+    <com.facebook.widget.ProfilePictureView
         android:id="@+id/io_openkit_scorePicView"
         android:layout_width="60dp"
         android:layout_height="60dp"

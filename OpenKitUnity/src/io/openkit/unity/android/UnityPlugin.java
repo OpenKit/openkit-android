@@ -16,7 +16,7 @@ import io.openkit.OKScore;
 import io.openkit.OKUser;
 import io.openkit.OKScore.ScoreRequestResponseHandler;
 import io.openkit.OpenKit;
-import io.openkit.facebook.FacebookRequestError;
+import com.facebook.FacebookRequestError;
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.leaderboards.OKLeaderboardsActivity;
 import android.content.Intent;

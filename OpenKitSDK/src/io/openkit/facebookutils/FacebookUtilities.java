@@ -27,12 +27,12 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.widget.Toast;
 import io.openkit.*;
-import io.openkit.facebook.*;
-import io.openkit.facebook.Request.GraphUserCallback;
-import io.openkit.facebook.Request.GraphUserListCallback;
-import io.openkit.facebook.model.GraphUser;
-import io.openkit.facebook.widget.WebDialog;
-import io.openkit.facebook.widget.WebDialog.OnCompleteListener;
+import com.facebook.*;
+import com.facebook.Request.GraphUserCallback;
+import com.facebook.Request.GraphUserListCallback;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 import io.openkit.user.OKUserIDType;
 import io.openkit.user.OKUserUtilities;
 import io.openkit.user.CreateOrUpdateOKUserRequestHandler;
@@ -333,7 +333,7 @@ public class FacebookUtilities
 	{
 		OKLog.v("Facebook login failed");
 
-		if(exception != null && exception.getClass() == io.openkit.facebook.FacebookOperationCanceledException.class)
+		if(exception != null && exception.getClass() == com.facebook.FacebookOperationCanceledException.class)
 		{
 			OKLog.v("User cancelled Facebook login");
 
