@@ -91,14 +91,14 @@
 	
 	<target name="dist-jar" depends="release">
         <jar
-            destfile="../OpenKitSDK/bin/jars/openkit-unity-plugin.jar"
+            destfile="bin/jars/openkit-unity-plugin.jar"
             basedir="bin/classes"
         />
     </target>
 
 	<target name="jar" depends="debug">
         <jar
-            destfile="../OpenKitSDK/bin/jars/openkit-unity-plugin.jar"
+            destfile="bin/jars/openkit-unity-plugin.jar"
             basedir="bin/classes"
         />
     </target>
