@@ -20,7 +20,7 @@ import io.openkit.OKScore;
 
 import java.util.List;
 
-import io.openkit.facebook.widget.ProfilePictureView;
+import com.facebook.widget.ProfilePictureView;
 
 import android.content.Context;
 import android.view.LayoutInflater;

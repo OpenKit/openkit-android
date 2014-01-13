@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import io.openkit.facebook.Session;
+import com.facebook.Session;
 import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.leaderboards.OKScoreCache;
 

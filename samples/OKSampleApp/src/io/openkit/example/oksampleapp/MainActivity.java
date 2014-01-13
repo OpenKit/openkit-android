@@ -16,7 +16,7 @@
 package io.openkit.example.oksampleapp;
 
 
-import io.openkit.facebook.widget.ProfilePictureView;
+import com.facebook.widget.ProfilePictureView;
 import io.openkit.*;
 import io.openkit.leaderboards.*;
 import android.os.Bundle;

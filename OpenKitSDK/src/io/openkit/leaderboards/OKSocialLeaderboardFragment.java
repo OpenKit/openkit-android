@@ -14,7 +14,7 @@ import io.openkit.OKLog;
 import io.openkit.OKManager;
 import io.openkit.OKScore;
 import io.openkit.OKUser;
-import io.openkit.facebook.FacebookRequestError;
+import com.facebook.FacebookRequestError;
 import io.openkit.facebookutils.FBLoginPrompt;
 import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.facebookutils.FBLoginRequestHandler;

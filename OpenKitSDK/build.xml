@@ -12,7 +12,7 @@
          Here are some properties you may want to change/update:
 
          source.dir
-             The name of the source directory. Default is 'src'.
+             The name of the source directory. Defau./b lt is 'src'.
          out.dir
              The name of the output directory. Default is 'bin'.
 
