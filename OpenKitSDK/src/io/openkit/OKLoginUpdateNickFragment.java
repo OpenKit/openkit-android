@@ -17,7 +17,7 @@
 package io.openkit;
 
 
-import io.openkit.facebook.widget.ProfilePictureView;
+import com.facebook.widget.ProfilePictureView;
 import io.openkit.user.*;
 import android.content.DialogInterface;
 import android.os.Bundle;

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import io.openkit.facebook.Session;
+import com.facebook.Session;
 import io.openkit.facebookutils.FBLoginRequest;
 import io.openkit.leaderboards.OKScoreCache;
 
@@ -44,7 +44,7 @@ public enum OKManager {
 	private ArrayList<Long> fbFriendsArrayList;
 	private boolean hasShownFBLoginPrompt = false;
 
-	public static final String OPENKIT_SDK_VERSION = "1.0.5";
+	public static final String OPENKIT_SDK_VERSION = "1.1";
 
 	/**
 	 * Initialize the OpenKit SDK with your credentials
