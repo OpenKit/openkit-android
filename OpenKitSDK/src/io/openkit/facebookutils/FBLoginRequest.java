@@ -65,8 +65,19 @@ public class FBLoginRequest {
 		}
 		else if(session.isOpened())
 		{
-			//Facebook session is already open, just authorize the user with OpenKit
-			requestHandler.onFBLoginSucceeded();
+			//Facebook session is already open.  Ensure we have the
+			//proper permissions, and authorize the user with OpenKit.
+
+            if (session.getPermissions().contains("basic_info")) {
+                requestHandler.onFBLoginSucceeded();
+            } else {
+                final java.util.List permList =
+                    java.util.Arrays.asList(new String [] { "basic_info" });
+                Session.NewPermissionsRequest newPermReq =
+                    new Session.NewPermissionsRequest(fragment, permList)
+                    .setCallback(sessionStatusCallback);
+                session.requestNewReadPermissions(newPermReq);
+            }
 		}
 		else {
 			Session.openActiveSession(fragment.getActivity(), fragment, true, sessionStatusCallback);

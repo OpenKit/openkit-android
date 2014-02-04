@@ -34,8 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/io_openkit_login_text"
-            android:textAlignment="center" />
+            android:text="@string/io_openkit_login_text" />
 
         <TextView
             android:id="@+id/io_openkit_loginSubTitleTextView"
@@ -43,8 +42,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/io_openkit_login_subtext"
-            android:textColor="@color/io_openkit_gray"
-            android:textAlignment="center" />
+            android:textColor="@color/io_openkit_gray" />
 
         <Button
             android:id="@+id/io_openkit_googleSignInButton"
