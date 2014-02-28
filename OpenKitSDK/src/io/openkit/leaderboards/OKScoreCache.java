@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import io.openkit.OKHTTPClient;
 import io.openkit.OKLog;
@@ -100,14 +101,15 @@ public class OKScoreCache extends SQLiteOpenHelper{
 		} else {
 			queryFormat = "SELECT * FROM %s WHERE leaderboardID=%d";
 		}
-		String selectQuery = String.format(queryFormat, TABLE_SCORES, leaderboardID);
+
+		String selectQuery = String.format(Locale.US, queryFormat, TABLE_SCORES, leaderboardID);
 		return getScoresWithQuerySQL(selectQuery);
 	}
 
 	public List<OKScore> getUnsubmittedCachedScores()
 	{
 		String queryFormat = "SELECT * FROM %s WHERE submitted=0";
-		String selectQuery = String.format(queryFormat, TABLE_SCORES);
+		String selectQuery = String.format(Locale.US, queryFormat, TABLE_SCORES);
 		return getScoresWithQuerySQL(selectQuery);
 	}
 
@@ -115,7 +117,7 @@ public class OKScoreCache extends SQLiteOpenHelper{
 	public List<OKScore> getAllCachedScores()
 	{
 		String queryFormat = "SELECT * FROM %s";
-		String selectQuery = String.format(queryFormat, TABLE_SCORES);
+		String selectQuery = String.format(Locale.US, queryFormat, TABLE_SCORES);
 		return getScoresWithQuerySQL(selectQuery);
 	}
 
