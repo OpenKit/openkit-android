@@ -17,6 +17,8 @@ import io.openkit.OKUser;
 import io.openkit.OKScore.ScoreRequestResponseHandler;
 import io.openkit.OpenKit;
 import com.facebook.FacebookRequestError;
+import com.facebook.Session;
+
 import io.openkit.facebookutils.FacebookUtilities;
 import io.openkit.leaderboards.OKLeaderboardsActivity;
 import android.content.Intent;
@@ -46,6 +48,15 @@ public class UnityPlugin {
 	{
 		OKManager.INSTANCE.logoutCurrentUser(UnityPlayer.currentActivity.getApplicationContext());
 		OKBridgeLog("Logging out of OpenKit");
+	}
+
+	public static void logoutFacebook()
+	{
+		Session currentSession = Session.getActiveSession();
+
+		if(currentSession != null) {
+			currentSession.closeAndClearTokenInformation();
+		}
 	}
 
 
